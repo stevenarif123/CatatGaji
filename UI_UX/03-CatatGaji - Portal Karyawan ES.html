@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CatatGaji ESS — Portal Karyawan</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Inter', 'sans-serif'] },
+      colors: {
+        brand: { blue: '#2563eb', light: '#eff6ff', active: '#e0f2fe' },
+        ink: { DEFAULT: '#0f172a', soft: '#475569', muted: '#64748b', faint: '#94a3b8' }
+      }
+    }
+  }
+}
+</script>
+<style>
+::-webkit-scrollbar { width: 0px; background: transparent; }
+.bottom-nav { border-top: 1px solid #e2e8f0; }
+.quick-action-card { transition: all 0.2s; }
+.quick-action-card:active { transform: scale(0.95); background-color: #f8fafc; }
+</style>
+</head>
+<body class="bg-[#f8fafc] text-ink font-sans antialiased min-h-[800px] flex flex-col w-full max-w-md mx-auto relative overflow-x-hidden">
+
+    <!-- Top App Bar -->
+    <header class="p-5 flex items-center justify-between sticky top-0 bg-[#f8fafc]/80 backdrop-blur-md z-20">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full border-2 border-brand-blue p-0.5">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" class="w-full h-full rounded-full object-cover shadow-sm">
+            </div>
+            <div>
+                <p class="text-[12px] text-ink-muted leading-none">Halo,</p>
+                <h1 class="text-[15px] font-bold text-slate-900 mt-1">Budi Prasetyo</h1>
+            </div>
+        </div>
+        <button class="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm border border-slate-100 relative">
+            <i class="fa-regular fa-bell text-ink-soft"></i>
+            <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+        </button>
+    </header>
+
+    <main class="flex-1 px-5 pb-24 space-y-6">
+        
+        <!-- Status Card -->
+        <section class="bg-brand-blue rounded-3xl p-5 shadow-xl shadow-brand-blue/20 text-white relative overflow-hidden">
+            <div class="relative z-10">
+                <p class="text-white/70 text-[11px] font-bold uppercase tracking-wider">Jam Kerja Hari Ini</p>
+                <h2 class="text-xl font-bold mt-1">Shift Pagi</h2>
+                <p class="text-white/60 text-[12px] mt-0.5">07:00 — 15:00 WIB</p>
+
+                <div class="mt-5 flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-2xl p-3 border border-white/10">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] text-white/70 font-semibold leading-none">Jam Masuk</p>
+                        <p class="text-[15px] font-bold mt-1">06:58 <span class="text-[11px] font-medium bg-emerald-400 text-brand-blue px-1.5 py-0.5 rounded ml-1">Tepat Waktu</span></p>
+                    </div>
+                </div>
+
+                <button class="w-full mt-5 bg-white text-brand-blue py-3.5 rounded-2xl font-bold text-[15px] shadow-lg shadow-black/5 flex items-center justify-center gap-2 active:scale-95 transition-transform">
+                    <i class="fa-solid fa-right-from-bracket"></i> Clock-Out Pulang
+                </button>
+                <p class="text-[10px] text-white/60 text-center mt-3 flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-location-crosshairs"></i> Radius Kantor Terverifikasi: 15m
+                </p>
+            </div>
+            <!-- Decorative circle -->
+            <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full"></div>
+        </section>
+
+        <!-- Quick Actions Grid -->
+        <section>
+            <h3 class="text-[14px] font-bold text-slate-800 mb-4 px-1">Menu Cepat Karyawan</h3>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="quick-action-card bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-3">
+                    <div class="w-10 h-10 bg-blue-50 text-brand-blue rounded-xl flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                    </div>
+                    <div>
+                        <p class="text-[13px] font-bold text-slate-900">Slip Gaji</p>
+                        <p class="text-[11px] text-ink-muted mt-0.5">Agu: Rp 5.4 Jt</p>
+                    </div>
+                </div>
+                <div class="quick-action-card bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-3">
+                    <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <p class="text-[13px] font-bold text-slate-900">Ajukan Cuti</p>
+                        <p class="text-[11px] text-ink-muted mt-0.5">Sisa: 8 Hari</p>
+                    </div>
+                </div>
+                <div class="quick-action-card bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-3">
+                    <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div>
+                        <p class="text-[13px] font-bold text-slate-900">Ajukan SPKL</p>
+                        <p class="text-[11px] text-ink-muted mt-0.5">Lembur Online</p>
+                    </div>
+                </div>
+                <div class="quick-action-card bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-3">
+                    <div class="w-10 h-10 bg-slate-50 text-ink-soft rounded-xl flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-history"></i>
+                    </div>
+                    <div>
+                        <p class="text-[13px] font-bold text-slate-900">Riwayat Abs</p>
+                        <p class="text-[11px] text-ink-muted mt-0.5">Cek Presensi</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Salary Summary -->
+        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="text-[14px] font-bold text-slate-800">Gaji Bulan Lalu</h3>
+                    <p class="text-[11px] text-ink-muted">Juli 2026</p>
+                </div>
+                <button class="text-[11px] font-bold text-brand-blue bg-brand-light px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                    <i class="fa-solid fa-download"></i> PDF
+                </button>
+            </div>
+            <div class="flex items-end justify-between">
+                <div>
+                    <p class="text-[11px] text-ink-muted font-medium mb-1">Take Home Pay</p>
+                    <p class="text-xl font-bold text-slate-900 leading-none">Rp 5.380.000</p>
+                </div>
+                <i class="fa-solid fa-chevron-right text-slate-200"></i>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md bottom-nav flex items-center justify-around h-20 px-4 z-30">
+        <button class="flex flex-col items-center gap-1.5 text-brand-blue">
+            <i class="fa-solid fa-house text-xl"></i>
+            <span class="text-[10px] font-bold">Beranda</span>
+        </button>
+        <button class="flex flex-col items-center gap-1.5 text-ink-faint hover:text-ink-soft">
+            <i class="fa-regular fa-calendar-check text-xl"></i>
+            <span class="text-[10px] font-medium">Absensi</span>
+        </button>
+        <button class="flex flex-col items-center gap-1.5 text-ink-faint hover:text-ink-soft">
+            <i class="fa-regular fa-paper-plane text-xl"></i>
+            <span class="text-[10px] font-medium">Pengajuan</span>
+        </button>
+        <button class="flex flex-col items-center gap-1.5 text-ink-faint hover:text-ink-soft">
+            <i class="fa-regular fa-circle-user text-xl"></i>
+            <span class="text-[10px] font-medium">Akun</span>
+        </button>
+    </nav>
+
+</body>
+</html>

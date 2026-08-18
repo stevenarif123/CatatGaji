@@ -1,0 +1,19 @@
+{
+  "name": "catatgaji",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Platform Multi-Tenant SaaS Penggajian & HRIS Indonesia",
+  "scripts": {
+    "dev": "pnpm -r --parallel run dev",
+    "dev:web": "pnpm --filter @catatgaji/web dev",
+    "dev:api": "pnpm --filter @catatgaji/api dev",
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "test": "pnpm -r run test",
+    "test:engine": "pnpm --filter @catatgaji/api test -- --grep payroll-engine"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}

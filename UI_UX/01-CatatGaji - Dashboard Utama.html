@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CatatGaji — Payroll Processor</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Inter', 'sans-serif'] },
+      colors: {
+        brand: { blue: '#2563eb', light: '#eff6ff', active: '#e0f2fe' },
+        ink: { DEFAULT: '#0f172a', soft: '#475569', muted: '#64748b', faint: '#94a3b8' }
+      }
+    }
+  }
+}
+</script>
+<style>
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+.apexcharts-tooltip { border: 1px solid #e2e8f0 !important; box-shadow: 0 6px 18px -8px rgba(15,23,42,.25) !important; border-radius: 10px !important; font-family: Inter, sans-serif !important; }
+</style>
+</head>
+<body class="bg-[#f1f5f9] text-ink font-sans antialiased min-h-screen flex w-full">
+
+<aside class="w-[260px] bg-white border-r border-slate-200 flex-shrink-0 flex flex-col hidden md:flex h-screen sticky top-0">
+  <div class="h-16 flex items-center px-6 border-b border-slate-100">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-lg bg-brand-blue flex items-center justify-center text-white"><i class="fa-solid fa-building-columns text-sm"></i></div>
+      <div><p class="text-base font-semibold leading-none text-slate-900">CatatGaji</p><p class="text-[11px] text-ink-muted mt-0.5">PT Maju Bersama Logistik</p></div>
+    </div>
+  </div>
+
+  <nav class="flex-1 overflow-y-auto py-5 px-3 space-y-0.5">
+    <a href="#" class="flex items-center gap-3 px-3 py-2 text-ink-soft hover:bg-slate-50 rounded-lg text-[13.5px] font-medium transition-colors"><i class="fa-solid fa-border-all w-5 text-center"></i> Overview</a>
+    <a href="#" class="flex items-center gap-3 px-3 py-2 bg-brand-active text-brand-blue rounded-lg text-[13.5px] font-semibold transition-colors"><i class="fa-solid fa-calculator w-5 text-center"></i> Payroll Processor</a>
+    <a href="#" class="flex items-center gap-3 px-3 py-2 text-ink-soft hover:bg-slate-50 rounded-lg text-[13.5px] font-medium transition-colors"><i class="fa-regular fa-user-group w-5 text-center"></i> Employee Roster</a>
+    <a href="#" class="flex items-center gap-3 px-3 py-2 text-ink-soft hover:bg-slate-50 rounded-lg text-[13.5px] font-medium transition-colors"><i class="fa-regular fa-clock w-5 text-center"></i> Time &amp; Attendance</a>
+    <a href="#" class="flex items-center gap-3 px-3 py-2 text-ink-soft hover:bg-slate-50 rounded-lg text-[13.5px] font-medium transition-colors"><i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i> Tax &amp; PPh21</a>
+    <a href="#" class="flex items-center gap-3 px-3 py-2 text-ink-soft hover:bg-slate-50 rounded-lg text-[13.5px] font-medium transition-colors">
+      <span class="flex items-center gap-3"><i class="fa-solid fa-user-check w-5 text-center"></i> Approvals</span>
+      <span class="ml-auto text-[11px] font-semibold bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full">3 pending</span>
+    </a>
+  </nav>
+
+  <div class="p-3 border-t border-slate-100 space-y-0.5">
+    <a href="#" class="flex items-center gap-3 px-3 py-2 text-ink-soft hover:bg-slate-50 rounded-lg text-[13.5px] font-medium transition-colors"><i class="fa-solid fa-gear w-5 text-center"></i> System Settings</a>
+    <a href="#" class="flex items-center gap-3 px-3 py-2 text-ink-soft hover:bg-slate-50 rounded-lg text-[13.5px] font-medium transition-colors"><i class="fa-regular fa-circle-question w-5 text-center"></i> Help &amp; Docs</a>
+    <div class="mt-2 pt-2 border-t border-slate-100">
+      <div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
+        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-6.jpg" alt="Hendra" class="w-8 h-8 rounded-full object-cover">
+        <div class="min-w-0 flex-1"><p class="text-[13px] font-semibold text-slate-900 truncate">Hendra Wijaya</p><p class="text-[11px] text-ink-muted truncate">HR Director</p></div>
+        <i class="fa-solid fa-chevron-down text-[11px] text-ink-faint"></i>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div class="flex-1 flex flex-col min-w-0">
+  <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 lg:px-8 sticky top-0 z-20">
+    <div class="flex items-center gap-3">
+      <button class="md:hidden text-ink-soft hover:text-ink"><i class="fa-solid fa-bars text-lg"></i></button>
+      <h1 class="text-[17px] font-semibold text-slate-900">PT Maju Bersama Logistik</h1>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="relative hidden sm:block">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint text-xs"></i>
+        <input type="text" placeholder="Cari data karyawan..." class="pl-9 pr-3 py-2 text-[13px] bg-white border border-slate-200 rounded-lg w-64 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all placeholder-ink-faint">
+      </div>
+      <div class="flex items-center gap-2 pl-4 border-l border-slate-200">
+        <button class="w-9 h-9 flex items-center justify-center text-ink-soft hover:bg-slate-100 rounded-lg transition-colors relative">
+          <i class="fa-regular fa-bell"></i>
+          <span class="absolute top-2 right-2.5 w-1.5 h-1.5 bg-red-500 rounded-full ring-2 ring-white"></span>
+        </button>
+        <button class="w-9 h-9 flex items-center justify-center text-ink-soft hover:bg-slate-100 rounded-lg transition-colors"><i class="fa-solid fa-gear"></i></button>
+      </div>
+      <button class="hidden md:flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2 text-[13px] font-medium text-ink-soft hover:bg-slate-50 transition-colors shadow-sm">
+        <i class="fa-regular fa-calendar text-ink-faint"></i> 1 Nov 2024 - 30 Nov 2024 <i class="fa-solid fa-chevron-down text-[10px] text-ink-faint ml-1"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 p-6 lg:p-8 space-y-6 max-w-[1600px] w-full mx-auto">
+
+    <!-- Hero banner -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 lg:p-7 flex flex-col md:flex-row md:items-center justify-between gap-5 relative overflow-hidden">
+      <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-brand-blue"></div>
+      <div class="pl-3">
+        <p class="text-[13px] font-medium text-ink-muted mb-1">Total Payroll Bulan Ini</p>
+        <div class="flex items-end gap-3 flex-wrap">
+          <h2 class="text-[32px] leading-none font-bold text-slate-900 tracking-tight">Rp 245.850.000</h2>
+          <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 text-[12px] font-semibold px-2 py-1 rounded-md mb-1"><i class="fa-solid fa-arrow-trend-up text-[10px]"></i> +4.2% vs bln lalu</span>
+        </div>
+        <p class="text-[12px] text-ink-faint mt-2">55 karyawan · diproses otomatis · tanggal potong 25 Nov</p>
+      </div>
+      <div class="flex items-center gap-3 flex-wrap">
+        <button class="bg-brand-blue hover:bg-blue-700 text-white text-[13px] font-semibold px-4 py-2.5 rounded-lg shadow-sm transition-colors flex items-center gap-2"><i class="fa-solid fa-play text-[11px]"></i> Proses Gaji</button>
+        <button class="bg-white border border-slate-200 hover:bg-slate-50 text-ink-soft text-[13px] font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2"><i class="fa-solid fa-paper-plane text-[11px]"></i> Kirim Slip Gaji</button>
+      </div>
+    </section>
+
+    <!-- KPI row -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <article class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center text-amber-500"><i class="fa-solid fa-clock text-sm"></i></div>
+          <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-600 text-[11px] font-semibold px-2 py-0.5 rounded-md"><i class="fa-solid fa-arrow-up text-[9px]"></i> +8.5% tinggi</span>
+        </div>
+        <p class="text-[12px] text-ink-muted font-medium">Total Lembur</p>
+        <p class="text-xl font-bold text-slate-900 mt-0.5">Rp 18.420.000</p>
+        <p class="text-[11px] text-ink-faint mt-2 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> 12 jam rata-rata / orang</p>
+      </article>
+
+      <article class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-ink-soft"><i class="fa-solid fa-receipt text-sm"></i></div>
+        </div>
+        <p class="text-[12px] text-ink-muted font-medium">Total Pajak PPh21</p>
+        <p class="text-xl font-bold text-slate-900 mt-0.5">Rp 6.120.000</p>
+        <p class="text-[11px] text-ink-faint mt-2 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Metode Netto · terpotong otomatis</p>
+      </article>
+
+      <article class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-9 h-9 rounded-lg bg-brand-light flex items-center justify-center text-brand-blue"><i class="fa-solid fa-users text-sm"></i></div>
+        </div>
+        <p class="text-[12px] text-ink-muted font-medium">Karyawan Aktif</p>
+        <div class="flex items-center gap-3 mt-1">
+          <p class="text-xl font-bold text-slate-900">55 Orang</p>
+          <div class="flex -space-x-2">
+            <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" class="w-7 h-7 rounded-full border-2 border-white object-cover">
+            <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" class="w-7 h-7 rounded-full border-2 border-white object-cover">
+            <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" class="w-7 h-7 rounded-full border-2 border-white object-cover">
+            <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-4.jpg" class="w-7 h-7 rounded-full border-2 border-white object-cover">
+            <div class="w-7 h-7 rounded-full border-2 border-white bg-slate-100 text-[10px] font-semibold text-ink-soft flex items-center justify-center">+51</div>
+          </div>
+        </div>
+        <p class="text-[11px] text-ink-faint mt-2 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-brand-blue"></span> PT Maju Bersama Logistik</p>
+      </article>
+    </section>
+
+    <!-- Chart row -->
+    <section class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div class="xl:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <div class="flex items-center justify-between mb-1">
+          <h3 class="text-[15px] font-semibold text-slate-900">Tren Biaya Gaji 6 Bulan Terakhir</h3>
+          <div class="flex items-center gap-4 text-[12px]">
+            <span class="flex items-center gap-1.5 text-ink-soft"><span class="w-2.5 h-2.5 rounded-sm bg-brand-blue"></span> Basic</span>
+            <span class="flex items-center gap-1.5 text-ink-soft"><span class="w-2.5 h-2.5 rounded-sm bg-amber-500"></span> Overtime</span>
+            <span class="flex items-center gap-1.5 text-ink-soft"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span> BPJS</span>
+          </div>
+        </div>
+        <p class="text-[12px] text-ink-faint mb-2">dalam jutaan rupiah (Rp)</p>
+        <div id="chart-trend" class="w-full h-[300px]"></div>
+      </div>
+
+      <!-- Persetujuan widget -->
+      <div class="xl:col-span-1 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col">
+        <div class="p-5 pb-4 border-b border-slate-100">
+          <h3 class="text-[15px] font-semibold text-slate-900">Persetujuan Tertunda (3)</h3>
+          <div class="flex items-center gap-1.5 mt-3">
+            <button class="px-2.5 py-1 bg-brand-active text-brand-blue text-[11px] font-semibold rounded-md">Semua</button>
+            <button class="px-2.5 py-1 text-ink-soft hover:bg-slate-50 text-[11px] font-medium rounded-md transition-colors">Lembur</button>
+            <button class="px-2.5 py-1 text-ink-soft hover:bg-slate-50 text-[11px] font-medium rounded-md transition-colors">Cuti</button>
+            <button class="px-2.5 py-1 text-ink-soft hover:bg-slate-50 text-[11px] font-medium rounded-md transition-colors">Kasbon</button>
+          </div>
+        </div>
+        <div class="flex-1 p-3 space-y-1">
+          <div class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-50 transition-colors">
+            <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" class="w-9 h-9 rounded-full object-cover flex-shrink-0">
+            <div class="min-w-0 flex-1">
+              <p class="text-[13px] font-semibold text-slate-900 truncate">Budi</p>
+              <p class="text-[12px] text-ink-soft truncate">Pengajuan Lembur Akhir Pekan 8 Jam</p>
+            </div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <button class="w-8 h-8 flex items-center justify-center text-ink-soft hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors"><i class="fa-solid fa-xmark text-xs"></i></button>
+              <button class="w-8 h-8 flex items-center justify-center text-white bg-emerald-500 hover:bg-emerald-600 rounded-lg transition-colors shadow-sm"><i class="fa-solid fa-check text-xs"></i></button>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-50 transition-colors">
+            <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" class="w-9 h-9 rounded-full object-cover flex-shrink-0">
+            <div class="min-w-0 flex-1">
+              <p class="text-[13px] font-semibold text-slate-900 truncate">Siti</p>
+              <p class="text-[12px] text-ink-soft truncate">Pengajuan Cuti Tahunan 3 Hari</p>
+            </div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <button class="w-8 h-8 flex items-center justify-center text-ink-soft hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors"><i class="fa-solid fa-xmark text-xs"></i></button>
+              <button class="w-8 h-8 flex items-center justify-center text-white bg-emerald-500 hover:bg-emerald-600 rounded-lg transition-colors shadow-sm"><i class="fa-solid fa-check text-xs"></i></button>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-50 transition-colors">
+            <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" class="w-9 h-9 rounded-full object-cover flex-shrink-0">
+            <div class="min-w-0 flex-1">
+              <p class="text-[13px] font-semibold text-slate-900 truncate">Rudi</p>
+              <p class="text-[12px] text-ink-soft truncate">Kasbon Darurat Rp 1.500.000</p>
+            </div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <button class="w-8 h-8 flex items-center justify-center text-ink-soft hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors"><i class="fa-solid fa-xmark text-xs"></i></button>
+              <button class="w-8 h-8 flex items-center justify-center text-white bg-emerald-500 hover:bg-emerald-600 rounded-lg transition-colors shadow-sm"><i class="fa-solid fa-check text-xs"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 border-t border-slate-100">
+          <button class="w-full py-2 text-[13px] font-medium text-brand-blue hover:bg-brand-light rounded-lg transition-colors">Lihat Semua Persetujuan</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom roster -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="p-5 flex items-center justify-between border-b border-slate-100">
+        <h3 class="text-[15px] font-semibold text-slate-900">Ringkasan Gaji Per Karyawan</h3>
+        <button class="flex items-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 text-ink-soft text-[13px] font-medium px-3 py-2 rounded-lg transition-colors"><i class="fa-solid fa-download text-[11px]"></i> Export CSV</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left whitespace-nowrap">
+          <thead>
+            <tr class="text-[11px] uppercase tracking-wide text-ink-faint border-b border-slate-100 bg-slate-50/50">
+              <th class="py-3 px-5 font-semibold">Nama</th>
+              <th class="py-3 px-5 font-semibold">Divisi</th>
+              <th class="py-3 px-5 font-semibold">Metode</th>
+              <th class="py-3 px-5 font-semibold">Status</th>
+              <th class="py-3 px-5 font-semibold text-right">Total</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-[13.5px]" id="roster-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const roster = [
+  { n:'Budi Santoso', av:1, div:'Operasional', met:'Netto', st:'Sudah Transfer', amt:'Rp 9.250.000' },
+  { n:'Siti Rahayu', av:2, div:'Logistik', met:'Bruto', st:'Menunggu', amt:'Rp 7.800.000' },
+  { n:'Ahmad Pratama', av:3, div:'Keuangan', met:'Netto', st:'Sudah Transfer', amt:'Rp 11.400.000' },
+  { n:'Rina Dewi', av:4, div:'SDM', met:'Bruto', st:'Sudah Transfer', amt:'Rp 8.950.000' },
+  { n:'Rudi Hermawan', av:5, div:'Armada', met:'Netto', st:'Menunggu', amt:'Rp 6.700.000' },
+];
+const stStyle = s => s==='Sudah Transfer' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600';
+document.getElementById('roster-body').innerHTML = roster.map(r => `
+  <tr class="hover:bg-slate-50/60 transition-colors">
+    <td class="py-3 px-5"><div class="flex items-center gap-3"><img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-${r.av}.jpg" class="w-8 h-8 rounded-full object-cover"><span class="font-semibold text-slate-900">${r.n}</span></div></td>
+    <td class="py-3 px-5 text-ink-soft">${r.div}</td>
+    <td class="py-3 px-5 text-ink-soft">${r.met}</td>
+    <td class="py-3 px-5"><span class="inline-flex items-center gap-1.5 ${stStyle(r.st)} text-[11px] font-semibold px-2.5 py-1 rounded-md">${r.st==='Sudah Transfer'?'<i class=\'fa-solid fa-circle-check text-[9px]\'></i>':'<i class=\'fa-regular fa-clock text-[9px]\'></i>'}${r.st}</span></td>
+    <td class="py-3 px-5 text-right font-semibold text-slate-900 tabular-nums">${r.amt}</td>
+  </tr>`).join('');
+
+new ApexCharts(document.querySelector('#chart-trend'), {
+  chart: { type: 'area', height: 300, fontFamily: 'Inter, sans-serif', toolbar: { show: false }, animations: { speed: 600 } },
+  series: [
+    { name: 'Basic', data: [210, 218, 224, 231, 238, 245] },
+    { name: 'Overtime', data: [12, 14, 13, 16, 17, 18] },
+    { name: 'BPJS', data: [9, 9, 10, 10, 11, 11] }
+  ],
+  colors: ['#2563eb', '#d97706', '#16a34a'],
+  fill: { type: 'gradient', gradient: { shadeIntensity: 0, opacityFrom: 0.22, opacityTo: 0.02, stops: [0, 100] } },
+  stroke: { curve: 'smooth', width: 2 },
+  dataLabels: { enabled: false },
+  grid: { borderColor: '#f1f5f9', strokeDashArray: 4, padding: { left: 8, right: 8 } },
+  xaxis: { categories: ['Jun','Jul','Agu','Sep','Okt','Nov'], axisBorder: { show: false }, axisTicks: { show: false }, labels: { style: { colors: '#94a3b8', fontSize: '11px' } } },
+  yaxis: { labels: { formatter: v => 'Rp '+v+'jt', style: { colors: '#94a3b8', fontSize: '11px' } } },
+  legend: { show: false },
+  tooltip: { y: { formatter: v => 'Rp '+v+' jt' } }
+}).render();
+</script>
+</body>
+</html>
