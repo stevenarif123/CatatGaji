@@ -1,125 +1,316 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { apiFetch } from '../lib/api';
+import { useAuthStore } from '../stores/authStore';
+import { formatRupiah } from '@catatgaji/shared';
 
 export const Dashboard: React.FC = () => {
+  const token = useAuthStore((state) => state.token);
+  const navigate = useNavigate();
+
+  const [stats, setStats] = useState({
+    activeEmployees: 0,
+    currentMonthPayroll: 0,
+    totalPph21: 0,
+    totalBpjsEmployer: 0,
+    totalOvertime: 0,
+    latestPeriodId: null as string | null,
+    latestPeriodStatus: 'DRAFT',
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadDashboardData() {
+      try {
+        const empRes = await apiFetch<any>('/employees', { token });
+        const employees = empRes.data || [];
+
+        const payrollRes = await apiFetch<any>('/payroll/periods', { token });
+        const periods = payrollRes.data || [];
+        const latest = periods[0] || null;
+
+        setStats({
+          activeEmployees: employees.filter((e: any) => e.status === 'ACTIVE').length,
+          currentMonthPayroll: latest ? Number(latest.total_gross_salary) || 0 : 0,
+          totalPph21: latest ? Number(latest.total_pph21) || 0 : 0,
+          totalBpjsEmployer: latest ? Number(latest.total_bpjs_employer) || 0 : 0,
+          totalOvertime: 0,
+          latestPeriodId: latest ? latest.id : null,
+          latestPeriodStatus: latest ? latest.status : 'NONE',
+        });
+      } catch (err) {
+        console.error('Failed to load dashboard:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadDashboardData();
+  }, [token]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '1200px' }}>
-      {/* Welcome Banner */}
-      <div
-        className="card"
-        style={{
-          background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-          color: '#fff',
-          border: 'none',
-          padding: '2rem',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <span className="badge badge-primary" style={{ marginBottom: '0.75rem', backgroundColor: 'rgba(59, 130, 246, 0.2)', color: '#93c5fd' }}>
-              Fase 1 MVP Aktif
-            </span>
-            <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff', margin: '0.25rem 0' }}>
-              Selamat Datang di CatatGaji
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Hero Banner (UX Pilot Mockup Style) */}
+      <section className="hero-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem', padding: '1.75rem 2rem' }}>
+        <div style={{ paddingLeft: '0.5rem' }}>
+          <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.375rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Total Payroll Bulan Berjalan
+          </p>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.875rem', flexWrap: 'wrap' }}>
+            <h2 style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-main)', letterSpacing: '-0.02em', margin: 0 }}>
+              {formatRupiah(stats.currentMonthPayroll)}
             </h2>
-            <p style={{ color: '#94a3b8', fontSize: '0.9375rem', maxWidth: '600px' }}>
-              Platform penggajian terotomatisasi dengan perhitungan PPh 21 TER (PMK 168/2023), 5 program BPJS, lembur resmi PP 35/2021, dan perlindungan privasi data UU PDP.
-            </p>
+            <span className="badge badge-success" style={{ padding: '0.25rem 0.625rem', fontSize: '0.75rem' }}>
+              <i className="fa-solid fa-arrow-trend-up"></i> Sesuai Regulasi PMK 168/2023
+            </span>
           </div>
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <Link to="/employees" className="btn btn-secondary" style={{ backgroundColor: '#ffffff', color: '#0f172a' }}>
-              + Tambah Karyawan
-            </Link>
-            <Link to="/payroll" className="btn btn-primary">
-              ⚡ Hitung Penggajian
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Summary KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
-        <div className="card">
-          <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
-            Total Karyawan Aktif
-          </div>
-          <div style={{ fontSize: '2rem', fontWeight: 800, marginTop: '0.5rem', color: 'var(--text-main)' }}>
-            0 <span style={{ fontSize: '0.875rem', fontWeight: 400, color: 'var(--text-muted)' }}>orang</span>
-          </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-            Maksimal kuota: 25 Karyawan (Starter)
-          </div>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-faint)', marginTop: '0.5rem' }}>
+            {stats.activeEmployees} Karyawan Aktif · Terintegrasi BPJS & PPh 21 TER Otomatis
+          </p>
         </div>
 
-        <div className="card">
-          <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
-            Estimasi Beban Gaji Bulanan
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate('/payroll')}
+            style={{ padding: '0.625rem 1.25rem' }}
+          >
+            <i className="fa-solid fa-calculator"></i>
+            <span>Proses Penggajian</span>
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => navigate('/employees')}
+            style={{ padding: '0.625rem 1.25rem' }}
+          >
+            <i className="fa-solid fa-user-plus"></i>
+            <span>Kelola Karyawan</span>
+          </button>
+        </div>
+      </section>
+
+      {/* KPI Row */}
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+        {/* Karyawan Aktif */}
+        <article className="card" style={{ padding: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                backgroundColor: 'var(--primary-light)',
+                color: 'var(--primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1rem',
+              }}
+            >
+              <i className="fa-solid fa-users"></i>
+            </div>
+            <span className="badge badge-primary">Master Data</span>
           </div>
-          <div style={{ fontSize: '2rem', fontWeight: 800, marginTop: '0.5rem', color: 'var(--text-main)' }}>
-            Rp 0
+          <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Karyawan Aktif
+          </p>
+          <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '0.25rem' }}>
+            {loading ? '...' : `${stats.activeEmployees} Orang`}
+          </p>
+          <p style={{ fontSize: '0.6875rem', color: 'var(--text-faint)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--success)' }}></span>
+            Auto-Mapping TER A/B/C & NIK Masking
+          </p>
+        </article>
+
+        {/* Total Pajak PPh 21 TER */}
+        <article className="card" style={{ padding: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                backgroundColor: 'var(--warning-light)',
+                color: 'var(--warning-text)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1rem',
+              }}
+            >
+              <i className="fa-solid fa-receipt"></i>
+            </div>
+            <span className="badge badge-warning">PPh 21 TER</span>
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-            Periode berjalan belum dikalkulasi
+          <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Pajak PPh 21 Dipotong
+          </p>
+          <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '0.25rem' }}>
+            {loading ? '...' : formatRupiah(stats.totalPph21)}
+          </p>
+          <p style={{ fontSize: '0.6875rem', color: 'var(--text-faint)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--warning)' }}></span>
+            125 Lapisan TER Bulanan & Rekonsiliasi Des
+          </p>
+        </article>
+
+        {/* Biaya BPJS Perusahaan */}
+        <article className="card" style={{ padding: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                backgroundColor: 'var(--purple-light)',
+                color: 'var(--purple-text)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1rem',
+              }}
+            >
+              <i className="fa-solid fa-shield-heart"></i>
+            </div>
+            <span className="badge badge-purple">5 Program BPJS</span>
+          </div>
+          <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Beban BPJS Perusahaan
+          </p>
+          <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '0.25rem' }}>
+            {loading ? '...' : formatRupiah(stats.totalBpjsEmployer)}
+          </p>
+          <p style={{ fontSize: '0.6875rem', color: 'var(--text-faint)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--purple)' }}></span>
+            JKK, JKM, JHT, JP & BPJS Kesehatan
+          </p>
+        </article>
+      </section>
+
+      {/* Grid: Overview Quick Actions & Compliance Checklist */}
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+        {/* Compliance Checklist Card */}
+        <div className="card" style={{ padding: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+            <h3 style={{ fontSize: '0.9375rem', margin: 0 }}>
+              <i className="fa-solid fa-list-check" style={{ color: 'var(--primary)', marginRight: '0.5rem' }}></i>
+              Checklist Kepatuhan Pajak & Payroll
+            </h3>
+            <span className="badge badge-success">Terverifikasi</span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <i className="fa-solid fa-circle-check" style={{ color: 'var(--success)', fontSize: '0.9rem' }}></i>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>Tabel TER PMK 168/2023 (125 Lapisan)</p>
+                <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: 0 }}>Kategori A, B, dan C aktif terhitung otomatis</p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <i className="fa-solid fa-circle-check" style={{ color: 'var(--success)', fontSize: '0.9rem' }}></i>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>Plafon Iuran BPJS Ketenagakerjaan & Kesehatan</p>
+                <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: 0 }}>JP (maks Rp 10.042.300) & Kes (maks Rp 12.000.000)</p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <i className="fa-solid fa-circle-check" style={{ color: 'var(--success)', fontSize: '0.9rem' }}></i>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>Kompensasi Lembur PP 35/2021</p>
+                <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: 0 }}>Rumus 1/173 upah sebulan dengan tarif bertingkat</p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <i className="fa-solid fa-circle-check" style={{ color: 'var(--success)', fontSize: '0.9rem' }}></i>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>Bukti Potong Formulir 1721-A1</p>
+                <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: 0 }}>Tersedia otomatis untuk pelaporan SPT Tahunan</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="card">
-          <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
-            Status PPh 21 TER
+        {/* Quick Launchpad Card */}
+        <div className="card" style={{ padding: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+            <h3 style={{ fontSize: '0.9375rem', margin: 0 }}>
+              <i className="fa-solid fa-bolt" style={{ color: 'var(--warning)', marginRight: '0.5rem' }}></i>
+              Akses Cepat Modul
+            </h3>
           </div>
-          <div style={{ fontSize: '2rem', fontWeight: 800, marginTop: '0.5rem', color: 'var(--success)' }}>
-            100%
-          </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-            Sesuai PMK 168/2023 (Kategori A, B, C)
-          </div>
-        </div>
 
-        <div className="card">
-          <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
-            Kepatuhan 5 BPJS
-          </div>
-          <div style={{ fontSize: '2rem', fontWeight: 800, marginTop: '0.5rem', color: 'var(--primary)' }}>
-            Aktif
-          </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-            JKK, JKM, JHT, JP, BPJS Kes
-          </div>
-        </div>
-      </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <div
+              onClick={() => navigate('/payroll')}
+              style={{
+                padding: '1rem',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border-color)',
+                backgroundColor: 'var(--bg-subtle)',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <i className="fa-solid fa-calculator" style={{ color: 'var(--primary)', fontSize: '1.25rem', marginBottom: '0.5rem', display: 'block' }}></i>
+              <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>Payroll Wizard</p>
+              <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>4 langkah gaji</p>
+            </div>
 
-      {/* Empty State / Onboarding Section as designed in PRD 06 */}
-      <div className="card" style={{ textAlign: 'center', padding: '3.5rem 2rem' }}>
-        <div
-          style={{
-            width: '64px',
-            height: '64px',
-            borderRadius: '50%',
-            backgroundColor: 'var(--primary-light)',
-            color: 'var(--primary)',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '1.75rem',
-            marginBottom: '1rem',
-          }}
-        >
-          📋
+            <div
+              onClick={() => navigate('/employees')}
+              style={{
+                padding: '1rem',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border-color)',
+                backgroundColor: 'var(--bg-subtle)',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <i className="fa-solid fa-user-gear" style={{ color: 'var(--success)', fontSize: '1.25rem', marginBottom: '0.5rem', display: 'block' }}></i>
+              <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>Master Karyawan</p>
+              <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>Data & Gaji</p>
+            </div>
+
+            <div
+              onClick={() => navigate('/tax-reports')}
+              style={{
+                padding: '1rem',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border-color)',
+                backgroundColor: 'var(--bg-subtle)',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <i className="fa-solid fa-file-invoice-dollar" style={{ color: 'var(--warning-text)', fontSize: '1.25rem', marginBottom: '0.5rem', display: 'block' }}></i>
+              <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>Laporan Pajak</p>
+              <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>Form 1721-A1</p>
+            </div>
+
+            <div
+              onClick={() => navigate('/payroll')}
+              style={{
+                padding: '1rem',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border-color)',
+                backgroundColor: 'var(--bg-subtle)',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <i className="fa-solid fa-file-pdf" style={{ color: 'var(--purple)', fontSize: '1.25rem', marginBottom: '0.5rem', display: 'block' }}></i>
+              <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>Slip Gaji PDF</p>
+              <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>Unduh resmi</p>
+            </div>
+          </div>
         </div>
-        <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Belum Ada Data Penggajian</h3>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', maxWidth: '480px', margin: '0.5rem auto 1.5rem' }}>
-          Mulai dengan mendaftarkan data karyawan atau mengimpor file CSV data karyawan untuk menghitung kalkulasi PPh 21 TER dan BPJS secara otomatis.
-        </p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem' }}>
-          <Link to="/employees" className="btn btn-primary">
-            + Input Karyawan Pertama
-          </Link>
-          <Link to="/employees" className="btn btn-secondary">
-            📥 Impor CSV / Excel
-          </Link>
-        </div>
-      </div>
+      </section>
     </div>
   );
 };

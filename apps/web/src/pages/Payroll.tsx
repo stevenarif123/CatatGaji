@@ -70,220 +70,242 @@ export const Payroll: React.FC = () => {
 
   const totalThpAll = periods.reduce((sum, p) => sum + (Number(p.total_thp) || 0), 0);
   const totalTaxAll = periods.reduce((sum, p) => sum + (Number(p.total_pph21) || 0), 0);
-  const totalEmpCount = periods.reduce((sum, p) => sum + (Number(p.employee_count) || 0), 0);
+  const totalBpjsAll = periods.reduce((sum, p) => sum + (Number(p.total_bpjs_employer) || 0), 0);
 
   return (
-    <div className="container" style={{ padding: '2rem 1rem' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Header & Actions */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.75rem', margin: '0 0 0.5rem' }}>Penggajian (Payroll)</h1>
-          <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-            Kelola periode penggajian, kalkulasi otomatis PPh 21 TER, BPJS, dan approval PIN Owner
+          <h1 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>
+            Payroll Processor & Penggajian
+          </h1>
+          <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
+            Kelola siklus penggajian bulanan, kalkulasi otomatis PPh 21 TER, BPJS, dan approval PIN Owner
           </p>
         </div>
         <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
-          + Buat Periode Gaji Baru
+          <i className="fa-solid fa-plus"></i>
+          <span>Buka Periode Gaji Baru</span>
         </button>
       </div>
 
-      {/* KPI Stats */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-        gap: '1rem',
-        marginBottom: '2rem',
-      }}>
-        <div className="card" style={{ padding: '1.25rem' }}>
-          <div style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Total Akumulasi THP</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--color-primary)', marginTop: '0.25rem' }}>
+      {/* KPI Row */}
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
+        <article className="card" style={{ padding: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <i className="fa-solid fa-money-bill-transfer"></i>
+            </div>
+            <span className="badge badge-primary">Take Home Pay</span>
+          </div>
+          <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Total Akumulasi THP
+          </p>
+          <p style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)', marginTop: '0.25rem' }}>
             {formatRupiah(totalThpAll)}
-          </div>
-        </div>
-        <div className="card" style={{ padding: '1.25rem' }}>
-          <div style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Total Setoran PPh 21 TER</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#e74c3c', marginTop: '0.25rem' }}>
-            {formatRupiah(totalTaxAll)}
-          </div>
-        </div>
-        <div className="card" style={{ padding: '1.25rem' }}>
-          <div style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Total Penggajian Karyawan</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--color-text)', marginTop: '0.25rem' }}>
-            {totalEmpCount} Proses
-          </div>
-        </div>
-      </div>
+          </p>
+        </article>
 
-      {/* Periods Table */}
-      <div className="card" style={{ overflow: 'hidden' }}>
-        <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 style={{ fontSize: '1.1rem', margin: 0 }}>Daftar Periode Penggajian</h2>
+        <article className="card" style={{ padding: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: 'var(--warning-light)', color: 'var(--warning-text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <i className="fa-solid fa-receipt"></i>
+            </div>
+            <span className="badge badge-warning">PPh 21 TER</span>
+          </div>
+          <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Total PPh 21 Terpotong
+          </p>
+          <p style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--warning-text)', marginTop: '0.25rem' }}>
+            {formatRupiah(totalTaxAll)}
+          </p>
+        </article>
+
+        <article className="card" style={{ padding: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: 'var(--purple-light)', color: 'var(--purple-text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <i className="fa-solid fa-shield-heart"></i>
+            </div>
+            <span className="badge badge-purple">BPJS Perusahaan</span>
+          </div>
+          <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Beban BPJS Perusahaan
+          </p>
+          <p style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--purple-text)', marginTop: '0.25rem' }}>
+            {formatRupiah(totalBpjsAll)}
+          </p>
+        </article>
+      </section>
+
+      {/* Period List Table */}
+      <section className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ fontSize: '0.9375rem', margin: 0, fontWeight: 600 }}>Daftar Periode Penggajian</h2>
           <button className="btn btn-sm btn-secondary" onClick={loadPeriods}>
-            🔄 Refresh
+            <i className="fa-solid fa-rotate-right"></i>
+            <span>Refresh</span>
           </button>
         </div>
 
         {loading ? (
-          <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+          <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+            <i className="fa-solid fa-spinner fa-spin" style={{ marginRight: '0.5rem' }}></i>
             Memuat daftar periode penggajian...
           </div>
         ) : periods.length === 0 ? (
-          <div style={{ padding: '3rem', textAlign: 'center' }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📅</div>
-            <h3 style={{ margin: '0 0 0.5rem' }}>Belum Ada Periode Penggajian</h3>
-            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-              Klik tombol di bawah untuk membuat periode penggajian baru bulan ini.
+          <div style={{ padding: '4rem 2rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem', color: 'var(--text-faint)' }}>
+              <i className="fa-solid fa-calculator"></i>
+            </div>
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 600 }}>Belum Ada Periode Penggajian</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', marginTop: '0.25rem' }}>
+              Klik tombol "+ Buka Periode Gaji Baru" untuk memulai siklus penggajian pertama Anda.
             </p>
-            <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
-              + Buat Periode Gaji Pertama
-            </button>
           </div>
         ) : (
-          <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'left', borderBottom: '1px solid var(--color-border)' }}>
-                <th style={{ padding: '0.75rem 1rem' }}>Periode</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Tanggal Transfer</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Karyawan</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Total Bruto</th>
-                <th style={{ padding: '0.75rem 1rem' }}>PPh 21 TER</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Total THP</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Status</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {periods.map((p) => (
-                <tr key={p.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                  <td style={{ padding: '0.75rem 1rem', fontWeight: 500 }}>
-                    {MONTH_NAMES[p.period_month - 1]} {p.period_year}
-                  </td>
-                  <td style={{ padding: '0.75rem 1rem', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
-                    {formatTanggal(p.payout_date)}
-                  </td>
-                  <td style={{ padding: '0.75rem 1rem' }}>
-                    {p.employee_count} Orang
-                  </td>
-                  <td style={{ padding: '0.75rem 1rem' }}>
-                    {formatRupiah(p.total_gross)}
-                  </td>
-                  <td style={{ padding: '0.75rem 1rem', color: '#e74c3c' }}>
-                    {formatRupiah(p.total_pph21)}
-                  </td>
-                  <td style={{ padding: '0.75rem 1rem', fontWeight: 'bold', color: '#27ae60' }}>
-                    {formatRupiah(p.total_thp)}
-                  </td>
-                  <td style={{ padding: '0.75rem 1rem' }}>
-                    <span className={`badge ${
-                      p.status === 'APPROVED' ? 'badge-success' :
-                      p.status === 'SUBMITTED' ? 'badge-warning' : 'badge-secondary'
-                    }`}>
-                      {p.status === 'APPROVED' ? 'FINAL & LOCKED' : p.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
-                    <button
-                      className="btn btn-sm btn-primary"
-                      onClick={() => navigate(`/payroll/${p.id}`)}
-                    >
-                      {p.status === 'DRAFT' ? 'Lanjutkan Wizard ➔' : 'Lihat Detail ➔'}
-                    </button>
-                  </td>
+          <div style={{ overflowX: 'auto' }}>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Bulan / Tahun</th>
+                  <th>Tanggal Bayar</th>
+                  <th>Jumlah Karyawan</th>
+                  <th>Total Gaji Bruto</th>
+                  <th>Total PPh 21</th>
+                  <th>Total THP (Transfer)</th>
+                  <th>Status</th>
+                  <th style={{ textAlign: 'right' }}>Aksi</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {periods.map((p) => {
+                  const isApproved = p.status === 'APPROVED';
+                  const isSubmitted = p.status === 'SUBMITTED';
+
+                  return (
+                    <tr key={p.id}>
+                      <td style={{ fontWeight: 600, color: 'var(--text-main)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <i className="fa-regular fa-calendar-check" style={{ color: 'var(--primary)' }}></i>
+                          <span>{MONTH_NAMES[p.period_month - 1]} {p.period_year}</span>
+                        </div>
+                      </td>
+                      <td style={{ color: 'var(--text-soft)' }}>
+                        {formatTanggal(p.payout_date)}
+                      </td>
+                      <td>
+                        <span className="badge badge-muted">{p.employee_count || 0} Karyawan</span>
+                      </td>
+                      <td>{formatRupiah(Number(p.total_gross_salary) || 0)}</td>
+                      <td style={{ color: 'var(--warning-text)', fontWeight: 500 }}>
+                        {formatRupiah(Number(p.total_pph21) || 0)}
+                      </td>
+                      <td style={{ fontWeight: 700, color: 'var(--primary)' }}>
+                        {formatRupiah(Number(p.total_thp) || 0)}
+                      </td>
+                      <td>
+                        <span
+                          className={`badge ${
+                            isApproved
+                              ? 'badge-success'
+                              : isSubmitted
+                              ? 'badge-warning'
+                              : 'badge-info'
+                          }`}
+                        >
+                          <i className={`fa-solid ${isApproved ? 'fa-lock' : isSubmitted ? 'fa-clock' : 'fa-pen-to-square'}`} style={{ fontSize: '8px' }}></i>
+                          {isApproved ? 'Final & Locked' : isSubmitted ? 'Menunggu Approval' : 'Draft'}
+                        </span>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <button
+                          className="btn btn-sm btn-primary"
+                          onClick={() => navigate(`/payroll/${p.id}`)}
+                        >
+                          <i className="fa-solid fa-arrow-right"></i>
+                          <span>{isApproved ? 'Lihat Rekap & Slip' : 'Buka Wizard'}</span>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
-      </div>
+      </section>
 
-      {/* Modal Buat Periode */}
+      {/* Create Modal */}
       {showCreateModal && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1rem',
-        }}>
-          <div style={{
-            backgroundColor: 'var(--color-bg)',
-            borderRadius: 'var(--radius-lg)',
-            border: '1px solid var(--color-border)',
-            boxShadow: 'var(--shadow-lg)',
-            width: '100%',
-            maxWidth: '460px',
-            padding: '1.5rem',
-          }}>
-            <h3 style={{ margin: '0 0 1rem' }}>Buat Periode Penggajian Baru</h3>
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '480px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.125rem', margin: 0 }}>Buka Periode Penggajian Baru</h3>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: 'var(--text-faint)', cursor: 'pointer' }}
+              >
+                <i className="fa-solid fa-xmark"></i>
+              </button>
+            </div>
 
-            {formError && (
-              <div style={{
-                padding: '0.75rem',
-                backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                border: '1px solid #e74c3c',
-                borderRadius: 'var(--radius-sm)',
-                color: '#e74c3c',
-                fontSize: '0.85rem',
-                marginBottom: '1rem',
-              }}>
-                {formError}
-              </div>
-            )}
+            {formError && <div className="alert alert-danger"><i className="fa-solid fa-circle-exclamation"></i>{formError}</div>}
 
             <form onSubmit={handleCreatePeriod}>
-              <div className="form-group" style={{ marginBottom: '1rem' }}>
-                <label className="form-label">Bulan Periode</label>
-                <select
-                  className="form-control"
-                  value={periodMonth}
-                  onChange={(e) => setPeriodMonth(Number(e.target.value))}
-                >
-                  {MONTH_NAMES.map((name, idx) => (
-                    <option key={idx + 1} value={idx + 1}>
-                      {name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <div className="form-group">
+                  <label className="form-label">Bulan Gaji</label>
+                  <select
+                    className="form-control"
+                    value={periodMonth}
+                    onChange={(e) => setPeriodMonth(Number(e.target.value))}
+                  >
+                    {MONTH_NAMES.map((name, idx) => (
+                      <option key={idx + 1} value={idx + 1}>
+                        {name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              <div className="form-group" style={{ marginBottom: '1rem' }}>
-                <label className="form-label">Tahun</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  value={periodYear}
-                  min={2020}
-                  max={2050}
-                  onChange={(e) => setPeriodYear(Number(e.target.value))}
-                  required
-                />
+                <div className="form-group">
+                  <label className="form-label">Tahun</label>
+                  <select
+                    className="form-control"
+                    value={periodYear}
+                    onChange={(e) => setPeriodYear(Number(e.target.value))}
+                  >
+                    {[2024, 2025, 2026, 2027].map((y) => (
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-                <label className="form-label">Tanggal Pembayaran Gaji (Payout Date)</label>
+                <label className="form-label">Tanggal Pembayaran (Payout Date)</label>
                 <input
                   type="date"
+                  required
                   className="form-control"
                   value={payoutDate}
                   onChange={(e) => setPayoutDate(e.target.value)}
-                  required
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
                 <button
                   type="button"
                   className="btn btn-secondary"
                   onClick={() => setShowCreateModal(false)}
-                  disabled={creating}
                 >
                   Batal
                 </button>
                 <button type="submit" className="btn btn-primary" disabled={creating}>
-                  {creating ? 'Membuat...' : 'Mulai Wizard Penggajian ➔'}
+                  {creating ? 'Membuka Periode...' : 'Buka Periode & Masuk Wizard'}
                 </button>
               </div>
             </form>

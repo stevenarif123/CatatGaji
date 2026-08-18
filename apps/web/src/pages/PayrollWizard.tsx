@@ -99,365 +99,403 @@ export const PayrollWizard: React.FC = () => {
 
   // Step 3: Submit for approval
   const handleSubmitForApproval = async () => {
-    setProcessing(true);
-    setError(null);
+    if (!window.confirm('Ajukan periode penggajian ini untuk disetujui Owner?')) return;
     try {
-      await apiFetch<any>(`/payroll/periods/${periodId}/submit`, {
+      await apiFetch(`/payroll/periods/${periodId}/submit`, {
         method: 'POST',
         token,
       });
       await loadData();
     } catch (err: any) {
-      setError(err.message || 'Gagal submit periode');
-    } finally {
-      setProcessing(false);
+      alert(err.message || 'Gagal mengajukan payroll');
     }
   };
 
   // Step 4: Owner PIN Approval
   const handleApproveWithPin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (pin.length !== 6) {
+      setPinError('PIN harus tepat 6 digit angka');
+      return;
+    }
+
     setPinSubmitting(true);
     setPinError(null);
 
     try {
-      await apiFetch<any>(`/payroll/periods/${periodId}/approve`, {
+      await apiFetch(`/payroll/periods/${periodId}/approve`, {
         method: 'POST',
         token,
         body: { pin },
       });
+
       setShowPinModal(false);
+      setPin('');
       await loadData();
+      alert('Penggajian berhasil disahkan dan dikunci secara permanen (Immutable).');
     } catch (err: any) {
-      setPinError(err.message || 'Gagal menyetujui penggajian');
+      setPinError(err.message || 'PIN yang Anda masukkan salah.');
     } finally {
       setPinSubmitting(false);
     }
   };
 
-  if (loading) {
+  const isApproved = period?.status === 'APPROVED';
+  const isSubmitted = period?.status === 'SUBMITTED';
+
+  if (loading && !period) {
     return (
-      <div className="container" style={{ padding: '3rem 1rem', textAlign: 'center' }}>
-        Memuat wizard penggajian...
+      <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+        <i className="fa-solid fa-spinner fa-spin" style={{ marginRight: '0.5rem' }}></i>
+        Memuat Wizard Penggajian...
       </div>
     );
   }
-
-  if (!period) {
-    return (
-      <div className="container" style={{ padding: '3rem 1rem', textAlign: 'center' }}>
-        <p>Periode tidak ditemukan.</p>
-        <button className="btn btn-secondary" onClick={() => navigate('/payroll')}>
-          Kembali ke Penggajian
-        </button>
-      </div>
-    );
-  }
-
-  const monthName = MONTH_NAMES[period.period_month - 1];
-  const isLocked = period.status === 'APPROVED';
 
   return (
-    <div className="container" style={{ padding: '2rem 1rem' }}>
-      {/* Top Breadcrumb & Status */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Header Bar */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <button
-            className="btn btn-sm btn-secondary"
             onClick={() => navigate('/payroll')}
+            className="btn btn-sm btn-secondary"
             style={{ marginBottom: '0.5rem' }}
           >
-            ← Kembali ke Daftar Periode
+            <i className="fa-solid fa-arrow-left"></i>
+            <span>Kembali ke Daftar Periode</span>
           </button>
-          <h1 style={{ fontSize: '1.75rem', margin: 0 }}>
-            Penggajian {monthName} {period.period_year}
+          <h1 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>
+            Payroll Wizard — {MONTH_NAMES[period.period_month - 1]} {period.period_year}
           </h1>
-          <p style={{ margin: '0.25rem 0 0', color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>
-            Tanggal Pembayaran: <strong>{formatTanggal(period.payout_date)}</strong> | Rentang:{' '}
-            {formatTanggal(period.start_date)} s/d {formatTanggal(period.end_date)}
+          <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
+            Jadwal Pembayaran: {formatTanggal(period.payout_date)}
           </p>
         </div>
 
-        <div>
-          <span className={`badge ${
-            isLocked ? 'badge-success' : period.status === 'SUBMITTED' ? 'badge-warning' : 'badge-secondary'
-          }`} style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>
-            {isLocked ? '🔒 FINAL & LOCKED' : `Status: ${period.status}`}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <span
+            className={`badge ${
+              isApproved
+                ? 'badge-success'
+                : isSubmitted
+                ? 'badge-warning'
+                : 'badge-info'
+            }`}
+          >
+            <i className={`fa-solid ${isApproved ? 'fa-lock' : isSubmitted ? 'fa-clock' : 'fa-pen-to-square'}`} style={{ fontSize: '8px' }}></i>
+            {isApproved ? 'FINAL & LOCKED' : isSubmitted ? 'MENUNGGU APPROVAL' : 'DRAFT'}
           </span>
         </div>
       </div>
 
-      {error && (
-        <div style={{
-          padding: '0.75rem 1rem',
-          backgroundColor: 'rgba(231, 76, 60, 0.1)',
-          border: '1px solid #e74c3c',
-          borderRadius: 'var(--radius-sm)',
-          color: '#e74c3c',
-          marginBottom: '1.5rem',
-        }}>
-          {error}
-        </div>
-      )}
+      {/* 4-Step Progress Indicator (UX Pilot Style) */}
+      <section className="card" style={{ padding: '1rem 1.25rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
+          {[
+            { num: 1, title: '1. Batch Kalkulasi', icon: 'fa-solid fa-calculator' },
+            { num: 2, title: '2. Input Variabel', icon: 'fa-solid fa-pen-to-square' },
+            { num: 3, title: '3. Review Rekap', icon: 'fa-solid fa-chart-pie' },
+            { num: 4, title: '4. Owner PIN Approval', icon: 'fa-solid fa-shield-halved' },
+          ].map((s) => {
+            const isActive = step === s.num;
+            const isDone = step > s.num || isApproved;
 
-      {/* Stepper Navigation */}
-      <div style={{
-        display: 'flex',
-        borderBottom: '1px solid var(--color-border)',
-        marginBottom: '1.5rem',
-        backgroundColor: 'var(--color-bg-subtle)',
-        borderRadius: 'var(--radius-md)',
-        overflow: 'hidden',
-      }}>
-        {[
-          { num: 1, label: '1. Inisialisasi & Batch Run' },
-          { num: 2, label: '2. Input Lembur & Komponen Variabel' },
-          { num: 3, label: '3. Review Rekapitulasi & Approval' },
-        ].map((s) => (
-          <button
-            key={s.num}
-            onClick={() => setStep(s.num)}
+            return (
+              <div
+                key={s.num}
+                onClick={() => {
+                  if (items.length > 0) setStep(s.num);
+                }}
+                style={{
+                  padding: '0.625rem 0.75rem',
+                  borderRadius: 'var(--radius-sm)',
+                  backgroundColor: isActive ? 'var(--primary-light)' : 'var(--bg-subtle)',
+                  border: `1px solid ${isActive ? 'var(--primary)' : 'var(--border-color)'}`,
+                  cursor: items.length > 0 ? 'pointer' : 'default',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <div
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '50%',
+                    backgroundColor: isDone ? 'var(--success)' : isActive ? 'var(--primary)' : '#cbd5e1',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.6875rem',
+                    fontWeight: 700,
+                  }}
+                >
+                  {isDone ? <i className="fa-solid fa-check" style={{ fontSize: '10px' }}></i> : s.num}
+                </div>
+                <span
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: isActive ? 700 : 500,
+                    color: isActive ? 'var(--primary)' : 'var(--text-main)',
+                  }}
+                >
+                  {s.title}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {error && <div className="alert alert-danger"><i className="fa-solid fa-circle-exclamation"></i>{error}</div>}
+
+      {/* STEP 1: Batch Calculation */}
+      {step === 1 && (
+        <section className="hero-card" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
+          <div
             style={{
-              flex: 1,
-              padding: '0.875rem',
-              border: 'none',
-              background: step === s.num ? 'var(--color-primary)' : 'transparent',
-              color: step === s.num ? '#fff' : 'var(--color-text)',
-              fontWeight: step === s.num ? 'bold' : 'normal',
-              cursor: 'pointer',
-              fontSize: '0.9rem',
-              transition: 'all 0.2s ease',
+              width: '64px',
+              height: '64px',
+              borderRadius: '16px',
+              backgroundColor: 'var(--primary-light)',
+              color: 'var(--primary)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.75rem',
+              marginBottom: '1rem',
             }}
           >
-            {s.label}
-          </button>
-        ))}
-      </div>
-
-      {/* STEP 1: INITIALIZATION */}
-      {step === 1 && (
-        <div className="card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚙️</div>
-          <h2 style={{ margin: '0 0 0.5rem' }}>Jalankan Mesin Penggajian</h2>
-          <p style={{ color: 'var(--color-text-muted)', maxWidth: '600px', margin: '0 auto 1.5rem', fontSize: '0.95rem' }}>
-            Sistem akan secara otomatis mengambil seluruh karyawan aktif, menghitung gaji pokok, tunjangan tetap,
-            5 program BPJS, serta tarif pajak PPh 21 TER (PMK 168/2023).
+            <i className="fa-solid fa-microchip"></i>
+          </div>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '0 0 0.5rem' }}>
+            Jalankan Mesin Penggajian Batch Otomatis
+          </h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', maxWidth: '520px', margin: '0 auto 1.5rem' }}>
+            Sistem akan menghitung gaji pokok, 5 program BPJS, dan PPh 21 TER (PMK 168/2023 125 lapisan) untuk seluruh karyawan aktif secara instan.
           </p>
-
-          {isLocked ? (
-            <div style={{ color: '#27ae60', fontWeight: 'bold' }}>
-              ✅ Periode ini telah disetujui oleh Owner dan data telah dikunci.
-            </div>
-          ) : (
-            <button
-              className="btn btn-primary btn-lg"
-              onClick={handleRunCalculation}
-              disabled={processing}
-              style={{ padding: '0.75rem 2rem', fontSize: '1.1rem' }}
-            >
-              {processing ? 'Menghitung Penggajian...' : '🚀 Mulai Kalkulasi Batch Sekarang'}
-            </button>
-          )}
-        </div>
+          <button
+            className="btn btn-primary btn-lg"
+            onClick={handleRunCalculation}
+            disabled={processing}
+          >
+            <i className={`fa-solid ${processing ? 'fa-spinner fa-spin' : 'fa-play'}`}></i>
+            <span>{processing ? 'Menjalankan Kalkulasi Batch...' : 'Mulai Hitung Payroll Otomatis'}</span>
+          </button>
+        </section>
       )}
 
-      {/* STEP 2: VARIABLE INPUTS */}
+      {/* STEP 2: Input Komponen Variabel */}
       {step === 2 && (
-        <div className="card" style={{ padding: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <section className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <h2 style={{ fontSize: '1.25rem', margin: 0 }}>Input Variabel Lembur & Penyesuaian</h2>
-              <p style={{ color: 'var(--color-text-muted)', margin: '0.25rem 0 0', fontSize: '0.85rem' }}>
-                Masukkan upah lembur, bonus/THR, dan potongan kasbon/absen. Sistem otomatis mengkalkulasi ulang PPh 21 TER dan THP.
+              <h2 style={{ fontSize: '0.9375rem', margin: 0, fontWeight: 600 }}>Input Komponen Variabel Karyawan</h2>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
+                Masukkan lembur, bonus, dan potongan kasbon/absen. Pajak PPh 21 TER dan THP akan terkalkulasi ulang otomatis.
               </p>
             </div>
-            <button className="btn btn-primary" onClick={() => setStep(3)}>
-              Lanjut ke Review Rekapitulasi ➔
-            </button>
+            {!isApproved && (
+              <button className="btn btn-sm btn-primary" onClick={() => setStep(3)}>
+                <span>Lanjut ke Review Rekapitulasi</span>
+                <i className="fa-solid fa-arrow-right"></i>
+              </button>
+            )}
           </div>
 
           <div style={{ overflowX: 'auto' }}>
-            <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <table className="table">
               <thead>
-                <tr style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'left', borderBottom: '1px solid var(--color-border)' }}>
-                  <th style={{ padding: '0.6rem 0.75rem' }}>Karyawan</th>
-                  <th style={{ padding: '0.6rem 0.75rem' }}>Gaji Pokok + Tunj Tetap</th>
-                  <th style={{ padding: '0.6rem 0.75rem' }}>Lembur (Rp)</th>
-                  <th style={{ padding: '0.6rem 0.75rem' }}>Bonus / THR (Rp)</th>
-                  <th style={{ padding: '0.6rem 0.75rem' }}>Kasbon / Absen (Rp)</th>
-                  <th style={{ padding: '0.6rem 0.75rem' }}>PPh 21 TER</th>
-                  <th style={{ padding: '0.6rem 0.75rem' }}>Take Home Pay</th>
+                <tr>
+                  <th>Nama Karyawan</th>
+                  <th>Gaji Pokok</th>
+                  <th style={{ width: '130px' }}>Lembur (Rp)</th>
+                  <th style={{ width: '130px' }}>Bonus (Rp)</th>
+                  <th style={{ width: '130px' }}>Kasbon (Rp)</th>
+                  <th style={{ width: '130px' }}>Pot. Absen (Rp)</th>
+                  <th>PPh 21 TER</th>
+                  <th>THP Bersih</th>
+                  <th style={{ textAlign: 'right' }}>Slip</th>
                 </tr>
               </thead>
               <tbody>
-                {items.map((it) => (
-                  <tr key={it.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                    <td style={{ padding: '0.6rem 0.75rem' }}>
-                      <div style={{ fontWeight: 500 }}>{it.employee_name}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-                        {it.ptkp_status} (TER {it.ter_category})
-                      </div>
+                {items.map((item) => (
+                  <tr key={item.id}>
+                    <td>
+                      <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>{item.employee_name}</div>
+                      <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>{item.nik_masked} · {item.ptkp_status}</div>
                     </td>
-                    <td style={{ padding: '0.6rem 0.75rem' }}>
-                      {formatRupiah(Number(it.basic_salary))}
-                    </td>
-                    <td style={{ padding: '0.6rem 0.75rem' }}>
+                    <td style={{ color: 'var(--text-soft)' }}>{formatRupiah(Number(item.basic_salary))}</td>
+                    <td>
                       <input
                         type="number"
-                        className="form-control form-control-sm"
-                        style={{ width: '130px' }}
-                        defaultValue={it.overtime_pay}
-                        disabled={isLocked}
-                        onBlur={(e) => handleUpdateItem(it.id, 'overtime_pay', Number(e.target.value))}
+                        disabled={isApproved}
+                        className="form-control"
+                        style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }}
+                        defaultValue={item.overtime_pay}
+                        onBlur={(e) => handleUpdateItem(item.id, 'overtime_pay', Number(e.target.value))}
                       />
                     </td>
-                    <td style={{ padding: '0.6rem 0.75rem' }}>
+                    <td>
                       <input
                         type="number"
-                        className="form-control form-control-sm"
-                        style={{ width: '130px' }}
-                        defaultValue={it.bonus_amount}
-                        disabled={isLocked}
-                        onBlur={(e) => handleUpdateItem(it.id, 'bonus_amount', Number(e.target.value))}
+                        disabled={isApproved}
+                        className="form-control"
+                        style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }}
+                        defaultValue={item.bonus_amount}
+                        onBlur={(e) => handleUpdateItem(item.id, 'bonus_amount', Number(e.target.value))}
                       />
                     </td>
-                    <td style={{ padding: '0.6rem 0.75rem' }}>
+                    <td>
                       <input
                         type="number"
-                        className="form-control form-control-sm"
-                        style={{ width: '130px' }}
-                        defaultValue={it.loan_deduction}
-                        disabled={isLocked}
-                        onBlur={(e) => handleUpdateItem(it.id, 'loan_deduction', Number(e.target.value))}
+                        disabled={isApproved}
+                        className="form-control"
+                        style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }}
+                        defaultValue={item.loan_deduction}
+                        onBlur={(e) => handleUpdateItem(item.id, 'loan_deduction', Number(e.target.value))}
                       />
                     </td>
-                    <td style={{ padding: '0.6rem 0.75rem', color: '#e74c3c' }}>
-                      {formatRupiah(it.pph21_amount)}
+                    <td>
+                      <input
+                        type="number"
+                        disabled={isApproved}
+                        className="form-control"
+                        style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }}
+                        defaultValue={item.absence_deduction}
+                        onBlur={(e) => handleUpdateItem(item.id, 'absence_deduction', Number(e.target.value))}
+                      />
                     </td>
-                    <td style={{ padding: '0.6rem 0.75rem', fontWeight: 'bold', color: '#27ae60' }}>
-                      {formatRupiah(it.thp)}
+                    <td style={{ color: 'var(--warning-text)', fontWeight: 600 }}>
+                      {formatRupiah(Number(item.pph21_amount))}
+                    </td>
+                    <td style={{ color: 'var(--primary)', fontWeight: 700 }}>
+                      {formatRupiah(Number(item.thp))}
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button
+                        className="btn btn-sm btn-secondary"
+                        onClick={() => setSelectedSlip(item.id)}
+                      >
+                        <i className="fa-regular fa-file-lines"></i>
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
       )}
 
-      {/* STEP 3: EXECUTIVE SUMMARY & APPROVAL */}
-      {step === 3 && (
-        <div>
-          {/* KPI Executive Summary */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '1rem',
-            marginBottom: '1.5rem',
-          }}>
-            <div className="card" style={{ padding: '1.25rem' }}>
-              <div style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>Total Gaji Kotor (Gross)</div>
-              <div style={{ fontSize: '1.35rem', fontWeight: 'bold', marginTop: '0.25rem' }}>
-                {formatRupiah(period.total_gross)}
+      {/* STEP 3 & 4: Review Summary & Approval */}
+      {step >= 3 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* KPI Summary Cards */}
+          <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
+            <article className="card" style={{ padding: '1.25rem' }}>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Total Gaji Bruto</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '0.25rem' }}>
+                {formatRupiah(Number(period.total_gross_salary) || 0)}
               </div>
-            </div>
-            <div className="card" style={{ padding: '1.25rem' }}>
-              <div style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>Total Potongan BPJS Pekerja</div>
-              <div style={{ fontSize: '1.35rem', fontWeight: 'bold', color: '#f39c12', marginTop: '0.25rem' }}>
-                {formatRupiah(period.total_bpjs_employee)}
-              </div>
-            </div>
-            <div className="card" style={{ padding: '1.25rem' }}>
-              <div style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>Setoran PPh 21 TER (DJP)</div>
-              <div style={{ fontSize: '1.35rem', fontWeight: 'bold', color: '#e74c3c', marginTop: '0.25rem' }}>
-                {formatRupiah(period.total_pph21)}
-              </div>
-            </div>
-            <div className="card" style={{ padding: '1.25rem' }}>
-              <div style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>Total THP (Transfer Bank)</div>
-              <div style={{ fontSize: '1.35rem', fontWeight: 'bold', color: '#27ae60', marginTop: '0.25rem' }}>
-                {formatRupiah(period.total_thp)}
-              </div>
-            </div>
-            <div className="card" style={{ padding: '1.25rem' }}>
-              <div style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>Beban Total Perusahaan</div>
-              <div style={{ fontSize: '1.35rem', fontWeight: 'bold', color: 'var(--color-primary)', marginTop: '0.25rem' }}>
-                {formatRupiah(period.total_employer_cost)}
-              </div>
-            </div>
-          </div>
+            </article>
 
-          {/* Detailed Employee Payroll Table */}
-          <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h2 style={{ fontSize: '1.25rem', margin: 0 }}>Rincian Slip Gaji Karyawan ({items.length} Orang)</h2>
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
-                {!isLocked && period.status === 'DRAFT' && (
-                  <button
-                    className="btn btn-warning"
-                    onClick={handleSubmitForApproval}
-                    disabled={processing}
-                  >
-                    📝 Submit untuk Approval Owner
-                  </button>
-                )}
-                {!isLocked && (period.status === 'SUBMITTED' || period.status === 'DRAFT') && (
-                  <button
-                    className="btn btn-success"
-                    onClick={() => setShowPinModal(true)}
-                  >
-                    🔒 Setujui & Kunci dengan PIN Owner
-                  </button>
-                )}
+            <article className="card" style={{ padding: '1.25rem' }}>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Total PPh 21 TER</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--warning-text)', marginTop: '0.25rem' }}>
+                {formatRupiah(Number(period.total_pph21) || 0)}
               </div>
+            </article>
+
+            <article className="card" style={{ padding: '1.25rem' }}>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Total Transfer Bank (THP)</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)', marginTop: '0.25rem' }}>
+                {formatRupiah(Number(period.total_thp) || 0)}
+              </div>
+            </article>
+
+            <article className="card" style={{ padding: '1.25rem' }}>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Total Beban Perusahaan</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--purple-text)', marginTop: '0.25rem' }}>
+                {formatRupiah(Number(period.total_employer_cost) || 0)}
+              </div>
+            </article>
+          </section>
+
+          {/* Action Bar */}
+          <section className="card" style={{ padding: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h3 style={{ fontSize: '0.9375rem', margin: 0, fontWeight: 600 }}>Status Approval & Pengesahan</h3>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
+                {isApproved
+                  ? 'Periode telah disahkan dengan PIN Owner. Data slip gaji bersifat permanen (Immutable).'
+                  : isSubmitted
+                  ? 'Payroll telah diajukan. Masukkan PIN 6-digit Owner untuk mengesahkan dan mengunci.'
+                  : 'Pastikan seluruh angka telah akurat sebelum mengajukan payroll ke Owner.'}
+              </p>
             </div>
 
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              {!isApproved && !isSubmitted && (
+                <button className="btn btn-secondary" onClick={handleSubmitForApproval}>
+                  <i className="fa-solid fa-paper-plane"></i>
+                  <span>Submit untuk Ditinjau Owner</span>
+                </button>
+              )}
+
+              {!isApproved && (
+                <button className="btn btn-primary" onClick={() => setShowPinModal(true)}>
+                  <i className="fa-solid fa-lock"></i>
+                  <span>Approval dengan PIN 6-Digit</span>
+                </button>
+              )}
+            </div>
+          </section>
+
+          {/* Items Table */}
+          <section className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border-color)' }}>
+              <h3 style={{ fontSize: '0.9375rem', margin: 0, fontWeight: 600 }}>Rincian Slip Gaji Karyawan ({items.length})</h3>
+            </div>
             <div style={{ overflowX: 'auto' }}>
-              <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <table className="table">
                 <thead>
-                  <tr style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'left', borderBottom: '1px solid var(--color-border)' }}>
-                    <th style={{ padding: '0.6rem 0.75rem' }}>Nama Karyawan</th>
-                    <th style={{ padding: '0.6rem 0.75rem' }}>PTKP / TER</th>
-                    <th style={{ padding: '0.6rem 0.75rem' }}>Bruto</th>
-                    <th style={{ padding: '0.6rem 0.75rem' }}>BPJS Pekerja</th>
-                    <th style={{ padding: '0.6rem 0.75rem' }}>PPh 21 TER</th>
-                    <th style={{ padding: '0.6rem 0.75rem' }}>THP Bersih</th>
-                    <th style={{ padding: '0.6rem 0.75rem', textAlign: 'right' }}>Slip Gaji</th>
+                  <tr>
+                    <th>Nama Karyawan</th>
+                    <th>PTKP & TER</th>
+                    <th>Gaji Bruto</th>
+                    <th>BPJS Pekerja</th>
+                    <th>PPh 21 TER</th>
+                    <th>Potongan Lain</th>
+                    <th>THP Bersih</th>
+                    <th style={{ textAlign: 'right' }}>Slip Gaji</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {items.map((it) => (
-                    <tr key={it.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                      <td style={{ padding: '0.6rem 0.75rem' }}>
-                        <div style={{ fontWeight: 500 }}>{it.employee_name}</div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-                          {it.nik_masked} | {it.bank_name || 'BCA'} {it.bank_account_no}
-                        </div>
+                  {items.map((item) => (
+                    <tr key={item.id}>
+                      <td>
+                        <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>{item.employee_name}</div>
+                        <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>{item.nik_masked}</div>
                       </td>
-                      <td style={{ padding: '0.6rem 0.75rem' }}>
-                        <span className="badge badge-info">{it.ptkp_status}</span>
-                        <div style={{ fontSize: '0.75rem', marginTop: '0.2rem' }}>
-                          TER {it.ter_category} ({(Number(it.effective_ter_rate) * 100).toFixed(2)}%)
-                        </div>
+                      <td>
+                        <span className="badge badge-info">{item.ptkp_status}</span>
                       </td>
-                      <td style={{ padding: '0.6rem 0.75rem' }}>
-                        {formatRupiah(it.gross_earnings)}
-                      </td>
-                      <td style={{ padding: '0.6rem 0.75rem', color: '#f39c12' }}>
-                        {formatRupiah(it.total_bpjs_employee)}
-                      </td>
-                      <td style={{ padding: '0.6rem 0.75rem', color: '#e74c3c' }}>
-                        {formatRupiah(it.pph21_amount)}
-                      </td>
-                      <td style={{ padding: '0.6rem 0.75rem', fontWeight: 'bold', color: '#27ae60' }}>
-                        {formatRupiah(it.thp)}
-                      </td>
-                      <td style={{ padding: '0.6rem 0.75rem', textAlign: 'right' }}>
+                      <td>{formatRupiah(Number(item.gross_earnings))}</td>
+                      <td style={{ color: 'var(--text-soft)' }}>{formatRupiah(Number(item.total_bpjs_employee))}</td>
+                      <td style={{ color: 'var(--warning-text)', fontWeight: 600 }}>{formatRupiah(Number(item.pph21_amount))}</td>
+                      <td style={{ color: 'var(--text-muted)' }}>{formatRupiah(Number(item.loan_deduction) + Number(item.absence_deduction))}</td>
+                      <td style={{ color: 'var(--primary)', fontWeight: 700 }}>{formatRupiah(Number(item.thp))}</td>
+                      <td style={{ textAlign: 'right' }}>
                         <button
                           className="btn btn-sm btn-secondary"
-                          onClick={() => setSelectedSlip({ ...it, company_name: 'PT CatatGaji Organisasi' })}
+                          onClick={() => setSelectedSlip(item.id)}
                         >
-                          👁️ Lihat Slip
+                          <i className="fa-solid fa-file-pdf" style={{ color: 'var(--primary)', marginRight: '0.25rem' }}></i>
+                          <span>Lihat & Unduh PDF</span>
                         </button>
                       </td>
                     </tr>
@@ -465,93 +503,79 @@ export const PayrollWizard: React.FC = () => {
                 </tbody>
               </table>
             </div>
-          </div>
+          </section>
         </div>
       )}
 
-      {/* Slip Modal Component */}
-      <PayslipModal
-        data={selectedSlip}
-        onClose={() => setSelectedSlip(null)}
-      />
+      {/* Payslip Modal */}
+      {selectedSlip && (
+        <PayslipModal resultId={selectedSlip} onClose={() => setSelectedSlip(null)} />
+      )}
 
-      {/* Modal Owner PIN Approval */}
+      {/* Owner PIN Modal */}
       {showPinModal && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(0,0,0,0.6)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1100,
-          padding: '1rem',
-        }}>
-          <div style={{
-            backgroundColor: 'var(--color-bg)',
-            borderRadius: 'var(--radius-lg)',
-            border: '1px solid var(--color-border)',
-            boxShadow: 'var(--shadow-lg)',
-            width: '100%',
-            maxWidth: '420px',
-            padding: '1.5rem',
-            textAlign: 'center',
-          }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🔐</div>
-            <h3 style={{ margin: '0 0 0.5rem' }}>Persetujuan Gaji oleh Owner</h3>
-            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
-              Masukkan 6-digit PIN Owner untuk mengunci data penggajian dan mengesahkan seluruh slip gaji periode ini.
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '420px', textAlign: 'center' }}>
+            <div
+              style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '12px',
+                backgroundColor: 'var(--primary-light)',
+                color: 'var(--primary)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.25rem',
+                marginBottom: '1rem',
+              }}
+            >
+              <i className="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 style={{ fontSize: '1.125rem', margin: '0 0 0.5rem', fontWeight: 700 }}>
+              Konfirmasi Otorisasi Owner
+            </h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', marginBottom: '1.25rem' }}>
+              Masukkan 6-digit PIN Keamanan Anda untuk menyetujui dan mengunci periode gaji ini secara permanen.
             </p>
 
-            {pinError && (
-              <div style={{
-                padding: '0.5rem',
-                backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                border: '1px solid #e74c3c',
-                borderRadius: 'var(--radius-sm)',
-                color: '#e74c3c',
-                fontSize: '0.85rem',
-                marginBottom: '1rem',
-              }}>
-                {pinError}
-              </div>
-            )}
+            {pinError && <div className="alert alert-danger"><i className="fa-solid fa-circle-exclamation"></i>{pinError}</div>}
 
             <form onSubmit={handleApproveWithPin}>
-              <div style={{ marginBottom: '1.5rem' }}>
+              <div className="form-group" style={{ marginBottom: '1.5rem' }}>
                 <input
                   type="password"
                   maxLength={6}
+                  required
                   autoFocus
                   className="form-control"
-                  style={{
-                    fontSize: '1.75rem',
-                    textAlign: 'center',
-                    letterSpacing: '0.5rem',
-                    fontWeight: 'bold',
-                  }}
+                  style={{ textAlign: 'center', fontSize: '1.5rem', letterSpacing: '0.4em', fontWeight: 700 }}
                   placeholder="••••••"
                   value={pin}
                   onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-                  required
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <button
                   type="button"
                   className="btn btn-secondary"
-                  onClick={() => setShowPinModal(false)}
-                  disabled={pinSubmitting}
+                  style={{ flex: 1 }}
+                  onClick={() => {
+                    setShowPinModal(false);
+                    setPin('');
+                    setPinError(null);
+                  }}
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-success"
+                  className="btn btn-primary"
+                  style={{ flex: 1 }}
                   disabled={pinSubmitting || pin.length !== 6}
                 >
-                  {pinSubmitting ? 'Memverifikasi PIN...' : '✅ Sahkan & Kunci Gaji'}
+                  {pinSubmitting ? 'Memverifikasi...' : 'Sahkan & Kunci'}
                 </button>
               </div>
             </form>

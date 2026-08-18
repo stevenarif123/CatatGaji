@@ -113,7 +113,7 @@ export const Employees: React.FC = () => {
       await apiFetch<any>('/employees', {
         method: 'POST',
         token,
-        body: JSON.stringify(payload),
+        body: payload,
       });
 
       setShowAddModal(false);
@@ -162,53 +162,63 @@ export const Employees: React.FC = () => {
   const currentTer = (PTKP_TO_TER as any)[formData.ptkp_status] || 'A';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '1200px' }}>
-      {/* Header & Actions */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Header & Actions (UX Pilot Mockup 04) */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0, letterSpacing: '-0.02em' }}>
-            Master Data Karyawan (HRIS)
-          </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-            Kelola data biodata, konfigurasi PTKP/TER, struktur gaji, dan rekening bank.
-          </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <h1 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>
+            Master Data Karyawan
+          </h1>
+          <span className="badge badge-muted">
+            {employees.length} Karyawan
+          </span>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
-          + Tambah Karyawan
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
+            <i className="fa-solid fa-plus"></i>
+            <span>Tambah Karyawan</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter Bar */}
-      <div className="card" style={{ padding: '1rem 1.25rem' }}>
-        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+      <section className="card" style={{ padding: '1rem 1.25rem' }}>
+        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ flex: 1, minWidth: '220px' }}>
-            <input
-              type="text"
-              className="form-input"
-              placeholder="Cari nama, NIK, atau email..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+            <label className="form-label" style={{ marginBottom: '0.375rem', display: 'block' }}>Pencarian</label>
+            <div style={{ position: 'relative' }}>
+              <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-faint)', fontSize: '0.75rem' }}></i>
+              <input
+                type="text"
+                className="form-control"
+                style={{ paddingLeft: '2.25rem' }}
+                placeholder="Cari Nama / NIK / Email..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
           </div>
 
           <div style={{ width: '180px' }}>
+            <label className="form-label" style={{ marginBottom: '0.375rem', display: 'block' }}>Status Karyawan</label>
             <select
-              className="form-select"
+              className="form-control"
               value={statusFilter}
               onChange={(e) => {
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
             >
-              <option value="ACTIVE">Status: Aktif</option>
-              <option value="RESIGNED">Status: Resign</option>
+              <option value="ACTIVE">Aktif</option>
+              <option value="RESIGNED">Non-Aktif (Resign)</option>
               <option value="ALL">Semua Status</option>
             </select>
           </div>
 
           <div style={{ width: '200px' }}>
+            <label className="form-label" style={{ marginBottom: '0.375rem', display: 'block' }}>Cabang Kantor</label>
             <select
-              className="form-select"
+              className="form-control"
               value={branchFilter}
               onChange={(e) => {
                 setBranchFilter(e.target.value);
@@ -224,81 +234,102 @@ export const Employees: React.FC = () => {
             </select>
           </div>
 
-          <button type="submit" className="btn btn-secondary btn-sm">
-            🔍 Cari
+          <button type="submit" className="btn btn-secondary">
+            <i className="fa-solid fa-filter"></i>
+            <span>Filter</span>
           </button>
         </form>
-      </div>
+      </section>
 
       {/* Employee List Table */}
-      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+      <section className="card" style={{ padding: 0, overflow: 'hidden' }}>
         {loading ? (
           <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+            <i className="fa-solid fa-spinner fa-spin" style={{ marginRight: '0.5rem' }}></i>
             Memuat data karyawan...
           </div>
         ) : employees.length === 0 ? (
           <div style={{ padding: '4rem 2rem', textAlign: 'center' }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>👥</div>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem', color: 'var(--text-faint)' }}>
+              <i className="fa-solid fa-users-slash"></i>
+            </div>
             <h3 style={{ fontSize: '1.125rem', fontWeight: 600 }}>Belum Ada Data Karyawan</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', marginTop: '0.25rem' }}>
               Klik tombol "+ Tambah Karyawan" untuk mendaftarkan pekerja pertama Anda.
             </p>
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+            <table className="table">
               <thead>
-                <tr style={{ backgroundColor: 'var(--bg-app)', borderBottom: '1px solid var(--border-color)', color: 'var(--text-muted)' }}>
-                  <th style={{ padding: '0.875rem 1.25rem', fontWeight: 600 }}>Karyawan</th>
-                  <th style={{ padding: '0.875rem 1.25rem', fontWeight: 600 }}>NIK (Masked)</th>
-                  <th style={{ padding: '0.875rem 1.25rem', fontWeight: 600 }}>Status Kerja</th>
-                  <th style={{ padding: '0.875rem 1.25rem', fontWeight: 600 }}>PTKP / TER</th>
-                  <th style={{ padding: '0.875rem 1.25rem', fontWeight: 600 }}>Gaji Pokok</th>
-                  <th style={{ padding: '0.875rem 1.25rem', fontWeight: 600 }}>Cabang</th>
-                  <th style={{ padding: '0.875rem 1.25rem', fontWeight: 600, textAlign: 'right' }}>Aksi</th>
+                <tr>
+                  <th style={{ width: '40px' }}>No</th>
+                  <th>NIK KTP (Masked)</th>
+                  <th>Nama Karyawan</th>
+                  <th>Status & PTKP</th>
+                  <th>Status Kerja</th>
+                  <th>Gaji Pokok</th>
+                  <th style={{ textAlign: 'right' }}>Aksi</th>
                 </tr>
               </thead>
               <tbody>
-                {employees.map((emp) => (
-                  <tr key={emp.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                    <td style={{ padding: '1rem 1.25rem' }}>
-                      <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>{emp.full_name}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{emp.email}</div>
+                {employees.map((emp, index) => (
+                  <tr key={emp.id}>
+                    <td style={{ color: 'var(--text-muted)' }}>{(page - 1) * 15 + index + 1}</td>
+                    <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      {emp.nik_masked || emp.nik_ktp}
                     </td>
-                    <td style={{ padding: '1rem 1.25rem', fontFamily: 'var(--font-mono)', fontSize: '0.8125rem' }}>
-                      {emp.nik_ktp_masked}
-                    </td>
-                    <td style={{ padding: '1rem 1.25rem' }}>
-                      <span className={`badge ${emp.employment_status === 'PKWTT' ? 'badge-primary' : 'badge-warning'}`}>
-                        {emp.employment_status}
-                      </span>
-                    </td>
-                    <td style={{ padding: '1rem 1.25rem' }}>
-                      <div>
-                        <strong>{emp.ptkp_status}</strong>
-                        <span style={{ marginLeft: '0.5rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                          (TER {emp.pph21_ter_category})
-                        </span>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div
+                          style={{
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '50%',
+                            backgroundColor: 'var(--primary-light)',
+                            color: 'var(--primary)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 700,
+                            fontSize: '0.8125rem',
+                          }}
+                        >
+                          {emp.full_name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p style={{ fontWeight: 600, margin: 0, color: 'var(--text-main)' }}>{emp.full_name}</p>
+                          <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: 0 }}>{emp.email || '-'}</p>
+                        </div>
                       </div>
                     </td>
-                    <td style={{ padding: '1rem 1.25rem', fontWeight: 600 }}>
-                      {formatRupiah(Number(emp.basic_salary || 0))}
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                        <span className="badge badge-info">{emp.ptkp_status}</span>
+                        <span className="badge badge-purple">TER {emp.pph21_ter_category}</span>
+                      </div>
                     </td>
-                    <td style={{ padding: '1rem 1.25rem', color: 'var(--text-muted)' }}>
-                      {emp.branch_name || 'Kantor Pusat'}
+                    <td>
+                      <span className={`badge ${emp.status === 'ACTIVE' ? 'badge-success' : 'badge-danger'}`}>
+                        <i className="fa-solid fa-circle" style={{ fontSize: '5px' }}></i>
+                        {emp.status === 'ACTIVE' ? 'Aktif' : 'Resign'}
+                      </span>
                     </td>
-                    <td style={{ padding: '1rem 1.25rem', textAlign: 'right' }}>
-                      <button
-                        onClick={() => handleDelete(emp.id, emp.full_name)}
-                        className="btn btn-sm"
-                        style={{
-                          backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                          color: '#ef4444',
-                          border: 'none',
-                        }}
-                      >
-                        Hapus
-                      </button>
+                    <td style={{ fontWeight: 600, color: 'var(--text-main)' }}>
+                      {formatRupiah(Number(emp.basic_salary) || 0)}
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      {emp.status === 'ACTIVE' && (
+                        <button
+                          className="btn btn-sm btn-secondary"
+                          onClick={() => handleDelete(emp.id, emp.full_name)}
+                          style={{ color: 'var(--danger-text)' }}
+                          title="Nonaktifkan Karyawan"
+                        >
+                          <i className="fa-solid fa-user-xmark"></i>
+                          <span>Nonaktifkan</span>
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -309,130 +340,108 @@ export const Employees: React.FC = () => {
 
         {/* Pagination Bar */}
         {totalPages > 1 && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.25rem' }}>
-            <button
-              className="btn btn-secondary btn-sm"
-              disabled={page <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-            >
-              ← Sebelumnya
-            </button>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1.25rem', borderTop: '1px solid var(--border-color)', backgroundColor: 'var(--bg-subtle)' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
               Halaman {page} dari {totalPages}
             </span>
-            <button
-              className="btn btn-secondary btn-sm"
-              disabled={page >= totalPages}
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            >
-              Selanjutnya →
-            </button>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button
+                className="btn btn-sm btn-secondary"
+                disabled={page <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                <i className="fa-solid fa-chevron-left"></i>
+              </button>
+              <button
+                className="btn btn-sm btn-secondary"
+                disabled={page >= totalPages}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              >
+                <i className="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Modal Tambah Karyawan */}
+      {/* Add Employee Multi-Step Modal */}
       {showAddModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '1.5rem',
-          }}
-        >
-          <div className="card" style={{ width: '100%', maxWidth: '640px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Pendaftaran Karyawan Baru</h3>
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '650px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
+              <div>
+                <h3 style={{ fontSize: '1.125rem', margin: 0 }}>Pendaftaran Karyawan Baru</h3>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
+                  Langkah {modalStep} dari 3: {modalStep === 1 ? 'Biodata & Identitas' : modalStep === 2 ? 'Status Kerja & PTKP' : 'Struktur Gaji & BPJS'}
+                </p>
+              </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: 'var(--text-muted)' }}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: 'var(--text-faint)', cursor: 'pointer' }}
               >
-                ✕
+                <i className="fa-solid fa-xmark"></i>
               </button>
             </div>
 
-            {/* Step Navigation Tabs */}
-            <div style={{ display: 'flex', borderBottom: '1px solid var(--border-color)', marginBottom: '1.5rem' }}>
-              {[
-                { step: 1, label: '1. Identitas' },
-                { step: 2, label: '2. Pajak & BPJS' },
-                { step: 3, label: '3. Gaji & Bank' },
-              ].map((t) => (
-                <button
-                  key={t.step}
-                  type="button"
-                  onClick={() => setModalStep(t.step)}
-                  style={{
-                    flex: 1,
-                    padding: '0.75rem',
-                    background: 'none',
-                    border: 'none',
-                    borderBottom: `2px solid ${modalStep === t.step ? 'var(--primary)' : 'transparent'}`,
-                    fontWeight: modalStep === t.step ? 700 : 500,
-                    color: modalStep === t.step ? 'var(--primary)' : 'var(--text-muted)',
-                    cursor: 'pointer',
-                    fontSize: '0.875rem',
-                  }}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
+            {formError && <div className="alert alert-danger"><i className="fa-solid fa-circle-exclamation"></i>{formError}</div>}
 
-            {formError && <div className="alert alert-danger">⚠️ {formError}</div>}
-
-            <form onSubmit={handleFormSubmit}>
-              {/* Step 1: Identitas */}
+            <form onSubmit={modalStep === 3 ? handleFormSubmit : (e) => { e.preventDefault(); setModalStep((s) => s + 1); }}>
               {modalStep === 1 && (
-                <div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+                  <div className="form-group">
+                    <label className="form-label">Nama Lengkap Sesuai KTP *</label>
+                    <input
+                      type="text"
+                      required
+                      className="form-control"
+                      placeholder="Contoh: Budi Santoso"
+                      value={formData.full_name}
+                      onChange={(e) => handleInputChange('full_name', e.target.value)}
+                    />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
                     <div className="form-group">
-                      <label className="form-label">NIK (16 Digit KTP) *</label>
+                      <label className="form-label">NIK KTP (16 Digit) *</label>
                       <input
                         type="text"
-                        className="form-input"
-                        placeholder="3171011508960001"
+                        required
                         maxLength={16}
+                        className="form-control"
+                        placeholder="3171012345670001"
                         value={formData.nik_ktp}
                         onChange={(e) => handleInputChange('nik_ktp', e.target.value)}
-                        required
                       />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Nama Lengkap *</label>
+                      <label className="form-label">NPWP (Opsional)</label>
                       <input
                         type="text"
-                        className="form-input"
-                        placeholder="Budi Santoso"
-                        value={formData.full_name}
-                        onChange={(e) => handleInputChange('full_name', e.target.value)}
-                        required
+                        className="form-control"
+                        placeholder="01.234.567.8-901.000"
+                        value={formData.npwp}
+                        onChange={(e) => handleInputChange('npwp', e.target.value)}
                       />
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
                     <div className="form-group">
-                      <label className="form-label">Email Resmi *</label>
+                      <label className="form-label">Email Karyawan *</label>
                       <input
                         type="email"
-                        className="form-input"
+                        required
+                        className="form-control"
                         placeholder="budi@perusahaan.com"
                         value={formData.email}
                         onChange={(e) => handleInputChange('email', e.target.value)}
-                        required
                       />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">No. WhatsApp</label>
+                      <label className="form-label">Nomor WhatsApp / HP</label>
                       <input
-                        type="tel"
-                        className="form-input"
+                        type="text"
+                        className="form-control"
                         placeholder="081234567890"
                         value={formData.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
@@ -440,11 +449,11 @@ export const Employees: React.FC = () => {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
                     <div className="form-group">
                       <label className="form-label">Jenis Kelamin</label>
                       <select
-                        className="form-select"
+                        className="form-control"
                         value={formData.gender}
                         onChange={(e) => handleInputChange('gender', e.target.value)}
                       >
@@ -453,195 +462,174 @@ export const Employees: React.FC = () => {
                       </select>
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Tanggal Masuk Kerja *</label>
+                      <label className="form-label">Tanggal Lahir</label>
                       <input
                         type="date"
-                        className="form-input"
-                        value={formData.join_date}
-                        onChange={(e) => handleInputChange('join_date', e.target.value)}
-                        required
+                        className="form-control"
+                        value={formData.birth_date}
+                        onChange={(e) => handleInputChange('birth_date', e.target.value)}
                       />
                     </div>
-                  </div>
-
-                  <div style={{ textAlign: 'right', marginTop: '1rem' }}>
-                    <button type="button" className="btn btn-primary" onClick={() => setModalStep(2)}>
-                      Lanjut ke Pajak & BPJS →
-                    </button>
                   </div>
                 </div>
               )}
 
-              {/* Step 2: Pajak & BPJS */}
               {modalStep === 2 && (
-                <div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
                     <div className="form-group">
-                      <label className="form-label">Status PTKP (Pajak)</label>
+                      <label className="form-label">Status Kepegawaian</label>
                       <select
-                        className="form-select"
-                        value={formData.ptkp_status}
-                        onChange={(e) => handleInputChange('ptkp_status', e.target.value)}
-                      >
-                        <option value="TK/0">TK/0 (Lajang, Tanpa Tanggungan)</option>
-                        <option value="TK/1">TK/1 (Lajang, 1 Tanggungan)</option>
-                        <option value="TK/2">TK/2 (Lajang, 2 Tanggungan)</option>
-                        <option value="TK/3">TK/3 (Lajang, 3 Tanggungan)</option>
-                        <option value="K/0">K/0 (Menikah, Tanpa Tanggungan)</option>
-                        <option value="K/1">K/1 (Menikah, 1 Tanggungan)</option>
-                        <option value="K/2">K/2 (Menikah, 2 Tanggungan)</option>
-                        <option value="K/3">K/3 (Menikah, 3 Tanggungan)</option>
-                      </select>
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label">Auto Kategori TER (PMK 168/2023)</label>
-                      <div
-                        style={{
-                          padding: '0.625rem 0.875rem',
-                          backgroundColor: 'var(--primary-light)',
-                          color: 'var(--primary)',
-                          fontWeight: 700,
-                          borderRadius: 'var(--radius-sm)',
-                          fontSize: '0.875rem',
-                        }}
-                      >
-                        Kategori TER {currentTer}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    <div className="form-group">
-                      <label className="form-label">NPWP (15/16 Digit)</label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        placeholder="01.234.567.8-901.000"
-                        value={formData.npwp}
-                        onChange={(e) => handleInputChange('npwp', e.target.value)}
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label">Status Hubungan Kerja</label>
-                      <select
-                        className="form-select"
+                        className="form-control"
                         value={formData.employment_status}
                         onChange={(e) => handleInputChange('employment_status', e.target.value)}
                       >
-                        <option value="PKWTT">PKWTT (Karyawan Tetap)</option>
-                        <option value="PKWT">PKWT (Karyawan Kontrak)</option>
+                        <option value="PKWTT">PKWTT (Tetap)</option>
+                        <option value="PKWT">PKWT (Kontrak)</option>
                         <option value="FREELANCE">Freelance / Lepas</option>
-                        <option value="INTERNSHIP">Internship / Magang</option>
                       </select>
                     </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <div className="form-group">
-                      <label className="form-label">No. BPJS Ketenagakerjaan (KPJ)</label>
+                      <label className="form-label">Tanggal Mulai Bergabung</label>
                       <input
-                        type="text"
-                        className="form-input"
-                        placeholder="12345678901"
-                        maxLength={11}
-                        value={formData.bpjs_tk_no}
-                        onChange={(e) => handleInputChange('bpjs_tk_no', e.target.value)}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">No. BPJS Kesehatan</label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        placeholder="1234567890123"
-                        maxLength={13}
-                        value={formData.bpjs_kes_no}
-                        onChange={(e) => handleInputChange('bpjs_kes_no', e.target.value)}
+                        type="date"
+                        required
+                        className="form-control"
+                        value={formData.join_date}
+                        onChange={(e) => handleInputChange('join_date', e.target.value)}
                       />
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
-                    <button type="button" className="btn btn-secondary" onClick={() => setModalStep(1)}>
-                      ← Kembali
-                    </button>
-                    <button type="button" className="btn btn-primary" onClick={() => setModalStep(3)}>
-                      Lanjut ke Gaji & Bank →
-                    </button>
+                  <div className="form-group">
+                    <label className="form-label">Cabang Penempatan</label>
+                    <select
+                      className="form-control"
+                      value={formData.branch_id}
+                      onChange={(e) => handleInputChange('branch_id', e.target.value)}
+                    >
+                      <option value="">Kantor Pusat (Default)</option>
+                      {branches.map((b) => (
+                        <option key={b.id} value={b.id}>
+                          {b.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* PTKP & Live TER Box */}
+                  <div style={{ padding: '1rem', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+                    <div className="form-group" style={{ marginBottom: '0.5rem' }}>
+                      <label className="form-label">Status PTKP (PMK No. 168/2023)</label>
+                      <select
+                        className="form-control"
+                        value={formData.ptkp_status}
+                        onChange={(e) => handleInputChange('ptkp_status', e.target.value)}
+                      >
+                        <option value="TK/0">TK/0 — Tidak Kawin, 0 Tanggungan (Rp 54jt/thn)</option>
+                        <option value="TK/1">TK/1 — Tidak Kawin, 1 Tanggungan (Rp 58.5jt/thn)</option>
+                        <option value="TK/2">TK/2 — Tidak Kawin, 2 Tanggungan (Rp 63jt/thn)</option>
+                        <option value="TK/3">TK/3 — Tidak Kawin, 3 Tanggungan (Rp 67.5jt/thn)</option>
+                        <option value="K/0">K/0 — Kawin, 0 Tanggungan (Rp 58.5jt/thn)</option>
+                        <option value="K/1">K/1 — Kawin, 1 Tanggungan (Rp 63jt/thn)</option>
+                        <option value="K/2">K/2 — Kawin, 2 Tanggungan (Rp 67.5jt/thn)</option>
+                        <option value="K/3">K/3 — Kawin, 3 Tanggungan (Rp 72jt/thn)</option>
+                      </select>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Auto-Mapping Kategori Pajak:</span>
+                      <span className="badge badge-purple">Kategori TER {currentTer}</span>
+                    </div>
                   </div>
                 </div>
               )}
 
-              {/* Step 3: Gaji & Bank */}
               {modalStep === 3 && (
-                <div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+                  <div className="form-group">
+                    <label className="form-label">Gaji Pokok Bulanan (Rp) *</label>
+                    <input
+                      type="number"
+                      required
+                      min={0}
+                      className="form-control"
+                      value={formData.basic_salary}
+                      onChange={(e) => handleInputChange('basic_salary', Number(e.target.value))}
+                    />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
                     <div className="form-group">
-                      <label className="form-label">Gaji Pokok Bulanan (Rp) *</label>
+                      <label className="form-label">Nama Tunjangan Tetap</label>
                       <input
-                        type="number"
-                        className="form-input"
-                        placeholder="5000000"
-                        value={formData.basic_salary}
-                        onChange={(e) => handleInputChange('basic_salary', e.target.value)}
-                        required
-                        min={0}
+                        type="text"
+                        className="form-control"
+                        value={formData.fixed_allowance_name}
+                        onChange={(e) => handleInputChange('fixed_allowance_name', e.target.value)}
                       />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Tunjangan Tetap (Rp)</label>
+                      <label className="form-label">Nominal Tunjangan (Rp)</label>
                       <input
                         type="number"
-                        className="form-input"
-                        placeholder="1000000"
-                        value={formData.fixed_allowance_amount}
-                        onChange={(e) => handleInputChange('fixed_allowance_amount', e.target.value)}
                         min={0}
+                        className="form-control"
+                        value={formData.fixed_allowance_amount}
+                        onChange={(e) => handleInputChange('fixed_allowance_amount', Number(e.target.value))}
                       />
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.875rem' }}>
                     <div className="form-group">
-                      <label className="form-label">Nama Bank Payroll</label>
+                      <label className="form-label">Nama Bank</label>
                       <select
-                        className="form-select"
+                        className="form-control"
                         value={formData.bank_name}
                         onChange={(e) => handleInputChange('bank_name', e.target.value)}
                       >
-                        <option value="BCA">BCA (Bank Central Asia)</option>
-                        <option value="MANDIRI">Bank Mandiri</option>
-                        <option value="BRI">BRI (Bank Rakyat Indonesia)</option>
-                        <option value="BNI">BNI (Bank Negara Indonesia)</option>
-                        <option value="BSI">BSI (Bank Syariah Indonesia)</option>
+                        <option value="BCA">BCA</option>
+                        <option value="Mandiri">Mandiri</option>
+                        <option value="BRI">BRI</option>
+                        <option value="BNI">BNI</option>
                         <option value="CIMB">CIMB Niaga</option>
+                        <option value="Permata">Permata Bank</option>
                       </select>
                     </div>
-
                     <div className="form-group">
                       <label className="form-label">Nomor Rekening Bank</label>
                       <input
                         type="text"
-                        className="form-input"
-                        placeholder="8830123456"
+                        className="form-control"
+                        placeholder="Contoh: 1234567890"
                         value={formData.bank_account_no}
                         onChange={(e) => handleInputChange('bank_account_no', e.target.value)}
                       />
                     </div>
                   </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1.5rem' }}>
-                    <button type="button" className="btn btn-secondary" onClick={() => setModalStep(2)}>
-                      ← Kembali
-                    </button>
-                    <button type="submit" className="btn btn-primary" disabled={submitting}>
-                      {submitting ? 'Menyimpan...' : 'Simpan Data Karyawan'}
-                    </button>
-                  </div>
                 </div>
               )}
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
+                {modalStep > 1 ? (
+                  <button type="button" className="btn btn-secondary" onClick={() => setModalStep((s) => s - 1)}>
+                    <i className="fa-solid fa-arrow-left"></i>
+                    <span>Kembali</span>
+                  </button>
+                ) : (
+                  <div></div>
+                )}
+
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button type="button" className="btn btn-secondary" onClick={() => setShowAddModal(false)}>
+                    Batal
+                  </button>
+                  <button type="submit" className="btn btn-primary" disabled={submitting}>
+                    {submitting ? 'Menyimpan...' : modalStep === 3 ? 'Daftarkan Karyawan' : 'Lanjut'}
+                  </button>
+                </div>
+              </div>
             </form>
           </div>
         </div>

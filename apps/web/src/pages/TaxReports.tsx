@@ -35,6 +35,7 @@ export const TaxReports: React.FC = () => {
     doc.setFont('helvetica', 'bold');
     doc.text('BUKTI PEMOTONGAN PAJAK PENGHASILAN PASAL 21', 14, 18);
     doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
     doc.text('BAGI PEGAWAI TETAP ATAU PENERIMA PENSIUN BERKALA (FORMULIR 1721-A1)', 14, 24);
     doc.setFont('helvetica', 'normal');
     doc.text(`Tahun Pajak: ${year}`, 14, 30);
@@ -64,8 +65,8 @@ export const TaxReports: React.FC = () => {
       startY: 58,
       head: [['Rincian Penghitungan PPh 21 Formulir 1721-A1', 'Nilai (Rp)']],
       body: tableBody,
-      theme: 'striped',
-      headStyles: { fillColor: [41, 128, 185] },
+      theme: 'grid',
+      headStyles: { fillColor: [37, 99, 235] },
       styles: { fontSize: 8.5 },
     });
 
@@ -78,20 +79,20 @@ export const TaxReports: React.FC = () => {
   };
 
   return (
-    <div className="container" style={{ padding: '2rem 1rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.75rem', margin: '0 0 0.5rem' }}>Laporan Pajak & Rekonsiliasi Tahunan</h1>
-          <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
+          <h1 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Laporan Pajak & Rekonsiliasi Tahunan</h1>
+          <p style={{ margin: '2px 0 0', color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
             Rekonsiliasi Pajak Desember (Pasal 17 UU HPP) dan Ekspor Formulir Bukti Potong 1721-A1
           </p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Tahun Pajak:</label>
+          <label style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-soft)' }}>Tahun Pajak:</label>
           <select
-            className="form-control form-control-sm"
-            style={{ width: '100px' }}
+            className="form-control"
+            style={{ width: '110px' }}
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
           >
@@ -105,101 +106,127 @@ export const TaxReports: React.FC = () => {
       </div>
 
       {/* KPI Cards */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-        gap: '1rem',
-        marginBottom: '2rem',
-      }}>
-        <div className="card" style={{ padding: '1.25rem' }}>
-          <div style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Total Bruto Kena Pajak {year}</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: 'var(--color-primary)', marginTop: '0.25rem' }}>
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
+        <article className="card" style={{ padding: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <i className="fa-solid fa-calculator"></i>
+            </div>
+            <span className="badge badge-primary">Bruto Setahun</span>
+          </div>
+          <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+            Total Bruto Pajak {year}
+          </p>
+          <p style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)', marginTop: '0.25rem' }}>
             {formatRupiah(report?.total_annual_gross || 0)}
+          </p>
+        </article>
+
+        <article className="card" style={{ padding: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: 'var(--danger-light)', color: 'var(--danger-text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <i className="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+            <span className="badge badge-danger">Pasal 17 HPP</span>
           </div>
-        </div>
-        <div className="card" style={{ padding: '1.25rem' }}>
-          <div style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Total PPh 21 Terutang (Pasal 17)</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: '#e74c3c', marginTop: '0.25rem' }}>
+          <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+            Total PPh 21 Terutang
+          </p>
+          <p style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--danger-text)', marginTop: '0.25rem' }}>
             {formatRupiah(report?.total_annual_pph21 || 0)}
+          </p>
+        </article>
+
+        <article className="card" style={{ padding: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: 'var(--purple-light)', color: 'var(--purple-text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <i className="fa-solid fa-users"></i>
+            </div>
+            <span className="badge badge-purple">Form 1721-A1</span>
           </div>
-        </div>
-        <div className="card" style={{ padding: '1.25rem' }}>
-          <div style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Jumlah Formulir 1721-A1</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: 'var(--color-text)', marginTop: '0.25rem' }}>
-            {report?.total_employees || 0} Karyawan
-          </div>
-        </div>
-      </div>
+          <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+            Jumlah Karyawan
+          </p>
+          <p style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '0.25rem' }}>
+            {report?.total_employees || 0} Orang
+          </p>
+        </article>
+      </section>
 
       {/* 1721-A1 Forms Table */}
-      <div className="card" style={{ overflow: 'hidden' }}>
-        <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 style={{ fontSize: '1.1rem', margin: 0 }}>Daftar Formulir 1721-A1 Pegawai Tetap ({year})</h2>
+      <section className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ fontSize: '0.9375rem', margin: 0, fontWeight: 600 }}>Daftar Formulir 1721-A1 Pegawai Tetap ({year})</h2>
           <button className="btn btn-sm btn-secondary" onClick={loadReport}>
-            🔄 Refresh
+            <i className="fa-solid fa-rotate-right"></i>
+            <span>Refresh</span>
           </button>
         </div>
 
         {loading ? (
-          <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+          <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+            <i className="fa-solid fa-spinner fa-spin" style={{ marginRight: '0.5rem' }}></i>
             Menghitung rekonsiliasi pajak tahunan...
           </div>
         ) : !report?.forms_1721_a1 || report.forms_1721_a1.length === 0 ? (
-          <div style={{ padding: '3rem', textAlign: 'center' }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📑</div>
-            <h3 style={{ margin: '0 0 0.5rem' }}>Belum Ada Data Pajak untuk Tahun {year}</h3>
-            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-              Jalankan penggajian bulanan di menu Penggajian terlebih dahulu.
+          <div style={{ padding: '4rem 2rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem', color: 'var(--text-faint)' }}>
+              <i className="fa-regular fa-folder-open"></i>
+            </div>
+            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.125rem' }}>Belum Ada Data Pajak untuk Tahun {year}</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
+              Jalankan penggajian bulanan di menu Payroll Processor terlebih dahulu.
             </p>
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
-            <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <table className="table">
               <thead>
-                <tr style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'left', borderBottom: '1px solid var(--color-border)' }}>
-                  <th style={{ padding: '0.75rem 1rem' }}>Nama Karyawan</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>PTKP</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Bruto Setahun</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Biaya Jabatan</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>PKP Dibulatkan</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>PPh 21 Setahun</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Telah Dipotong</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Aksi</th>
+                <tr>
+                  <th>Nama Karyawan</th>
+                  <th>PTKP</th>
+                  <th>Bruto Setahun</th>
+                  <th>Biaya Jabatan</th>
+                  <th>PKP Dibulatkan</th>
+                  <th>PPh 21 Setahun</th>
+                  <th>Telah Dipotong</th>
+                  <th style={{ textAlign: 'right' }}>Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 {report.forms_1721_a1.map((f: any) => (
-                  <tr key={f.employee_id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                    <td style={{ padding: '0.75rem 1rem' }}>
-                      <div style={{ fontWeight: 500 }}>{f.employee_name}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                  <tr key={f.employee_id}>
+                    <td>
+                      <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>{f.employee_name}</div>
+                      <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
                         {f.nik_masked} | {f.npwp}
                       </div>
                     </td>
-                    <td style={{ padding: '0.75rem 1rem' }}>
+                    <td>
                       <span className="badge badge-info">{f.ptkp_status}</span>
                     </td>
-                    <td style={{ padding: '0.75rem 1rem' }}>
+                    <td>
                       {formatRupiah(f.annual_gross_taxable)}
                     </td>
-                    <td style={{ padding: '0.75rem 1rem', color: 'var(--color-text-muted)' }}>
+                    <td style={{ color: 'var(--text-muted)' }}>
                       {formatRupiah(f.biaya_jabatan)}
                     </td>
-                    <td style={{ padding: '0.75rem 1rem' }}>
+                    <td>
                       {formatRupiah(f.pkp_rounded)}
                     </td>
-                    <td style={{ padding: '0.75rem 1rem', fontWeight: 'bold', color: '#e74c3c' }}>
+                    <td style={{ fontWeight: 700, color: 'var(--danger-text)' }}>
                       {formatRupiah(f.total_pph21_annual)}
                     </td>
-                    <td style={{ padding: '0.75rem 1rem', color: 'var(--color-text-muted)' }}>
+                    <td style={{ color: 'var(--text-muted)' }}>
                       {formatRupiah(f.pph21_withheld)}
                     </td>
-                    <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                    <td style={{ textAlign: 'right' }}>
                       <button
                         className="btn btn-sm btn-secondary"
                         onClick={() => setSelected1721A1(f)}
                       >
-                        👁️ Formulir 1721-A1
+                        <i className="fa-solid fa-file-lines" style={{ color: 'var(--primary)', marginRight: '0.25rem' }}></i>
+                        <span>Formulir 1721-A1</span>
                       </button>
                     </td>
                   </tr>
@@ -208,91 +235,73 @@ export const TaxReports: React.FC = () => {
             </table>
           </div>
         )}
-      </div>
+      </section>
 
       {/* 1721-A1 Modal */}
       {selected1721A1 && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(0,0,0,0.6)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1rem',
-        }}>
-          <div style={{
-            backgroundColor: 'var(--color-bg)',
-            borderRadius: 'var(--radius-lg)',
-            border: '1px solid var(--color-border)',
-            boxShadow: 'var(--shadow-lg)',
-            width: '100%',
-            maxWidth: '680px',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-            padding: '1.5rem',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--color-border)', paddingBottom: '1rem' }}>
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '650px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
               <div>
-                <h3 style={{ margin: 0 }}>Bukti Potong 1721-A1 ({year})</h3>
-                <p style={{ margin: '0.25rem 0 0', color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>
+                <h3 style={{ margin: 0, fontSize: '1.125rem' }}>Bukti Potong 1721-A1 ({year})</h3>
+                <p style={{ margin: '0.25rem 0 0', color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
                   {selected1721A1.employee_name} ({selected1721A1.nik_masked})
                 </p>
               </div>
               <button
                 onClick={() => setSelected1721A1(null)}
-                style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: 'var(--text-faint)', cursor: 'pointer' }}
               >
-                ×
+                <i className="fa-solid fa-xmark"></i>
               </button>
             </div>
 
-            <div style={{ margin: '1rem 0', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--color-border)' }}>
+            <div style={{ margin: '1rem 0', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8125rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--border-subtle)' }}>
                 <span>1. Penghasilan Bruto Setahun</span>
                 <strong>{formatRupiah(selected1721A1.annual_gross_taxable)}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--color-border)' }}>
-                <span>2. Biaya Jabatan (5% maks Rp 6.000.000)</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--border-subtle)' }}>
+                <span>2. Pengurang: Biaya Jabatan (5% maks Rp 6.000.000)</span>
                 <strong>({formatRupiah(selected1721A1.biaya_jabatan)})</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--color-border)' }}>
-                <span>3. Iuran JHT & Pensiun Pekerja Setahun</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--border-subtle)' }}>
+                <span>3. Pengurang: Iuran JHT & Pensiun Pekerja Setahun</span>
                 <strong>({formatRupiah(selected1721A1.annual_jht_employee + selected1721A1.annual_jp_employee)})</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--color-border)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--border-subtle)' }}>
                 <span>4. Penghasilan Neto Setahun</span>
                 <strong>{formatRupiah(selected1721A1.annual_net_income)}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--color-border)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--border-subtle)' }}>
                 <span>5. Penghasilan Tidak Kena Pajak (PTKP {selected1721A1.ptkp_status})</span>
                 <strong>{formatRupiah(selected1721A1.ptkp_amount)}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--color-border)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--border-subtle)' }}>
                 <span>6. Penghasilan Kena Pajak (PKP)</span>
                 <strong>{formatRupiah(selected1721A1.pkp_rounded)}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--color-border)', color: '#e74c3c' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--border-subtle)', color: 'var(--danger-text)' }}>
                 <span>7. PPh 21 Terutang Setahun (Pasal 17 UU HPP)</span>
                 <strong>{formatRupiah(selected1721A1.total_pph21_annual)}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--color-border)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--border-subtle)' }}>
                 <span>8. PPh 21 Telah Dipotong (Jan–Nov)</span>
                 <strong>{formatRupiah(selected1721A1.pph21_withheld)}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', fontWeight: 'bold', fontSize: '1rem', color: 'var(--color-primary)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', fontWeight: 700, fontSize: '0.9375rem', color: 'var(--primary)' }}>
                 <span>9. Selisih PPh 21 Masa Terakhir (Desember)</span>
                 <span>{formatRupiah(selected1721A1.total_pph21_annual - selected1721A1.pph21_withheld)}</span>
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.25rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
               <button className="btn btn-secondary" onClick={() => setSelected1721A1(null)}>
                 Tutup
               </button>
               <button className="btn btn-primary" onClick={() => download1721A1Pdf(selected1721A1)}>
-                📥 Unduh PDF Formulir 1721-A1
+                <i className="fa-solid fa-download"></i>
+                <span>Unduh PDF Formulir 1721-A1</span>
               </button>
             </div>
           </div>

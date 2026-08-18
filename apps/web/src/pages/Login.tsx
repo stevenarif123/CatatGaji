@@ -20,7 +20,7 @@ export const Login: React.FC = () => {
     try {
       const res = await apiFetch<any>('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: { email, password },
       });
 
       setAuth(res.data);
@@ -57,24 +57,24 @@ export const Login: React.FC = () => {
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontWeight: 800,
-              fontSize: '1.5rem',
+              fontSize: '1.25rem',
               marginBottom: '1rem',
             }}
           >
-            C
+            <i className="fa-solid fa-building-columns"></i>
           </div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0, letterSpacing: '-0.02em' }}>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: 700, margin: 0, letterSpacing: '-0.02em' }}>
             Masuk ke CatatGaji
           </h2>
-          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '0.375rem' }}>
-            Portal Penggajian & HRIS UMKM Indonesia
+          <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginTop: '0.375rem' }}>
+            Platform Penggajian & HRIS Indonesia (PMK 168/2023)
           </p>
         </div>
 
         {error && (
           <div className="alert alert-danger" role="alert">
-            ⚠️ {error}
+            <i className="fa-solid fa-circle-exclamation"></i>
+            <span>{error}</span>
           </div>
         )}
 
@@ -86,7 +86,7 @@ export const Login: React.FC = () => {
             <input
               id="email"
               type="email"
-              className="form-input"
+              className="form-control"
               placeholder="nama@perusahaan.co.id"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -101,7 +101,7 @@ export const Login: React.FC = () => {
             <input
               id="password"
               type="password"
-              className="form-input"
+              className="form-control"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -112,14 +112,15 @@ export const Login: React.FC = () => {
           <button
             type="submit"
             className="btn btn-primary"
-            style={{ width: '100%', marginTop: '0.5rem', padding: '0.75rem' }}
+            style={{ width: '100%', marginTop: '0.5rem', padding: '0.625rem' }}
             disabled={loading}
           >
-            {loading ? 'Memverifikasi...' : 'Masuk ke Portal'}
+            <i className={`fa-solid ${loading ? 'fa-spinner fa-spin' : 'fa-arrow-right-to-bracket'}`}></i>
+            <span>{loading ? 'Memverifikasi...' : 'Masuk ke Portal'}</span>
           </button>
         </form>
 
-        <div style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+        <div style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
           Belum punya akun organisasi?{' '}
           <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
             Daftar Tenant Baru

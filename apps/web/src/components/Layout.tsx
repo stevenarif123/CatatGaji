@@ -4,7 +4,7 @@ import { useAuthStore } from '../stores/authStore';
 import { OfflineBanner } from './OfflineBanner';
 
 export const Layout: React.FC = () => {
-  const { role, logout } = useAuthStore();
+  const { role, userName, logout } = useAuthStore();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -13,30 +13,34 @@ export const Layout: React.FC = () => {
   };
 
   const navItems = [
-    { label: '📊 Dashboard', to: '/' },
-    { label: '👥 Data Karyawan', to: '/employees' },
-    { label: '⏱️ Kehadiran & Shift', to: '/attendance' },
-    { label: '💰 Penggajian (Payroll)', to: '/payroll' },
-    { label: '📑 Laporan Pajak & BPJS', to: '/tax-reports' },
-    { label: '⚙️ Pengaturan Tenant', to: '/settings' },
+    { label: 'Overview', to: '/', icon: 'fa-solid fa-border-all' },
+    { label: 'Payroll Processor', to: '/payroll', icon: 'fa-solid fa-calculator' },
+    { label: 'Employee Roster', to: '/employees', icon: 'fa-solid fa-users' },
+    { label: 'Time & Attendance', to: '/attendance', icon: 'fa-regular fa-clock' },
+    { label: 'Tax & PPh21 (1721-A1)', to: '/tax-reports', icon: 'fa-solid fa-file-invoice-dollar' },
+    { label: 'System Settings', to: '/settings', icon: 'fa-solid fa-gear' },
   ];
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', width: '100vw' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', width: '100vw', backgroundColor: 'var(--bg-app)' }}>
       {/* Sidebar */}
       <aside
         style={{
           width: '260px',
-          backgroundColor: 'var(--bg-sidebar)',
-          color: 'var(--text-inverse)',
+          backgroundColor: '#ffffff',
+          color: 'var(--text-main)',
           display: 'flex',
           flexDirection: 'column',
           flexShrink: 0,
           borderRight: '1px solid var(--border-color)',
+          height: '100vh',
+          position: 'sticky',
+          top: 0,
+          zIndex: 30,
         }}
       >
         {/* Brand Header */}
-        <div style={{ padding: '1.5rem 1.25rem', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <div style={{ height: '64px', display: 'flex', alignItems: 'center', padding: '0 1.5rem', borderBottom: '1px solid var(--border-color)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
             <div
               style={{
@@ -44,106 +48,144 @@ export const Layout: React.FC = () => {
                 height: '32px',
                 borderRadius: '8px',
                 backgroundColor: 'var(--primary)',
+                color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: 700,
-                fontSize: '1.125rem',
+                fontSize: '0.9rem',
               }}
             >
-              C
+              <i className="fa-solid fa-building-columns"></i>
             </div>
             <div>
-              <h1 style={{ fontSize: '1.125rem', fontWeight: 700, margin: 0, color: '#fff', letterSpacing: '-0.02em' }}>
+              <p style={{ fontSize: '0.9375rem', fontWeight: 700, margin: 0, color: 'var(--text-main)', lineHeight: 1.1 }}>
                 CatatGaji
-              </h1>
-              <span style={{ fontSize: '0.6875rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Payroll & HRIS
-              </span>
+              </p>
+              <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
+                Payroll & HRIS Indonesia
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Navigation Links */}
-        <nav style={{ padding: '1rem 0.75rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+        {/* Navigation Items */}
+        <nav style={{ flex: 1, padding: '1.25rem 0.75rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
+              end={item.to === '/'}
               style={({ isActive }) => ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.75rem',
-                padding: '0.625rem 0.875rem',
+                padding: '0.5rem 0.75rem',
                 borderRadius: 'var(--radius-sm)',
-                color: isActive ? '#ffffff' : '#94a3b8',
-                backgroundColor: isActive ? 'var(--primary)' : 'transparent',
+                backgroundColor: isActive ? 'var(--primary-active)' : 'transparent',
+                color: isActive ? 'var(--primary)' : 'var(--text-soft)',
                 textDecoration: 'none',
-                fontSize: '0.875rem',
+                fontSize: '0.84rem',
                 fontWeight: isActive ? 600 : 500,
                 transition: 'all 0.15s ease',
               })}
             >
-              {item.label}
+              <i className={`${item.icon}`} style={{ width: '18px', textAlign: 'center', fontSize: '0.875rem' }}></i>
+              <span>{item.label}</span>
             </NavLink>
           ))}
         </nav>
 
-        {/* User / Logout Footer */}
-        <div style={{ padding: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Role Aktif</div>
-              <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#fff' }}>{role || 'Admin'}</div>
+        {/* User Profile Footer */}
+        <div style={{ padding: '0.75rem', borderTop: '1px solid var(--border-color)' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '0.5rem 0.75rem',
+              borderRadius: 'var(--radius-sm)',
+              backgroundColor: 'var(--bg-subtle)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', minWidth: 0 }}>
+              <div
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--primary-light)',
+                  color: 'var(--primary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 700,
+                  fontSize: '0.8125rem',
+                }}
+              >
+                {(userName || 'U').charAt(0).toUpperCase()}
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {userName || 'Owner Administrator'}
+                </p>
+                <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: 0 }}>
+                  {role || 'OWNER'}
+                </p>
+              </div>
             </div>
             <button
               onClick={handleLogout}
-              className="btn btn-sm"
-              style={{
-                backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                color: '#f87171',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-              }}
+              title="Keluar"
+              className="btn btn-sm btn-secondary"
+              style={{ padding: '0.35rem 0.5rem', color: 'var(--danger-text)' }}
             >
-              Keluar
+              <i className="fa-solid fa-arrow-right-from-bracket"></i>
             </button>
           </div>
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+      {/* Main Area */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <OfflineBanner />
+
         {/* Top Header Bar */}
         <header
           style={{
             height: '64px',
-            backgroundColor: 'var(--bg-card)',
+            backgroundColor: '#ffffff',
             borderBottom: '1px solid var(--border-color)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '0 2rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 20,
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <span className="badge badge-success">Sistem Aktif</span>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-              Kepatuhan Regulasi Indonesia (PMK 168/2023 & UU HPP)
+            <span className="badge badge-success">
+              <i className="fa-solid fa-shield-halved" style={{ fontSize: '9px' }}></i> PMK 168/2023 & UU HPP
+            </span>
+            <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', display: 'none', md: 'inline' } as any}>
+              Kepatuhan 100% Regulasi Perpajakan Indonesia
             </span>
           </div>
-          <div>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-              Masa Pajak: <strong>{new Date().toLocaleString('id-ID', { month: 'long', year: 'numeric' })}</strong>
-            </span>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8125rem', color: 'var(--text-soft)' }}>
+              <i className="fa-regular fa-calendar text-slate-400"></i>
+              <span>Periode Aktif: <strong>{new Date().toLocaleString('id-ID', { month: 'long', year: 'numeric' })}</strong></span>
+            </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <div style={{ padding: '2rem', flex: 1 }}>
+        <main style={{ flex: 1, padding: '2rem', maxWidth: '1600px', width: '100%', margin: '0 auto', overflowY: 'auto' }}>
           <Outlet />
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };

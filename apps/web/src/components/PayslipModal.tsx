@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { formatRupiah, formatTanggal } from '@catatgaji/shared';
+import { apiFetch } from '../lib/api';
+import { useAuthStore } from '../stores/authStore';
 
-interface PayslipData {
+export interface PayslipData {
   id: string;
   company_name: string;
   employee_name: string;
@@ -45,7 +47,8 @@ interface PayslipData {
 }
 
 interface PayslipModalProps {
-  data: PayslipData | null;
+  data?: PayslipData | null;
+  resultId?: string | null;
   onClose: () => void;
 }
 
@@ -54,7 +57,36 @@ const MONTH_NAMES = [
   'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
-export const PayslipModal: React.FC<PayslipModalProps> = ({ data, onClose }) => {
+export const PayslipModal: React.FC<PayslipModalProps> = ({ data: initialData, resultId, onClose }) => {
+  const token = useAuthStore((state) => state.token);
+  const [data, setData] = useState<PayslipData | null>(initialData || null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (resultId && !initialData) {
+      setLoading(true);
+      apiFetch<any>(`/payroll/results/${resultId}/slip`, { token })
+        .then((res) => {
+          setData(res.data);
+        })
+        .catch((err) => {
+          console.error('Failed to fetch slip:', err);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [resultId, initialData, token]);
+
+  if (!data && loading) {
+    return (
+      <div className="modal-overlay">
+        <div className="modal-content" style={{ textAlign: 'center', padding: '3rem' }}>
+          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '1.5rem', color: 'var(--primary)', marginBottom: '1rem' }}></i>
+          <p style={{ margin: 0, color: 'var(--text-muted)' }}>Memuat slip gaji digital...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!data) return null;
 
   const monthName = MONTH_NAMES[data.period_month - 1] || data.period_month;
@@ -113,7 +145,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ data, onClose }) => 
       head: [['Komponen Pendapatan', 'Jumlah (Rp)']],
       body: earningsBody,
       theme: 'grid',
-      headStyles: { fillColor: [44, 62, 80] },
+      headStyles: { fillColor: [37, 99, 235] },
       styles: { fontSize: 8 },
     });
 
@@ -124,16 +156,16 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ data, onClose }) => 
       head: [['Komponen Potongan', 'Jumlah (Rp)']],
       body: deductionsBody,
       theme: 'grid',
-      headStyles: { fillColor: [192, 57, 43] },
+      headStyles: { fillColor: [220, 38, 38] },
       styles: { fontSize: 8 },
     });
 
     const thpY = (doc as any).lastAutoTable.finalY + 8;
-    doc.setFillColor(235, 247, 238);
+    doc.setFillColor(236, 253, 245);
     doc.rect(14, thpY, 182, 14, 'F');
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(27, 94, 32);
+    doc.setTextColor(5, 150, 105);
     doc.text(`TAKE HOME PAY (THP) BERSIH: ${formatRupiah(data.thp)}`, 18, thpY + 9);
 
     // Footer Security Notice
@@ -146,32 +178,16 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ data, onClose }) => 
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      backgroundColor: 'rgba(0,0,0,0.6)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-      padding: '1rem',
-    }}>
-      <div style={{
-        backgroundColor: 'var(--color-bg)',
-        borderRadius: 'var(--radius-lg)',
-        border: '1px solid var(--color-border)',
-        boxShadow: 'var(--shadow-lg)',
-        width: '100%',
-        maxWidth: '750px',
-        maxHeight: '90vh',
-        overflowY: 'auto',
-        padding: '1.5rem',
-      }}>
+    <div className="modal-overlay">
+      <div className="modal-content" style={{ maxWidth: '720px' }}>
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--color-border)', paddingBottom: '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
           <div>
-            <h3 style={{ margin: 0, color: 'var(--color-primary)' }}>{data.company_name}</h3>
-            <p style={{ margin: '0.25rem 0 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.125rem' }}>{data.company_name}</h3>
+              <span className="badge badge-primary">Resmi</span>
+            </div>
+            <p style={{ margin: '0.25rem 0 0', color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
               Slip Gaji Karyawan — Periode {periodLabel}
             </p>
           </div>
@@ -180,75 +196,76 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ data, onClose }) => 
             style={{
               background: 'none',
               border: 'none',
-              fontSize: '1.5rem',
+              fontSize: '1.25rem',
               cursor: 'pointer',
-              color: 'var(--color-text-muted)',
+              color: 'var(--text-faint)',
             }}
           >
-            ×
+            <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
 
-        {/* Employee Info */}
+        {/* Employee Info Box */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
           gap: '0.75rem',
-          margin: '1rem 0',
-          padding: '0.75rem',
-          backgroundColor: 'var(--color-bg-subtle)',
-          borderRadius: 'var(--radius-md)',
-          fontSize: '0.875rem',
+          margin: '1.25rem 0',
+          padding: '0.875rem',
+          backgroundColor: 'var(--bg-subtle)',
+          borderRadius: 'var(--radius-sm)',
+          border: '1px solid var(--border-color)',
+          fontSize: '0.8125rem',
         }}>
-          <div><strong>Nama:</strong> {data.employee_name}</div>
-          <div><strong>NIK:</strong> {data.nik_masked}</div>
-          <div><strong>Status PTKP:</strong> <span className="badge badge-info">{data.ptkp_status}</span> (TER {data.ter_category})</div>
-          <div><strong>Tarif Efektif:</strong> {(Number(data.effective_ter_rate) * 100).toFixed(2)}%</div>
-          <div><strong>Rekening:</strong> {data.bank_name || 'BCA'} {data.bank_account_no}</div>
-          <div><strong>Tgl Transfer:</strong> {formatTanggal(data.payout_date)}</div>
+          <div><strong style={{ color: 'var(--text-muted)' }}>Nama:</strong> <span style={{ fontWeight: 600 }}>{data.employee_name}</span></div>
+          <div><strong style={{ color: 'var(--text-muted)' }}>NIK:</strong> <span style={{ fontFamily: 'var(--font-mono)' }}>{data.nik_masked}</span></div>
+          <div><strong style={{ color: 'var(--text-muted)' }}>PTKP & TER:</strong> <span className="badge badge-info">{data.ptkp_status}</span> (TER {data.ter_category})</div>
+          <div><strong style={{ color: 'var(--text-muted)' }}>Tarif TER:</strong> {(Number(data.effective_ter_rate) * 100).toFixed(2)}%</div>
+          <div><strong style={{ color: 'var(--text-muted)' }}>Rekening Bank:</strong> {data.bank_name || 'BCA'} - {data.bank_account_no || '-'}</div>
+          <div><strong style={{ color: 'var(--text-muted)' }}>Tanggal Bayar:</strong> {formatTanggal(data.payout_date)}</div>
         </div>
 
         {/* 2-Column Breakdown */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
           {/* Earnings */}
-          <div style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '0.75rem' }}>
-            <h4 style={{ margin: '0 0 0.75rem', color: '#27ae60', fontSize: '0.9rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.25rem' }}>
-              (+) PENDAPATAN
+          <div style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', padding: '0.875rem', backgroundColor: '#ffffff' }}>
+            <h4 style={{ margin: '0 0 0.75rem', color: 'var(--success-text)', fontSize: '0.8125rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.375rem' }}>
+              <i className="fa-solid fa-plus-circle" style={{ marginRight: '0.375rem' }}></i> Pendapatan
             </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.85rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.8125rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>Gaji Pokok</span>
+                <span style={{ color: 'var(--text-soft)' }}>Gaji Pokok</span>
                 <strong>{formatRupiah(data.basic_salary)}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>Tunjangan Tetap</span>
+                <span style={{ color: 'var(--text-soft)' }}>Tunjangan Tetap</span>
                 <strong>{formatRupiah(fixedTotal)}</strong>
               </div>
               {Number(data.overtime_pay) > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Lembur PP 35/2021</span>
+                  <span style={{ color: 'var(--text-soft)' }}>Lembur PP 35/2021</span>
                   <strong>{formatRupiah(data.overtime_pay)}</strong>
                 </div>
               )}
               {Number(data.thr_amount) > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Tunjangan Hari Raya</span>
+                  <span style={{ color: 'var(--text-soft)' }}>THR</span>
                   <strong>{formatRupiah(data.thr_amount)}</strong>
                 </div>
               )}
               {Number(data.pkwt_compensation) > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Kompensasi PKWT</span>
+                  <span style={{ color: 'var(--text-soft)' }}>Kompensasi PKWT</span>
                   <strong>{formatRupiah(data.pkwt_compensation)}</strong>
                 </div>
               )}
               {Number(data.bonus_amount) > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Bonus & Insentif</span>
+                  <span style={{ color: 'var(--text-soft)' }}>Bonus</span>
                   <strong>{formatRupiah(data.bonus_amount)}</strong>
                 </div>
               )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed var(--color-border)', paddingTop: '0.4rem', fontWeight: 'bold' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed var(--border-color)', paddingTop: '0.5rem', fontWeight: 700, color: 'var(--text-main)' }}>
                 <span>Total Bruto</span>
                 <span>{formatRupiah(data.gross_earnings)}</span>
               </div>
@@ -256,40 +273,40 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ data, onClose }) => 
           </div>
 
           {/* Deductions */}
-          <div style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '0.75rem' }}>
-            <h4 style={{ margin: '0 0 0.75rem', color: '#e74c3c', fontSize: '0.9rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.25rem' }}>
-              (-) POTONGAN
+          <div style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', padding: '0.875rem', backgroundColor: '#ffffff' }}>
+            <h4 style={{ margin: '0 0 0.75rem', color: 'var(--danger-text)', fontSize: '0.8125rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.375rem' }}>
+              <i className="fa-solid fa-minus-circle" style={{ marginRight: '0.375rem' }}></i> Potongan
             </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.85rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.8125rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>BPJS JHT (2%)</span>
+                <span style={{ color: 'var(--text-soft)' }}>BPJS JHT (2%)</span>
                 <strong>{formatRupiah(data.jht_employee)}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>BPJS JP (1%)</span>
+                <span style={{ color: 'var(--text-soft)' }}>BPJS JP (1%)</span>
                 <strong>{formatRupiah(data.jp_employee)}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>BPJS Kes (1%)</span>
+                <span style={{ color: 'var(--text-soft)' }}>BPJS Kes (1%)</span>
                 <strong>{formatRupiah(data.kes_employee)}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>PPh 21 TER {(Number(data.effective_ter_rate) * 100).toFixed(2)}%</span>
-                <strong style={{ color: '#e74c3c' }}>{formatRupiah(data.pph21_amount)}</strong>
+                <span style={{ color: 'var(--text-soft)' }}>PPh 21 TER</span>
+                <strong style={{ color: 'var(--danger-text)' }}>{formatRupiah(data.pph21_amount)}</strong>
               </div>
               {Number(data.loan_deduction) > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Potongan Kasbon</span>
+                  <span style={{ color: 'var(--text-soft)' }}>Kasbon</span>
                   <strong>{formatRupiah(data.loan_deduction)}</strong>
                 </div>
               )}
               {Number(data.absence_deduction) > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Potongan Absensi</span>
+                  <span style={{ color: 'var(--text-soft)' }}>Absensi</span>
                   <strong>{formatRupiah(data.absence_deduction)}</strong>
                 </div>
               )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed var(--color-border)', paddingTop: '0.4rem', fontWeight: 'bold' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed var(--border-color)', paddingTop: '0.5rem', fontWeight: 700, color: 'var(--danger-text)' }}>
                 <span>Total Potongan</span>
                 <span>{formatRupiah(data.total_deductions)}</span>
               </div>
@@ -297,28 +314,27 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ data, onClose }) => 
           </div>
         </div>
 
-        {/* THP Highlight */}
+        {/* THP Banner */}
         <div style={{
           marginTop: '1.25rem',
-          padding: '1rem',
-          backgroundColor: '#e8f5e9',
-          border: '1px solid #c8e6c9',
-          borderRadius: 'var(--radius-md)',
+          padding: '1rem 1.25rem',
+          backgroundColor: 'var(--success-light)',
+          border: '1px solid rgba(16, 185, 129, 0.3)',
+          borderRadius: 'var(--radius-sm)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
           <div>
-            <div style={{ fontSize: '0.8rem', color: '#2e7d32', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--success-text)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Take Home Pay (Gaji Bersih Diterima)
             </div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1b5e20' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--success-text)' }}>
               {formatRupiah(data.thp)}
             </div>
           </div>
-          <div style={{ textAlign: 'right', fontSize: '0.75rem', color: '#555' }}>
-            <div>Status Kunci: {data.is_locked ? '✅ FINAL & TERKUNCI' : '⏳ DRAFT'}</div>
-            <div>Beban Total Perusahaan: {formatRupiah(data.total_employer_cost)}</div>
+          <div style={{ textAlign: 'right', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            <div>Status: <span className="badge badge-success">{data.is_locked ? 'Locked' : 'Draft'}</span></div>
           </div>
         </div>
 
@@ -328,7 +344,8 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ data, onClose }) => 
             Tutup
           </button>
           <button className="btn btn-primary" onClick={downloadPdf}>
-            📥 Unduh PDF Slip Gaji
+            <i className="fa-solid fa-download"></i>
+            <span>Unduh PDF Resmi</span>
           </button>
         </div>
       </div>
