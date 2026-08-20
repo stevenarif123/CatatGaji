@@ -18,12 +18,9 @@ export function formatTanggal(dateStr: string): string {
 }
 
 /**
- * Generate PIN default dari tanggal lahir: DDMMYY
+ * Masking NIK untuk privasi UU PDP: 3171********0001
  */
-export function birthDateToPin(birthDate: string): string {
-  const d = new Date(birthDate);
-  const dd = String(d.getDate()).padStart(2, '0');
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const yy = String(d.getFullYear()).slice(-2);
-  return `${dd}${mm}${yy}`;
+export function maskNik(nik: string): string {
+  if (!nik || nik.length < 8) return nik || '';
+  return nik.slice(0, 4) + '*'.repeat(nik.length - 8) + nik.slice(-4);
 }

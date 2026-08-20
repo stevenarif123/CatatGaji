@@ -196,4 +196,18 @@ describe('Attendance, Geofencing & Leave API Integration Tests', () => {
     const approvedLeave = JSON.parse(approveRes.body).data;
     expect(approvedLeave.status).toBe('APPROVED');
   });
+
+  it('7. GET /api/v1/attendance/my-today returns ESS portal daily snapshot', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      url: `/api/v1/attendance/my-today?employee_id=${employeeId}`,
+      headers: { authorization: `Bearer ${token}` },
+    });
+
+    expect(res.statusCode).toBe(200);
+    const body = JSON.parse(res.body);
+    expect(body.success).toBe(true);
+    expect(body.data.employee).toBeDefined();
+    expect(body.data.shift).toBeDefined();
+  });
 });

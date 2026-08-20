@@ -23,6 +23,58 @@ export const attendanceRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // --------------------------------------------------------------------------
+  // 0. ESS Helper: Get Today's Attendance & Shift Info for Employee
+  // --------------------------------------------------------------------------
+  app.get('/my-today', async (request: any) => {
+    const { tenant_id } = request.user;
+    const employeeId = request.query?.employee_id;
+
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    const data = await withTenant(tenant_id, async (sql) => {
+      // Find employee
+      let emp: any = null;
+      if (employeeId) {
+        [emp] = await sql`SELECT * FROM employees WHERE id = ${employeeId} AND tenant_id = ${tenant_id}`;
+      } else {
+        [emp] = await sql`SELECT * FROM employees WHERE tenant_id = ${tenant_id} AND deleted_at IS NULL LIMIT 1`;
+      }
+
+      if (!emp) {
+        return { employee: null, today_log: null, shift: null, geofence: null };
+      }
+
+      const [todayLog] = await sql`
+        SELECT * FROM attendance_logs
+        WHERE tenant_id = ${tenant_id} AND employee_id = ${emp.id} AND date = ${todayStr}
+      `;
+
+      const [shift] = await sql`
+        SELECT * FROM shifts WHERE tenant_id = ${tenant_id} LIMIT 1
+      `;
+
+      const [geofence] = await sql`
+        SELECT * FROM branch_geofences WHERE tenant_id = ${tenant_id} LIMIT 1
+      `;
+
+      return {
+        employee: {
+          id: emp.id,
+          full_name: emp.full_name,
+          nik_ktp: emp.nik_ktp,
+          employment_status: emp.employment_status,
+          ptkp_status: emp.ptkp_status,
+        },
+        today_log: todayLog || null,
+        shift: shift || { name: 'Shift Pagi Reguler', start_time: '08:00', end_time: '17:00' },
+        geofence: geofence || null,
+      };
+    });
+
+    return { success: true, data };
+  });
+
+  // --------------------------------------------------------------------------
   // 1. Shifts Management
   // --------------------------------------------------------------------------
   app.get('/shifts', async (request: any) => {

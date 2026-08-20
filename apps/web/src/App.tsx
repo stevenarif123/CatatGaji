@@ -11,6 +11,7 @@ import { PayrollWizard } from './pages/PayrollWizard';
 import { TaxReports } from './pages/TaxReports';
 import { Attendance } from './pages/Attendance';
 import { Settings } from './pages/Settings';
+import { ESS } from './pages/ESS';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -28,7 +29,17 @@ export function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Protected Application Routes */}
+        {/* Dedicated Mobile ESS Portal */}
+        <Route
+          path="/ess"
+          element={
+            <ProtectedRoute>
+              <ESS />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected Application Admin Routes */}
         <Route
           path="/"
           element={
@@ -44,6 +55,7 @@ export function App() {
           <Route path="tax-reports" element={<TaxReports />} />
           <Route path="attendance" element={<Attendance />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="portal-karyawan" element={<ESS />} />
         </Route>
 
         {/* Catch-all fallback */}
