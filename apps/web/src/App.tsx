@@ -10,6 +10,7 @@ import { Payroll } from './pages/Payroll';
 import { PayrollWizard } from './pages/PayrollWizard';
 import { TaxReports } from './pages/TaxReports';
 import { Attendance } from './pages/Attendance';
+import { Settings } from './pages/Settings';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -42,7 +43,7 @@ export function App() {
           <Route path="payroll/:id" element={<PayrollWizard />} />
           <Route path="tax-reports" element={<TaxReports />} />
           <Route path="attendance" element={<Attendance />} />
-          <Route path="settings" element={<Dashboard />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
 
         {/* Catch-all fallback */}

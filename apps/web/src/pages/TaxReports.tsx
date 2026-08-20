@@ -88,20 +88,45 @@ export const TaxReports: React.FC = () => {
             Rekonsiliasi Pajak Desember (Pasal 17 UU HPP) dan Ekspor Formulir Bukti Potong 1721-A1
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <label style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-soft)' }}>Tahun Pajak:</label>
-          <select
-            className="form-control"
-            style={{ width: '110px' }}
-            value={year}
-            onChange={(e) => setYear(Number(e.target.value))}
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <label style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-soft)' }}>Tahun Pajak:</label>
+            <select
+              className="form-control"
+              style={{ width: '110px' }}
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
+            >
+              {[2024, 2025, 2026, 2027].map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            className="btn btn-secondary"
+            onClick={async () => {
+              try {
+                const res = await fetch(`http://localhost:3000/api/v1/payroll/tax-reports/annual-1721a1-csv/${year}`, {
+                  headers: { authorization: `Bearer ${token}` },
+                });
+                if (!res.ok) throw new Error('Gagal mengunduh CSV');
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Formulir_1721A1_${year}_DJP_Online.csv`;
+                a.click();
+              } catch (err: any) {
+                alert(err.message || 'Gagal mengekspor CSV e-Bupot');
+              }
+            }}
           >
-            {[2024, 2025, 2026, 2027].map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </select>
+            <i className="fa-solid fa-file-csv" style={{ color: 'var(--success)' }}></i>
+            <span>Ekspor CSV e-Bupot 1721-A1 (DJP Online)</span>
+          </button>
         </div>
       </div>
 

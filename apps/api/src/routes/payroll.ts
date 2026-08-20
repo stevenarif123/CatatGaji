@@ -5,6 +5,8 @@ import { sql } from '../db.js';
 import {
   calculateMonthlyPayroll,
   calculateAnnualReconciliation,
+  generateEbupotMonthlyCsv,
+  generate1721A1AnnualCsv,
   MonthlyPayrollInput,
   MonthlyPayrollResult,
   PtkpStatus,
@@ -652,5 +654,154 @@ export const payrollRoutes: FastifyPluginAsync = async (app) => {
         forms_1721_a1: forms1721A1,
       },
     };
+  });
+
+  /**
+   * 10. GET /api/v1/payroll/tax-reports/ebupot-monthly-csv/:periodId
+   * Unduh file CSV resmi e-Bupot 21/26 DJP Online untuk masa pajak bulanan
+   */
+  app.get('/tax-reports/ebupot-monthly-csv/:periodId', async (request, reply) => {
+    const user = (request as any).user;
+    const tenantId = user.tenant_id;
+    const { periodId } = request.params as any;
+
+    const [tenant] = await sql`
+      SELECT * FROM tenants WHERE id = ${tenantId}
+    `;
+    const [period] = await sql`
+      SELECT * FROM payroll_periods WHERE id = ${periodId} AND tenant_id = ${tenantId}
+    `;
+    if (!period) {
+      return reply.code(404).send({
+        success: false,
+        error_code: 'NOT_FOUND',
+        message: 'Periode penggajian tidak ditemukan.',
+      });
+    }
+
+    const items = await sql`
+      SELECT 
+        r.*,
+        e.full_name as employee_name,
+        e.nik_ktp,
+        e.npwp,
+        e.ptkp_status,
+        e.pph21_ter_category
+      FROM employee_payroll_results r
+      JOIN employees e ON e.id = r.employee_id
+      WHERE r.payroll_period_id = ${periodId} AND r.tenant_id = ${tenantId}
+    `;
+
+    const csvContent = generateEbupotMonthlyCsv({
+      tax_year: period.period_year,
+      tax_month: period.period_month,
+      pembetulan: 0,
+      company_npwp: tenant?.npwp_badan || '0000000000000000',
+      company_name: tenant?.name || 'PT CatatGaji Organisasi',
+      signatory_nik_npwp: tenant?.tax_signatory_nik || tenant?.tax_signatory_npwp || '0000000000000000',
+      signatory_name: tenant?.tax_signatory_name || 'Direktur Utama',
+      payout_date: period.payout_date,
+      items: items.map((i: any) => ({
+        nik_ktp: i.nik_ktp,
+        npwp: i.npwp,
+        employee_name: i.employee_name,
+        gross_taxable: Number(i.gross_taxable_income),
+        pph21_amount: Number(i.pph21_amount),
+        ptkp_status: i.ptkp_status,
+        ter_category: i.pph21_ter_category,
+        ter_rate_percent: Number(i.pph21_ter_rate) * 100,
+      })),
+    });
+
+    const fileName = `eBupot_2126_${period.period_year}_Masa${String(period.period_month).padStart(2, '0')}.csv`;
+
+    return reply
+      .header('Content-Type', 'text/csv; charset=utf-8')
+      .header('Content-Disposition', `attachment; filename="${fileName}"`)
+      .send(csvContent);
+  });
+
+  /**
+   * 11. GET /api/v1/payroll/tax-reports/annual-1721a1-csv/:year
+   * Unduh file CSV Bukti Potong Formulir 1721-A1 Tahunan DJP Online
+   */
+  app.get('/tax-reports/annual-1721a1-csv/:year', async (request, reply) => {
+    const user = (request as any).user;
+    const tenantId = user.tenant_id;
+    const { year } = request.params as any;
+    const reportYear = parseInt(year, 10);
+
+    const [tenant] = await sql`
+      SELECT * FROM tenants WHERE id = ${tenantId}
+    `;
+
+    const employees = await sql`
+      SELECT id, nik_ktp, npwp, full_name, ptkp_status
+      FROM employees
+      WHERE tenant_id = ${tenantId} AND deleted_at IS NULL
+    `;
+
+    const items: any[] = [];
+
+    for (const emp of employees) {
+      const results = await sql`
+        SELECT r.*
+        FROM employee_payroll_results r
+        JOIN payroll_periods p ON p.id = r.payroll_period_id
+        WHERE r.tenant_id = ${tenantId}
+          AND r.employee_id = ${emp.id}
+          AND p.period_year = ${reportYear}
+        ORDER BY p.period_month ASC
+      `;
+      if (results.length === 0) continue;
+
+      const annualGross = results.reduce((sum, r) => sum + Number(r.gross_taxable_income), 0);
+      const annualJht = results.reduce((sum, r) => sum + Number(r.jht_employee), 0);
+      const annualJp = results.reduce((sum, r) => sum + Number(r.jp_employee), 0);
+      const annualPph21 = results.reduce((sum, r) => sum + Number(r.pph21_amount), 0);
+
+      const recon = calculateAnnualReconciliation({
+        ptkpStatus: (emp.ptkp_status || 'TK/0') as PtkpStatus,
+        annualGrossTaxable: annualGross,
+        annualEmployeeJht: annualJht,
+        annualEmployeeJp: annualJp,
+        previouslyWithheldPph21: annualPph21,
+        workingMonths: results.length,
+        hasNpwp: !!emp.npwp,
+      });
+
+      items.push({
+        employee_name: emp.full_name,
+        nik_ktp: emp.nik_ktp,
+        npwp: emp.npwp,
+        ptkp_status: emp.ptkp_status,
+        months_count: results.length,
+        annual_gross_taxable: annualGross,
+        biaya_jabatan: recon.biaya_jabatan,
+        annual_jht_jp_employee: annualJht + annualJp,
+        annual_net_income: recon.annual_net_income,
+        ptkp_amount: recon.ptkp_amount,
+        pkp_rounded: recon.pkp_rounded,
+        total_pph21_annual: recon.total_pph21_annual,
+        pph21_withheld: annualPph21,
+        pph21_difference: recon.total_pph21_annual - annualPph21,
+      });
+    }
+
+    const csvContent = generate1721A1AnnualCsv({
+      tax_year: reportYear,
+      company_npwp: tenant?.npwp_badan || '0000000000000000',
+      company_name: tenant?.name || 'PT CatatGaji Organisasi',
+      signatory_nik_npwp: tenant?.tax_signatory_nik || tenant?.tax_signatory_npwp || '0000000000000000',
+      signatory_name: tenant?.tax_signatory_name || 'Direktur Utama',
+      items,
+    });
+
+    const fileName = `Formulir_1721A1_${reportYear}_Massal.csv`;
+
+    return reply
+      .header('Content-Type', 'text/csv; charset=utf-8')
+      .header('Content-Disposition', `attachment; filename="${fileName}"`)
+      .send(csvContent);
   });
 };
