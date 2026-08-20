@@ -5,7 +5,7 @@ import { useAuthStore } from '../stores/authStore';
 import { formatRupiah, formatTanggal } from '@catatgaji/shared';
 import { PayslipModal } from '../components/PayslipModal';
 
-const MONTH_NAMES = [
+const NAMA_BULAN = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
   'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
@@ -99,7 +99,7 @@ export const PayrollWizard: React.FC = () => {
 
   // Step 3: Submit for approval
   const handleSubmitForApproval = async () => {
-    if (!window.confirm('Ajukan periode penggajian ini untuk disetujui Owner?')) return;
+    if (!window.confirm('Ajukan periode penggajian ini untuk disetujui Pemilik (Owner)?')) return;
     try {
       await apiFetch(`/payroll/periods/${periodId}/submit`, {
         method: 'POST',
@@ -132,9 +132,9 @@ export const PayrollWizard: React.FC = () => {
       setShowPinModal(false);
       setPin('');
       await loadData();
-      alert('Penggajian berhasil disahkan dan dikunci secara permanen (Immutable).');
+      alert('Penggajian berhasil disahkan dan dikunci secara permanen.');
     } catch (err: any) {
-      setPinError(err.message || 'PIN yang Anda masukkan salah.');
+      setPinError(err.message || 'PIN yang Anda masukkan tidak sesuai.');
     } finally {
       setPinSubmitting(false);
     }
@@ -166,7 +166,7 @@ export const PayrollWizard: React.FC = () => {
             <span>Kembali ke Daftar Periode</span>
           </button>
           <h1 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>
-            Payroll Wizard — {MONTH_NAMES[period.period_month - 1]} {period.period_year}
+            Wizard Penggajian — {NAMA_BULAN[period.period_month - 1]} {period.period_year}
           </h1>
           <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
             Jadwal Pembayaran: {formatTanggal(period.payout_date)}
@@ -184,19 +184,19 @@ export const PayrollWizard: React.FC = () => {
             }`}
           >
             <i className={`fa-solid ${isApproved ? 'fa-lock' : isSubmitted ? 'fa-clock' : 'fa-pen-to-square'}`} style={{ fontSize: '8px' }}></i>
-            {isApproved ? 'FINAL & LOCKED' : isSubmitted ? 'MENUNGGU APPROVAL' : 'DRAFT'}
+            {isApproved ? 'FINAL & TERKUNCI' : isSubmitted ? 'MENUNGGU PERSETUJUAN' : 'DRAF'}
           </span>
         </div>
       </div>
 
-      {/* 4-Step Progress Indicator (UX Pilot Style) */}
+      {/* 4-Step Progress Indicator */}
       <section className="card" style={{ padding: '1rem 1.25rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
           {[
-            { num: 1, title: '1. Batch Kalkulasi', icon: 'fa-solid fa-calculator' },
-            { num: 2, title: '2. Input Variabel', icon: 'fa-solid fa-pen-to-square' },
-            { num: 3, title: '3. Review Rekap', icon: 'fa-solid fa-chart-pie' },
-            { num: 4, title: '4. Owner PIN Approval', icon: 'fa-solid fa-shield-halved' },
+            { num: 1, title: '1. Hitung Gaji Batch', icon: 'fa-solid fa-calculator' },
+            { num: 2, title: '2. Input Lembur & Bonus', icon: 'fa-solid fa-pen-to-square' },
+            { num: 3, title: '3. Tinjau Rekapitulasi', icon: 'fa-solid fa-chart-pie' },
+            { num: 4, title: '4. Pengesahan PIN Pemilik', icon: 'fa-solid fa-shield-halved' },
           ].map((s) => {
             const isActive = step === s.num;
             const isDone = step > s.num || isApproved;
@@ -252,7 +252,7 @@ export const PayrollWizard: React.FC = () => {
 
       {error && <div className="alert alert-danger"><i className="fa-solid fa-circle-exclamation"></i>{error}</div>}
 
-      {/* STEP 1: Batch Calculation */}
+      {/* LANGKAH 1: Kalkulasi Batch */}
       {step === 1 && (
         <section className="hero-card" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
           <div
@@ -283,24 +283,24 @@ export const PayrollWizard: React.FC = () => {
             disabled={processing}
           >
             <i className={`fa-solid ${processing ? 'fa-spinner fa-spin' : 'fa-play'}`}></i>
-            <span>{processing ? 'Menjalankan Kalkulasi Batch...' : 'Mulai Hitung Payroll Otomatis'}</span>
+            <span>{processing ? 'Menghitung Penggajian...' : 'Mulai Hitung Payroll Otomatis'}</span>
           </button>
         </section>
       )}
 
-      {/* STEP 2: Input Komponen Variabel */}
+      {/* LANGKAH 2: Input Komponen Variabel */}
       {step === 2 && (
         <section className="card" style={{ padding: 0, overflow: 'hidden' }}>
           <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <h2 style={{ fontSize: '0.9375rem', margin: 0, fontWeight: 600 }}>Input Komponen Variabel Karyawan</h2>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
-                Masukkan lembur, bonus, dan potongan kasbon/absen. Pajak PPh 21 TER dan THP akan terkalkulasi ulang otomatis.
+                Masukkan lembur, bonus, dan potongan kasbon/absen. Pajak PPh 21 TER dan THP akan terhitung ulang secara instan.
               </p>
             </div>
             {!isApproved && (
               <button className="btn btn-sm btn-primary" onClick={() => setStep(3)}>
-                <span>Lanjut ke Review Rekapitulasi</span>
+                <span>Lanjut ke Tinjau Rekapitulasi</span>
                 <i className="fa-solid fa-arrow-right"></i>
               </button>
             )}
@@ -317,8 +317,8 @@ export const PayrollWizard: React.FC = () => {
                   <th style={{ width: '130px' }}>Kasbon (Rp)</th>
                   <th style={{ width: '130px' }}>Pot. Absen (Rp)</th>
                   <th>PPh 21 TER</th>
-                  <th>THP Bersih</th>
-                  <th style={{ textAlign: 'right' }}>Slip</th>
+                  <th>Gaji Bersih (THP)</th>
+                  <th style={{ textAlign: 'right' }}>Pratinjau</th>
                 </tr>
               </thead>
               <tbody>
@@ -391,10 +391,10 @@ export const PayrollWizard: React.FC = () => {
         </section>
       )}
 
-      {/* STEP 3 & 4: Review Summary & Approval */}
+      {/* LANGKAH 3 & 4: Tinjau Ringkasan & Approval PIN */}
       {step >= 3 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {/* KPI Summary Cards */}
+          {/* Kartu Ringkasan KPI */}
           <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
             <article className="card" style={{ padding: '1.25rem' }}>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Total Gaji Bruto</div>
@@ -411,30 +411,30 @@ export const PayrollWizard: React.FC = () => {
             </article>
 
             <article className="card" style={{ padding: '1.25rem' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Total Transfer Bank (THP)</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Total Gaji Bersih (THP)</div>
               <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)', marginTop: '0.25rem' }}>
                 {formatRupiah(Number(period.total_thp) || 0)}
               </div>
             </article>
 
             <article className="card" style={{ padding: '1.25rem' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Total Beban Perusahaan</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Total Biaya Perusahaan</div>
               <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--purple-text)', marginTop: '0.25rem' }}>
                 {formatRupiah(Number(period.total_employer_cost) || 0)}
               </div>
             </article>
           </section>
 
-          {/* Action Bar */}
+          {/* Bar Aksi Status */}
           <section className="card" style={{ padding: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
-              <h3 style={{ fontSize: '0.9375rem', margin: 0, fontWeight: 600 }}>Status Approval & Pengesahan</h3>
+              <h3 style={{ fontSize: '0.9375rem', margin: 0, fontWeight: 600 }}>Status Persetujuan & Pengesahan</h3>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
                 {isApproved
-                  ? 'Periode telah disahkan dengan PIN Owner. Data slip gaji bersifat permanen (Immutable).'
+                  ? 'Periode telah disahkan dengan PIN Pemilik. Data slip gaji bersifat permanen (Terkunci).'
                   : isSubmitted
-                  ? 'Payroll telah diajukan. Masukkan PIN 6-digit Owner untuk mengesahkan dan mengunci.'
-                  : 'Pastikan seluruh angka telah akurat sebelum mengajukan payroll ke Owner.'}
+                  ? 'Penggajian telah diajukan. Masukkan PIN 6-digit Pemilik untuk mengesahkan dan mengunci.'
+                  : 'Pastikan seluruh rincian telah akurat sebelum mengajukan payroll ke Pemilik.'}
               </p>
             </div>
 
@@ -442,20 +442,20 @@ export const PayrollWizard: React.FC = () => {
               {!isApproved && !isSubmitted && (
                 <button className="btn btn-secondary" onClick={handleSubmitForApproval}>
                   <i className="fa-solid fa-paper-plane"></i>
-                  <span>Submit untuk Ditinjau Owner</span>
+                  <span>Ajukan ke Pemilik Usaha</span>
                 </button>
               )}
 
               {!isApproved && (
                 <button className="btn btn-primary" onClick={() => setShowPinModal(true)}>
                   <i className="fa-solid fa-lock"></i>
-                  <span>Approval dengan PIN 6-Digit</span>
+                  <span>Otorisasi dengan PIN 6-Digit</span>
                 </button>
               )}
             </div>
           </section>
 
-          {/* Items Table */}
+          {/* Tabel Rincian Slip */}
           <section className="card" style={{ padding: 0, overflow: 'hidden' }}>
             <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border-color)' }}>
               <h3 style={{ fontSize: '0.9375rem', margin: 0, fontWeight: 600 }}>Rincian Slip Gaji Karyawan ({items.length})</h3>
@@ -470,7 +470,7 @@ export const PayrollWizard: React.FC = () => {
                     <th>BPJS Pekerja</th>
                     <th>PPh 21 TER</th>
                     <th>Potongan Lain</th>
-                    <th>THP Bersih</th>
+                    <th>Gaji Bersih (THP)</th>
                     <th style={{ textAlign: 'right' }}>Slip Gaji</th>
                   </tr>
                 </thead>
@@ -507,12 +507,12 @@ export const PayrollWizard: React.FC = () => {
         </div>
       )}
 
-      {/* Payslip Modal */}
+      {/* Modal Slip Gaji */}
       {selectedSlip && (
         <PayslipModal resultId={selectedSlip} onClose={() => setSelectedSlip(null)} />
       )}
 
-      {/* Owner PIN Modal */}
+      {/* Modal PIN Pemilik */}
       {showPinModal && (
         <div className="modal-overlay">
           <div className="modal-content" style={{ maxWidth: '420px', textAlign: 'center' }}>
@@ -533,10 +533,10 @@ export const PayrollWizard: React.FC = () => {
               <i className="fa-solid fa-shield-halved"></i>
             </div>
             <h3 style={{ fontSize: '1.125rem', margin: '0 0 0.5rem', fontWeight: 700 }}>
-              Konfirmasi Otorisasi Owner
+              Konfirmasi Otorisasi Pemilik
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', marginBottom: '1.25rem' }}>
-              Masukkan 6-digit PIN Keamanan Anda untuk menyetujui dan mengunci periode gaji ini secara permanen.
+              Masukkan 6 digit PIN Keamanan Anda untuk menyetujui dan mengunci periode gaji ini secara permanen.
             </p>
 
             {pinError && <div className="alert alert-danger"><i className="fa-solid fa-circle-exclamation"></i>{pinError}</div>}

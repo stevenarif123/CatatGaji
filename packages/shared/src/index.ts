@@ -10,3 +10,4 @@ export * from './engine/bpjsService';
 export * from './engine/overtimeService';
 export * from './engine/reconciliationService';
 export * from './engine/payrollEngine';
+export * from './engine/attendanceService';

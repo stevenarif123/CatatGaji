@@ -13,7 +13,6 @@ export const Dashboard: React.FC = () => {
     currentMonthPayroll: 0,
     totalPph21: 0,
     totalBpjsEmployer: 0,
-    totalOvertime: 0,
     latestPeriodId: null as string | null,
     latestPeriodStatus: 'DRAFT',
   });
@@ -34,12 +33,11 @@ export const Dashboard: React.FC = () => {
           currentMonthPayroll: latest ? Number(latest.total_gross_salary) || 0 : 0,
           totalPph21: latest ? Number(latest.total_pph21) || 0 : 0,
           totalBpjsEmployer: latest ? Number(latest.total_bpjs_employer) || 0 : 0,
-          totalOvertime: 0,
           latestPeriodId: latest ? latest.id : null,
           latestPeriodStatus: latest ? latest.status : 'NONE',
         });
       } catch (err) {
-        console.error('Failed to load dashboard:', err);
+        console.error('Gagal memuat data ringkasan:', err);
       } finally {
         setLoading(false);
       }
@@ -50,7 +48,7 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Hero Banner (UX Pilot Mockup Style) */}
+      {/* Hero Banner */}
       <section className="hero-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem', padding: '1.75rem 2rem' }}>
         <div style={{ paddingLeft: '0.5rem' }}>
           <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.375rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
@@ -61,7 +59,7 @@ export const Dashboard: React.FC = () => {
               {formatRupiah(stats.currentMonthPayroll)}
             </h2>
             <span className="badge badge-success" style={{ padding: '0.25rem 0.625rem', fontSize: '0.75rem' }}>
-              <i className="fa-solid fa-arrow-trend-up"></i> Sesuai Regulasi PMK 168/2023
+              <i className="fa-solid fa-arrow-trend-up"></i> Sesuai PMK 168/2023
             </span>
           </div>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-faint)', marginTop: '0.5rem' }}>
@@ -89,7 +87,7 @@ export const Dashboard: React.FC = () => {
         </div>
       </section>
 
-      {/* KPI Row */}
+      {/* Baris Kartu Metrik KPI */}
       <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
         {/* Karyawan Aktif */}
         <article className="card" style={{ padding: '1.25rem' }}>
@@ -123,7 +121,7 @@ export const Dashboard: React.FC = () => {
           </p>
         </article>
 
-        {/* Total Pajak PPh 21 TER */}
+        {/* Pajak PPh 21 TER */}
         <article className="card" style={{ padding: '1.25rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
             <div
@@ -144,7 +142,7 @@ export const Dashboard: React.FC = () => {
             <span className="badge badge-warning">PPh 21 TER</span>
           </div>
           <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Pajak PPh 21 Dipotong
+            Pajak PPh 21 Terpotong
           </p>
           <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '0.25rem' }}>
             {loading ? '...' : formatRupiah(stats.totalPph21)}
@@ -155,7 +153,7 @@ export const Dashboard: React.FC = () => {
           </p>
         </article>
 
-        {/* Biaya BPJS Perusahaan */}
+        {/* Beban BPJS Perusahaan */}
         <article className="card" style={{ padding: '1.25rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
             <div
@@ -188,14 +186,14 @@ export const Dashboard: React.FC = () => {
         </article>
       </section>
 
-      {/* Grid: Overview Quick Actions & Compliance Checklist */}
+      {/* Grid: Checklist Kepatuhan & Akses Cepat */}
       <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
-        {/* Compliance Checklist Card */}
+        {/* Checklist Kepatuhan Pajak */}
         <div className="card" style={{ padding: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
             <h3 style={{ fontSize: '0.9375rem', margin: 0 }}>
               <i className="fa-solid fa-list-check" style={{ color: 'var(--primary)', marginRight: '0.5rem' }}></i>
-              Checklist Kepatuhan Pajak & Payroll
+              Daftar Kepatuhan Pajak & Penggajian
             </h3>
             <span className="badge badge-success">Terverifikasi</span>
           </div>
@@ -235,7 +233,7 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Quick Launchpad Card */}
+        {/* Akses Cepat Modul */}
         <div className="card" style={{ padding: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
             <h3 style={{ fontSize: '0.9375rem', margin: 0 }}>
@@ -257,7 +255,7 @@ export const Dashboard: React.FC = () => {
               }}
             >
               <i className="fa-solid fa-calculator" style={{ color: 'var(--primary)', fontSize: '1.25rem', marginBottom: '0.5rem', display: 'block' }}></i>
-              <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>Payroll Wizard</p>
+              <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>Proses Penggajian</p>
               <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>4 langkah gaji</p>
             </div>
 
@@ -273,8 +271,8 @@ export const Dashboard: React.FC = () => {
               }}
             >
               <i className="fa-solid fa-user-gear" style={{ color: 'var(--success)', fontSize: '1.25rem', marginBottom: '0.5rem', display: 'block' }}></i>
-              <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>Master Karyawan</p>
-              <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>Data & Gaji</p>
+              <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>Data Karyawan</p>
+              <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>Biodata & Gaji</p>
             </div>
 
             <div
@@ -290,7 +288,7 @@ export const Dashboard: React.FC = () => {
             >
               <i className="fa-solid fa-file-invoice-dollar" style={{ color: 'var(--warning-text)', fontSize: '1.25rem', marginBottom: '0.5rem', display: 'block' }}></i>
               <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>Laporan Pajak</p>
-              <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>Form 1721-A1</p>
+              <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>Formulir 1721-A1</p>
             </div>
 
             <div

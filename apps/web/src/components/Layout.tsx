@@ -13,12 +13,12 @@ export const Layout: React.FC = () => {
   };
 
   const navItems = [
-    { label: 'Overview', to: '/', icon: 'fa-solid fa-border-all' },
-    { label: 'Payroll Processor', to: '/payroll', icon: 'fa-solid fa-calculator' },
-    { label: 'Employee Roster', to: '/employees', icon: 'fa-solid fa-users' },
-    { label: 'Time & Attendance', to: '/attendance', icon: 'fa-regular fa-clock' },
-    { label: 'Tax & PPh21 (1721-A1)', to: '/tax-reports', icon: 'fa-solid fa-file-invoice-dollar' },
-    { label: 'System Settings', to: '/settings', icon: 'fa-solid fa-gear' },
+    { label: 'Ringkasan Utama', to: '/', icon: 'fa-solid fa-border-all' },
+    { label: 'Proses Penggajian', to: '/payroll', icon: 'fa-solid fa-calculator' },
+    { label: 'Data Karyawan', to: '/employees', icon: 'fa-solid fa-users' },
+    { label: 'Kehadiran & Absensi', to: '/attendance', icon: 'fa-regular fa-clock' },
+    { label: 'Laporan Pajak & 1721-A1', to: '/tax-reports', icon: 'fa-solid fa-file-invoice-dollar' },
+    { label: 'Pengaturan Sistem', to: '/settings', icon: 'fa-solid fa-gear' },
   ];
 
   return (
@@ -62,7 +62,7 @@ export const Layout: React.FC = () => {
                 CatatGaji
               </p>
               <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
-                Payroll & HRIS Indonesia
+                Penggajian & HRIS Indonesia
               </p>
             </div>
           </div>
@@ -122,20 +122,20 @@ export const Layout: React.FC = () => {
                   fontSize: '0.8125rem',
                 }}
               >
-                {(userName || 'U').charAt(0).toUpperCase()}
+                {(userName || 'P').charAt(0).toUpperCase()}
               </div>
               <div style={{ minWidth: 0 }}>
                 <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {userName || 'Owner Administrator'}
+                  {userName || 'Pemilik Usaha'}
                 </p>
                 <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: 0 }}>
-                  {role || 'OWNER'}
+                  {role === 'OWNER' ? 'Pemilik (Owner)' : role || 'Admin'}
                 </p>
               </div>
             </div>
             <button
               onClick={handleLogout}
-              title="Keluar"
+              title="Keluar dari Akun"
               className="btn btn-sm btn-secondary"
               style={{ padding: '0.35rem 0.5rem', color: 'var(--danger-text)' }}
             >
@@ -166,10 +166,10 @@ export const Layout: React.FC = () => {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <span className="badge badge-success">
-              <i className="fa-solid fa-shield-halved" style={{ fontSize: '9px' }}></i> PMK 168/2023 & UU HPP
+              <i className="fa-solid fa-shield-halved" style={{ fontSize: '9px' }}></i> Kepatuhan PMK 168/2023 & UU HPP
             </span>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', display: 'none', md: 'inline' } as any}>
-              Kepatuhan 100% Regulasi Perpajakan Indonesia
+            <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
+              Sistem Penggajian & Pajak Terstandar Nasional Indonesia
             </span>
           </div>
 

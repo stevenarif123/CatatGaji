@@ -7,6 +7,8 @@ import { healthRoutes } from './routes/health.js';
 import { branchRoutes } from './routes/branches.js';
 import { employeeRoutes } from './routes/employees.js';
 import { payrollRoutes } from './routes/payroll.js';
+import { attendanceRoutes } from './routes/attendance.js';
+import { leaveRoutes } from './routes/leave.js';
 import { initDb } from './db.js';
 
 export async function buildApp() {
@@ -36,6 +38,8 @@ export async function buildApp() {
   await app.register(branchRoutes, { prefix: '/api/v1/branches' });
   await app.register(employeeRoutes, { prefix: '/api/v1/employees' });
   await app.register(payrollRoutes, { prefix: '/api/v1/payroll' });
+  await app.register(attendanceRoutes, { prefix: '/api/v1/attendance' });
+  await app.register(leaveRoutes, { prefix: '/api/v1/leave' });
 
   return app;
 }

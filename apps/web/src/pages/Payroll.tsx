@@ -4,7 +4,7 @@ import { apiFetch } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { formatRupiah, formatTanggal } from '@catatgaji/shared';
 
-const MONTH_NAMES = [
+const NAMA_BULAN = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
   'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
@@ -62,7 +62,7 @@ export const Payroll: React.FC = () => {
       setShowCreateModal(false);
       navigate(`/payroll/${res.data.id}`);
     } catch (err: any) {
-      setFormError(err.message || 'Gagal membuat periode penggajian');
+      setFormError(err.message || 'Gagal membuat periode penggajian baru');
     } finally {
       setCreating(false);
     }
@@ -78,10 +78,10 @@ export const Payroll: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>
-            Payroll Processor & Penggajian
+            Manajemen Penggajian (Payroll)
           </h1>
           <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
-            Kelola siklus penggajian bulanan, kalkulasi otomatis PPh 21 TER, BPJS, dan approval PIN Owner
+            Kelola siklus penggajian bulanan, perhitungan otomatis PPh 21 TER, BPJS, dan otorisasi PIN Pemilik
           </p>
         </div>
         <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
@@ -97,7 +97,7 @@ export const Payroll: React.FC = () => {
             <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <i className="fa-solid fa-money-bill-transfer"></i>
             </div>
-            <span className="badge badge-primary">Take Home Pay</span>
+            <span className="badge badge-primary">Gaji Bersih</span>
           </div>
           <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Total Akumulasi THP
@@ -144,7 +144,7 @@ export const Payroll: React.FC = () => {
           <h2 style={{ fontSize: '0.9375rem', margin: 0, fontWeight: 600 }}>Daftar Periode Penggajian</h2>
           <button className="btn btn-sm btn-secondary" onClick={loadPeriods}>
             <i className="fa-solid fa-rotate-right"></i>
-            <span>Refresh</span>
+            <span>Segarkan</span>
           </button>
         </div>
 
@@ -160,7 +160,7 @@ export const Payroll: React.FC = () => {
             </div>
             <h3 style={{ fontSize: '1.125rem', fontWeight: 600 }}>Belum Ada Periode Penggajian</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', marginTop: '0.25rem' }}>
-              Klik tombol "+ Buka Periode Gaji Baru" untuk memulai siklus penggajian pertama Anda.
+              Klik tombol "+ Buka Periode Gaji Baru" untuk memulai proses penggajian pertama Anda.
             </p>
           </div>
         ) : (
@@ -173,8 +173,8 @@ export const Payroll: React.FC = () => {
                   <th>Jumlah Karyawan</th>
                   <th>Total Gaji Bruto</th>
                   <th>Total PPh 21</th>
-                  <th>Total THP (Transfer)</th>
-                  <th>Status</th>
+                  <th>Total Gaji Bersih (THP)</th>
+                  <th>Status Dokumen</th>
                   <th style={{ textAlign: 'right' }}>Aksi</th>
                 </tr>
               </thead>
@@ -188,7 +188,7 @@ export const Payroll: React.FC = () => {
                       <td style={{ fontWeight: 600, color: 'var(--text-main)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                           <i className="fa-regular fa-calendar-check" style={{ color: 'var(--primary)' }}></i>
-                          <span>{MONTH_NAMES[p.period_month - 1]} {p.period_year}</span>
+                          <span>{NAMA_BULAN[p.period_month - 1]} {p.period_year}</span>
                         </div>
                       </td>
                       <td style={{ color: 'var(--text-soft)' }}>
@@ -215,7 +215,7 @@ export const Payroll: React.FC = () => {
                           }`}
                         >
                           <i className={`fa-solid ${isApproved ? 'fa-lock' : isSubmitted ? 'fa-clock' : 'fa-pen-to-square'}`} style={{ fontSize: '8px' }}></i>
-                          {isApproved ? 'Final & Locked' : isSubmitted ? 'Menunggu Approval' : 'Draft'}
+                          {isApproved ? 'Final & Terkunci' : isSubmitted ? 'Menunggu Persetujuan' : 'Draf'}
                         </span>
                       </td>
                       <td style={{ textAlign: 'right' }}>
@@ -224,7 +224,7 @@ export const Payroll: React.FC = () => {
                           onClick={() => navigate(`/payroll/${p.id}`)}
                         >
                           <i className="fa-solid fa-arrow-right"></i>
-                          <span>{isApproved ? 'Lihat Rekap & Slip' : 'Buka Wizard'}</span>
+                          <span>{isApproved ? 'Lihat Rekap & Slip' : 'Buka Wizard Penggajian'}</span>
                         </button>
                       </td>
                     </tr>
@@ -236,7 +236,7 @@ export const Payroll: React.FC = () => {
         )}
       </section>
 
-      {/* Create Modal */}
+      {/* Modal Buat Periode */}
       {showCreateModal && (
         <div className="modal-overlay">
           <div className="modal-content" style={{ maxWidth: '480px' }}>
@@ -255,13 +255,13 @@ export const Payroll: React.FC = () => {
             <form onSubmit={handleCreatePeriod}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                 <div className="form-group">
-                  <label className="form-label">Bulan Gaji</label>
+                  <label className="form-label">Bulan Penggajian</label>
                   <select
                     className="form-control"
                     value={periodMonth}
                     onChange={(e) => setPeriodMonth(Number(e.target.value))}
                   >
-                    {MONTH_NAMES.map((name, idx) => (
+                    {NAMA_BULAN.map((name, idx) => (
                       <option key={idx + 1} value={idx + 1}>
                         {name}
                       </option>
@@ -286,7 +286,7 @@ export const Payroll: React.FC = () => {
               </div>
 
               <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-                <label className="form-label">Tanggal Pembayaran (Payout Date)</label>
+                <label className="form-label">Tanggal Pembayaran Gaji (Payout Date)</label>
                 <input
                   type="date"
                   required
