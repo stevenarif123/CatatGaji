@@ -5,7 +5,7 @@ import { formatRupiah } from '@catatgaji/shared';
 
 export const Settings: React.FC = () => {
   const token = useAuthStore((state) => state.token);
-  const [activeTab, setActiveTab] = useState<'PROFILE' | 'BRANCHES' | 'SECURITY'>('PROFILE');
+  const [activeTab, setActiveTab] = useState<'PROFILE' | 'BRANCHES' | 'SECURITY' | 'AUDIT'>('PROFILE');
   const [loading, setLoading] = useState(true);
 
   // Profile Form State
@@ -41,12 +41,16 @@ export const Settings: React.FC = () => {
   const [pinMessage, setPinMessage] = useState<string | null>(null);
   const [pinError, setPinError] = useState<string | null>(null);
 
+  // Audit Logs State
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+
   const loadSettings = useCallback(async () => {
     setLoading(true);
     try {
-      const [profRes, branchRes] = await Promise.all([
+      const [profRes, branchRes, auditRes] = await Promise.all([
         apiFetch<any>('/settings/profile', { token }),
         apiFetch<any>('/branches', { token }),
+        apiFetch<any>('/settings/audit-logs?limit=50', { token }),
       ]);
       if (profRes.data) {
         setProfile({
@@ -63,8 +67,9 @@ export const Settings: React.FC = () => {
         });
       }
       setBranches(branchRes.data || []);
+      setAuditLogs(auditRes.data || []);
     } catch (err: any) {
-      console.error(err);
+      console.error('Gagal memuat pengaturan:', err);
     } finally {
       setLoading(false);
     }
@@ -165,11 +170,12 @@ export const Settings: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', flexWrap: 'wrap' }}>
         {[
           { id: 'PROFILE', label: 'Profil Perusahaan & Pajak Badan', icon: 'fa-solid fa-building' },
           { id: 'BRANCHES', label: 'Cabang & UMK Daerah', icon: 'fa-solid fa-network-wired' },
           { id: 'SECURITY', label: 'Keamanan & PIN Pengesahan', icon: 'fa-solid fa-shield-halved' },
+          { id: 'AUDIT', label: 'Log Audit Forensik (UU PDP)', icon: 'fa-solid fa-clipboard-list' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -470,6 +476,71 @@ export const Settings: React.FC = () => {
               <span>{savingPin ? 'Memperbarui PIN...' : 'Simpan PIN Baru'}</span>
             </button>
           </form>
+        </section>
+      )}
+
+      {/* TAB 4: LOG AUDIT FORENSIK (UU PDP NO. 27/2022 & PRD 8.4) */}
+      {activeTab === 'AUDIT' && (
+        <section className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h2 style={{ fontSize: '1rem', margin: 0, fontWeight: 700 }}>Catatan Log Audit Forensik Tak Dapat Diubah</h2>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
+                Riwayat seluruh otorisasi finansial, persetujuan cuti/lembur, dan mutasi data sensitif (Kepatuhan UU PDP No. 27/2022).
+              </p>
+            </div>
+            <span className="badge badge-success">
+              <i className="fa-solid fa-lock"></i> Immutable Append-Only
+            </span>
+          </div>
+
+          {auditLogs.length === 0 ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+              <i className="fa-solid fa-clipboard-check fa-2x" style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}></i>
+              <p style={{ fontSize: '0.875rem', fontWeight: 600, margin: 0 }}>Belum ada rekaman log audit forensik</p>
+            </div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Waktu (WIB)</th>
+                    <th>Nama Pelaksana</th>
+                    <th>Tindakan / Aksi</th>
+                    <th>Entitas Target</th>
+                    <th>Rincian Parameter</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {auditLogs.map((log) => (
+                    <tr key={log.id}>
+                      <td style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>
+                        {new Date(log.created_at).toLocaleString('id-ID')}
+                      </td>
+                      <td style={{ fontWeight: 600 }}>{log.user_name || 'Admin Sistem'}</td>
+                      <td>
+                        <span className="badge badge-primary" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem' }}>
+                          {log.action}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="badge badge-secondary" style={{ fontSize: '0.7rem' }}>
+                          {log.entity_type} {log.entity_id ? `(#${log.entity_id.slice(-6)})` : ''}
+                        </span>
+                      </td>
+                      <td style={{ fontSize: '0.75rem', color: 'var(--text-soft)', maxWidth: '300px' }}>
+                        {log.new_values ? (
+                          <pre style={{ margin: 0, fontSize: '0.7rem', backgroundColor: '#f8fafc', padding: '4px 6px', borderRadius: '4px', overflowX: 'auto' }}>
+                            {typeof log.new_values === 'string' ? log.new_values : JSON.stringify(log.new_values, null, 2)}
+                          </pre>
+                        ) : '-'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
       )}
     </div>

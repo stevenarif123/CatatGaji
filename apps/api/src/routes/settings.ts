@@ -132,4 +132,25 @@ export const settingsRoutes: FastifyPluginAsync = async (app) => {
       message: 'PIN pengesahan payroll 6-digit berhasil diperbarui.',
     });
   });
+
+  // --------------------------------------------------------------------------
+  // 4. Log Audit Forensik Tak Dapat Diubah (Immutable Audit Logs - PRD 8.4)
+  // --------------------------------------------------------------------------
+  app.get('/audit-logs', async (request: any) => {
+    const { tenant_id } = request.user;
+    const { limit = 50 } = request.query as any;
+
+    const logs = await withTenant(tenant_id, async (sql) => {
+      return sql`
+        SELECT id, user_name, action, entity_type, entity_id, new_values, ip_address, created_at
+        FROM audit_logs
+        WHERE tenant_id = ${tenant_id}
+        ORDER BY created_at DESC
+        LIMIT ${Math.min(100, Number(limit))}
+      `;
+    });
+
+    return { success: true, data: logs };
+  });
 };
+
