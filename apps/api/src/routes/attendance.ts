@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4, v7 as uuidv7 } from 'uuid';
 import { withTenant } from '../db.js';
 import {
   verifyGeofence,
@@ -486,5 +486,62 @@ export const attendanceRoutes: FastifyPluginAsync = async (app) => {
         summary,
       },
     };
+  });
+
+  // --------------------------------------------------------------------------
+  // 8. Pengajuan Lembur (SPKL Overtime Requests)
+  // --------------------------------------------------------------------------
+  app.get('/overtime-requests', async (request: any) => {
+    const { tenant_id } = request.user;
+    const { employee_id, status } = request.query as any;
+
+    const list = await withTenant(tenant_id, async (sql) => {
+      let query = sql`
+        SELECT o.*, e.full_name as employee_name, e.nik_ktp
+        FROM overtime_requests o
+        JOIN employees e ON e.id = o.employee_id
+        WHERE o.tenant_id = ${tenant_id}
+      `;
+      if (employee_id) query = sql`${query} AND o.employee_id = ${employee_id}`;
+      if (status) query = sql`${query} AND o.status = ${status}`;
+      return sql`${query} ORDER BY o.date DESC, o.created_at DESC`;
+    });
+
+    return { success: true, data: list };
+  });
+
+  app.post('/overtime-requests', async (request: any, reply) => {
+    const { tenant_id } = request.user;
+    const { employee_id, date, start_time, end_time, duration_hours, is_holiday, reason } =
+      request.body || {};
+
+    if (!employee_id || !date || !start_time || !end_time || duration_hours === undefined || !reason) {
+      return reply.code(400).send({
+        success: false,
+        error_code: 'VALIDATION_ERROR',
+        message: 'Karyawan, tanggal, jam mulai/selesai, durasi, dan alasan lembur wajib diisi.',
+      });
+    }
+
+    const otId = uuidv7();
+
+    const created = await withTenant(tenant_id, async (sql) => {
+      const [inserted] = await sql`
+        INSERT INTO overtime_requests (
+          id, tenant_id, employee_id, date, start_time, end_time,
+          duration_hours, is_holiday, reason, status, created_at, updated_at
+        ) VALUES (
+          ${otId}, ${tenant_id}, ${employee_id}, ${date}, ${start_time}, ${end_time},
+          ${Number(duration_hours)}, ${!!is_holiday}, ${reason}, 'PENDING', NOW(), NOW()
+        ) RETURNING *
+      `;
+      return inserted;
+    });
+
+    return reply.code(201).send({
+      success: true,
+      message: 'Surat Perintah Kerja Lembur (SPKL) berhasil diajukan.',
+      data: created,
+    });
   });
 };

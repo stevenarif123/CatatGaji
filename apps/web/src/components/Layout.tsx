@@ -15,9 +15,10 @@ export const Layout: React.FC = () => {
   const navItems = [
     { label: 'Ringkasan Utama', to: '/', icon: 'fa-solid fa-border-all' },
     { label: 'Proses Penggajian', to: '/payroll', icon: 'fa-solid fa-calculator' },
+    { label: 'Pusat Persetujuan', to: '/approvals', icon: 'fa-solid fa-user-check' },
     { label: 'Data Karyawan', to: '/employees', icon: 'fa-solid fa-users' },
     { label: 'Kehadiran & Absensi', to: '/attendance', icon: 'fa-regular fa-clock' },
-    { label: 'Laporan Pajak & 1721-A1', to: '/tax-reports', icon: 'fa-solid fa-file-invoice-dollar' },
+    { label: 'Laporan Finansial & Pajak', to: '/tax-reports', icon: 'fa-solid fa-file-invoice-dollar' },
     { label: 'Portal Karyawan (ESS)', to: '/portal-karyawan', icon: 'fa-solid fa-mobile-screen' },
     { label: 'Pengaturan Sistem', to: '/settings', icon: 'fa-solid fa-gear' },
   ];
