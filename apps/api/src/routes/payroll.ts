@@ -7,6 +7,12 @@ import {
   calculateAnnualReconciliation,
   generateEbupotMonthlyCsv,
   generate1721A1AnnualCsv,
+  generatePayrollJournal,
+  exportToMekariJurnalCsv,
+  exportToAccurateOnlineCsv,
+  generateBpjsTkSippCsv,
+  generateBpjsKesEdabuCsv,
+  generateBankPayrollCsv,
   MonthlyPayrollInput,
   MonthlyPayrollResult,
   PtkpStatus,
@@ -162,8 +168,15 @@ export const payrollRoutes: FastifyPluginAsync = async (app) => {
     let totalEmployerCost = 0;
 
     for (const emp of employees) {
-      const rawFixed = typeof emp.fixed_allowances_json === 'string' ? JSON.parse(emp.fixed_allowances_json) : (emp.fixed_allowances_json || []);
-      const rawNonFixed = typeof emp.non_fixed_allowances_json === 'string' ? JSON.parse(emp.non_fixed_allowances_json) : (emp.non_fixed_allowances_json || []);
+      let rawFixed = typeof emp.fixed_allowances_json === 'string' ? JSON.parse(emp.fixed_allowances_json) : (emp.fixed_allowances_json || []);
+      let rawNonFixed = typeof emp.non_fixed_allowances_json === 'string' ? JSON.parse(emp.non_fixed_allowances_json) : (emp.non_fixed_allowances_json || []);
+
+      if (!Array.isArray(rawFixed)) {
+        rawFixed = Object.entries(rawFixed).map(([name, amount]) => ({ name, amount: Number(amount) || 0 }));
+      }
+      if (!Array.isArray(rawNonFixed)) {
+        rawNonFixed = Object.entries(rawNonFixed).map(([name, amount]) => ({ name, amount: Number(amount) || 0 }));
+      }
 
       const input: MonthlyPayrollInput = {
         basicSalary: Number(emp.basic_salary) || 0,
@@ -798,6 +811,304 @@ export const payrollRoutes: FastifyPluginAsync = async (app) => {
     });
 
     const fileName = `Formulir_1721A1_${reportYear}_Massal.csv`;
+
+    return reply
+      .header('Content-Type', 'text/csv; charset=utf-8')
+      .header('Content-Disposition', `attachment; filename="${fileName}"`)
+      .send(csvContent);
+  });
+
+  /**
+   * 12. GET /api/v1/payroll/periods/:id/journal
+   * Menghasilkan Jurnal Akuntansi Double-Entry Seimbang (Balanced)
+   */
+  app.get('/periods/:id/journal', async (request, reply) => {
+    const user = (request as any).user;
+    const tenantId = user.tenant_id;
+    const { id: periodId } = request.params as any;
+
+    const [period] = await sql`
+      SELECT * FROM payroll_periods WHERE id = ${periodId} AND tenant_id = ${tenantId}
+    `;
+    if (!period) {
+      return reply.code(404).send({ success: false, message: 'Periode tidak ditemukan.' });
+    }
+
+    const items = await sql`
+      SELECT r.*, e.full_name as employee_name
+      FROM employee_payroll_results r
+      JOIN employees e ON e.id = r.employee_id
+      WHERE r.payroll_period_id = ${periodId} AND r.tenant_id = ${tenantId}
+    `;
+
+    const sumAllowances = (val: any): number => {
+      if (!val) return 0;
+      try {
+        const parsed = typeof val === 'string' ? JSON.parse(val) : val;
+        if (Array.isArray(parsed)) {
+          return parsed.reduce((acc, item) => acc + (Number(item?.amount) || 0), 0);
+        }
+        if (typeof parsed === 'object') {
+          return Object.values(parsed).reduce((acc: number, num: any) => acc + (Number(num) || 0), 0);
+        }
+      } catch {
+        // fallback
+      }
+      return Number(val) || 0;
+    };
+
+    const journal = generatePayrollJournal({
+      period_month: period.period_month,
+      period_year: period.period_year,
+      payout_date: period.payout_date,
+      items: items.map((i: any) => ({
+        employee_name: i.employee_name,
+        basic_salary: Number(i.basic_salary || 0),
+        allowances: sumAllowances(i.fixed_allowances) + sumAllowances(i.non_fixed_allowances),
+        overtime_pay: Number(i.overtime_pay || 0),
+        jkk_employer: Number(i.jkk_employer || 0),
+        jkm_employer: Number(i.jkm_employer || 0),
+        jht_employer: Number(i.jht_employer || 0),
+        jp_employer: Number(i.jp_employer || 0),
+        kes_employer: Number(i.kes_employer || 0),
+        jht_employee: Number(i.jht_employee || 0),
+        jp_employee: Number(i.jp_employee || 0),
+        kes_employee: Number(i.kes_employee || 0),
+        pph21_amount: Number(i.pph21_amount || 0),
+        loan_deduction: Number(i.loan_deduction || 0),
+        absence_deduction: Number(i.absence_deduction || 0),
+        thp: Number(i.thp || 0),
+      })),
+    });
+
+    return { success: true, data: journal };
+  });
+
+  /**
+   * 13. GET /api/v1/payroll/periods/:id/journal-csv
+   * Unduh Berkas CSV Jurnal Akuntansi (Mekari Jurnal atau Accurate Online)
+   */
+  app.get('/periods/:id/journal-csv', async (request, reply) => {
+    const user = (request as any).user;
+    const tenantId = user.tenant_id;
+    const { id: periodId } = request.params as any;
+    const { type } = (request.query as any) || {};
+
+    const [period] = await sql`
+      SELECT * FROM payroll_periods WHERE id = ${periodId} AND tenant_id = ${tenantId}
+    `;
+    if (!period) {
+      return reply.code(404).send({ success: false, message: 'Periode tidak ditemukan.' });
+    }
+
+    const items = await sql`
+      SELECT r.*, e.full_name as employee_name
+      FROM employee_payroll_results r
+      JOIN employees e ON e.id = r.employee_id
+      WHERE r.payroll_period_id = ${periodId} AND r.tenant_id = ${tenantId}
+    `;
+
+    const sumAllowances = (val: any): number => {
+      if (!val) return 0;
+      try {
+        const parsed = typeof val === 'string' ? JSON.parse(val) : val;
+        if (Array.isArray(parsed)) {
+          return parsed.reduce((acc, item) => acc + (Number(item?.amount) || 0), 0);
+        }
+        if (typeof parsed === 'object') {
+          return Object.values(parsed).reduce((acc: number, num: any) => acc + (Number(num) || 0), 0);
+        }
+      } catch {
+        // fallback
+      }
+      return Number(val) || 0;
+    };
+
+    const journal = generatePayrollJournal({
+      period_month: period.period_month,
+      period_year: period.period_year,
+      payout_date: period.payout_date,
+      items: items.map((i: any) => ({
+        employee_name: i.employee_name,
+        basic_salary: Number(i.basic_salary || 0),
+        allowances: sumAllowances(i.fixed_allowances) + sumAllowances(i.non_fixed_allowances),
+        overtime_pay: Number(i.overtime_pay || 0),
+        jkk_employer: Number(i.jkk_employer || 0),
+        jkm_employer: Number(i.jkm_employer || 0),
+        jht_employer: Number(i.jht_employer || 0),
+        jp_employer: Number(i.jp_employer || 0),
+        kes_employer: Number(i.kes_employer || 0),
+        jht_employee: Number(i.jht_employee || 0),
+        jp_employee: Number(i.jp_employee || 0),
+        kes_employee: Number(i.kes_employee || 0),
+        pph21_amount: Number(i.pph21_amount || 0),
+        loan_deduction: Number(i.loan_deduction || 0),
+        absence_deduction: Number(i.absence_deduction || 0),
+        thp: Number(i.thp || 0),
+      })),
+    });
+
+    const isAccurate = type?.toUpperCase() === 'ACCURATE';
+    const csvContent = isAccurate
+      ? exportToAccurateOnlineCsv(journal)
+      : exportToMekariJurnalCsv(journal);
+
+    const fileName = isAccurate
+      ? `Jurnal_Accurate_${period.period_year}_Masa${period.period_month}.csv`
+      : `Jurnal_Mekari_${period.period_year}_Masa${period.period_month}.csv`;
+
+    return reply
+      .header('Content-Type', 'text/csv; charset=utf-8')
+      .header('Content-Disposition', `attachment; filename="${fileName}"`)
+      .send(csvContent);
+  });
+
+  /**
+   * 14. GET /api/v1/payroll/periods/:id/bpjs-tk-csv
+   * Unduh Berkas CSV Rekapitulasi BPJS Ketenagakerjaan (SIPP Online / Formulir F2A)
+   */
+  app.get('/periods/:id/bpjs-tk-csv', async (request, reply) => {
+    const user = (request as any).user;
+    const tenantId = user.tenant_id;
+    const { id: periodId } = request.params as any;
+
+    const [tenant] = await sql`SELECT name FROM tenants WHERE id = ${tenantId}`;
+    const [period] = await sql`
+      SELECT * FROM payroll_periods WHERE id = ${periodId} AND tenant_id = ${tenantId}
+    `;
+    if (!period) {
+      return reply.code(404).send({ success: false, message: 'Periode tidak ditemukan.' });
+    }
+
+    const items = await sql`
+      SELECT r.*, e.full_name as employee_name, e.nik_ktp, e.bpjs_tk_no as bpjs_tk_number
+      FROM employee_payroll_results r
+      JOIN employees e ON e.id = r.employee_id
+      WHERE r.payroll_period_id = ${periodId} AND r.tenant_id = ${tenantId}
+    `;
+
+    const csvContent = generateBpjsTkSippCsv({
+      company_name: tenant?.name || 'PT CatatGaji Organisasi',
+      period_year: period.period_year,
+      period_month: period.period_month,
+      items: items.map((i: any) => ({
+        employee_id: i.employee_id,
+        employee_name: i.employee_name,
+        nik_ktp: i.nik_ktp,
+        bpjs_tk_number: i.bpjs_tk_number,
+        basis_salary: Number(i.basic_salary),
+        jkk_employer: Number(i.jkk_employer || 0),
+        jkm_employer: Number(i.jkm_employer || 0),
+        jht_employer: Number(i.jht_employer || 0),
+        jht_employee: Number(i.jht_employee || 0),
+        jp_employer: Number(i.jp_employer || 0),
+        jp_employee: Number(i.jp_employee || 0),
+        kes_employer: Number(i.kes_employer || 0),
+        kes_employee: Number(i.kes_employee || 0),
+      })),
+    });
+
+    const fileName = `BPJSTK_SIPP_Masa${String(period.period_month).padStart(2, '0')}_${period.period_year}.csv`;
+
+    return reply
+      .header('Content-Type', 'text/csv; charset=utf-8')
+      .header('Content-Disposition', `attachment; filename="${fileName}"`)
+      .send(csvContent);
+  });
+
+  /**
+   * 15. GET /api/v1/payroll/periods/:id/bpjs-kes-csv
+   * Unduh Berkas CSV Rekapitulasi BPJS Kesehatan (E-Dabu)
+   */
+  app.get('/periods/:id/bpjs-kes-csv', async (request, reply) => {
+    const user = (request as any).user;
+    const tenantId = user.tenant_id;
+    const { id: periodId } = request.params as any;
+
+    const [tenant] = await sql`SELECT name FROM tenants WHERE id = ${tenantId}`;
+    const [period] = await sql`
+      SELECT * FROM payroll_periods WHERE id = ${periodId} AND tenant_id = ${tenantId}
+    `;
+    if (!period) {
+      return reply.code(404).send({ success: false, message: 'Periode tidak ditemukan.' });
+    }
+
+    const items = await sql`
+      SELECT r.*, e.full_name as employee_name, e.nik_ktp, e.bpjs_kes_no as bpjs_kes_number
+      FROM employee_payroll_results r
+      JOIN employees e ON e.id = r.employee_id
+      WHERE r.payroll_period_id = ${periodId} AND r.tenant_id = ${tenantId}
+    `;
+
+    const csvContent = generateBpjsKesEdabuCsv({
+      company_name: tenant?.name || 'PT CatatGaji Organisasi',
+      period_year: period.period_year,
+      period_month: period.period_month,
+      items: items.map((i: any) => ({
+        employee_id: i.employee_id,
+        employee_name: i.employee_name,
+        nik_ktp: i.nik_ktp,
+        bpjs_kes_number: i.bpjs_kes_number,
+        basis_salary: Number(i.basic_salary),
+        jkk_employer: Number(i.jkk_employer || 0),
+        jkm_employer: Number(i.jkm_employer || 0),
+        jht_employer: Number(i.jht_employer || 0),
+        jht_employee: Number(i.jht_employee || 0),
+        jp_employer: Number(i.jp_employer || 0),
+        jp_employee: Number(i.jp_employee || 0),
+        kes_employer: Number(i.kes_employer || 0),
+        kes_employee: Number(i.kes_employee || 0),
+      })),
+    });
+
+    const fileName = `BPJSKes_EDabu_Masa${String(period.period_month).padStart(2, '0')}_${period.period_year}.csv`;
+
+    return reply
+      .header('Content-Type', 'text/csv; charset=utf-8')
+      .header('Content-Disposition', `attachment; filename="${fileName}"`)
+      .send(csvContent);
+  });
+
+  /**
+   * 16. GET /api/v1/payroll/periods/:id/bank-transfer-csv
+   * Unduh Berkas CSV Batch Payroll Transfer Bank (BCA, Mandiri, BRI, BNI)
+   */
+  app.get('/periods/:id/bank-transfer-csv', async (request, reply) => {
+    const user = (request as any).user;
+    const tenantId = user.tenant_id;
+    const { id: periodId } = request.params as any;
+
+    const [tenant] = await sql`SELECT name FROM tenants WHERE id = ${tenantId}`;
+    const [period] = await sql`
+      SELECT * FROM payroll_periods WHERE id = ${periodId} AND tenant_id = ${tenantId}
+    `;
+    if (!period) {
+      return reply.code(404).send({ success: false, message: 'Periode tidak ditemukan.' });
+    }
+
+    const items = await sql`
+      SELECT r.*, e.full_name as employee_name, e.bank_name, e.bank_account_no, e.email
+      FROM employee_payroll_results r
+      JOIN employees e ON e.id = r.employee_id
+      WHERE r.payroll_period_id = ${periodId} AND r.tenant_id = ${tenantId}
+    `;
+
+    const csvContent = generateBankPayrollCsv({
+      company_name: tenant?.name || 'PT CatatGaji Organisasi',
+      period_year: period.period_year,
+      period_month: period.period_month,
+      payout_date: period.payout_date,
+      items: items.map((i: any) => ({
+        employee_name: i.employee_name,
+        bank_name: i.bank_name || 'BCA',
+        bank_account_no: i.bank_account_no || '0000000000',
+        amount: Number(i.take_home_pay),
+        email: i.email || null,
+        notes: `Gaji ${period.period_year}-${String(period.period_month).padStart(2, '0')}`,
+      })),
+    });
+
+    const fileName = `Bank_Payroll_Transfer_Masa${String(period.period_month).padStart(2, '0')}_${period.period_year}.csv`;
 
     return reply
       .header('Content-Type', 'text/csv; charset=utf-8')
