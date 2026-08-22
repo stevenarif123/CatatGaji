@@ -6,7 +6,6 @@ import {
   formatRupiah,
   formatTanggal,
   formatTanggalHari,
-  formatTanggalSingkat,
   formatPeriodeBulan,
   BULAN_INDONESIA,
 } from '@catatgaji/shared';
@@ -190,7 +189,7 @@ export const Payroll: React.FC = () => {
                       <td style={{ fontWeight: 600, color: 'var(--text-main)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                           <i className="fa-regular fa-calendar-check" style={{ color: 'var(--primary)' }}></i>
-                          <span>{NAMA_BULAN[p.period_month - 1]} {p.period_year}</span>
+                          <span>{BULAN_INDONESIA[p.period_month - 1]} {p.period_year}</span>
                         </div>
                       </td>
                       <td style={{ color: 'var(--text-soft)' }}>

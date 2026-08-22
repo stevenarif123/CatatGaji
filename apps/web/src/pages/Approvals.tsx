@@ -4,7 +4,6 @@ import { useAuthStore } from '../stores/authStore';
 import {
   formatTanggal,
   formatTanggalHari,
-  formatTanggalSingkat,
   hitungJumlahHari,
   hitungTanggalSelesai,
 } from '@catatgaji/shared';

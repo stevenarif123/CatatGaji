@@ -6,7 +6,6 @@ import {
   maskNik,
   formatTanggal,
   formatTanggalHari,
-  formatTanggalSingkat,
   hitungJumlahHari,
   hitungTanggalSelesai,
   hitungDurasiJam,
