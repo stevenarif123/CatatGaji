@@ -15,3 +15,4 @@ export * from './engine/ebupotExportService';
 export * from './engine/accountingJournalService';
 export * from './engine/bpjsReportService';
 export * from './engine/bankTransferService';
+export * from './engine/terminationAndCompensationService';
