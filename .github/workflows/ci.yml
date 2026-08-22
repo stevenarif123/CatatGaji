@@ -34,5 +34,5 @@ jobs:
       - name: Type Check & Lint
         run: pnpm lint
 
-      - name: Build Web App
-        run: pnpm --filter @catatgaji/web build
+      - name: Build All Projects (API, Web, Shared)
+        run: pnpm build
