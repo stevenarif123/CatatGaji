@@ -157,14 +157,12 @@ export const attendanceRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // --------------------------------------------------------------------------
-  // 3. Attendance Logs List
-  // --------------------------------------------------------------------------
   app.get('/logs', async (request: any) => {
     const { tenant_id } = request.user;
     const { start_date, end_date, employee_id, status } = request.query as any;
 
     const logs = await withTenant(tenant_id, async (sql) => {
-      let query = sql`
+      return sql`
         SELECT
           l.*,
           e.full_name as employee_name,
@@ -177,20 +175,13 @@ export const attendanceRoutes: FastifyPluginAsync = async (app) => {
         LEFT JOIN branches_departments b ON b.id = e.branch_id
         LEFT JOIN shifts s ON s.id = l.shift_id
         WHERE l.tenant_id = ${tenant_id}
+          AND (${start_date || null}::date IS NULL OR l.date >= ${start_date || null}::date)
+          AND (${end_date || null}::date IS NULL OR l.date <= ${end_date || null}::date)
+          AND (${employee_id || null}::uuid IS NULL OR l.employee_id = ${employee_id || null}::uuid)
+          AND (${status || null}::varchar IS NULL OR l.status = ${status || null}::varchar)
+        ORDER BY l.date DESC, l.clock_in DESC
+        LIMIT 100
       `;
-
-      if (start_date && end_date) {
-        query = sql`${query} AND l.date >= ${start_date} AND l.date <= ${end_date}`;
-      }
-      if (employee_id) {
-        query = sql`${query} AND l.employee_id = ${employee_id}`;
-      }
-      if (status) {
-        query = sql`${query} AND l.status = ${status}`;
-      }
-
-      query = sql`${query} ORDER BY l.date DESC, l.clock_in DESC LIMIT 100`;
-      return query;
     });
 
     return { success: true, data: logs };
@@ -496,15 +487,15 @@ export const attendanceRoutes: FastifyPluginAsync = async (app) => {
     const { employee_id, status } = request.query as any;
 
     const list = await withTenant(tenant_id, async (sql) => {
-      let query = sql`
+      return sql`
         SELECT o.*, e.full_name as employee_name, e.nik_ktp
         FROM overtime_requests o
         JOIN employees e ON e.id = o.employee_id
         WHERE o.tenant_id = ${tenant_id}
+          AND (${employee_id || null}::uuid IS NULL OR o.employee_id = ${employee_id || null}::uuid)
+          AND (${status || null}::varchar IS NULL OR o.status = ${status || null}::varchar)
+        ORDER BY o.date DESC, o.created_at DESC
       `;
-      if (employee_id) query = sql`${query} AND o.employee_id = ${employee_id}`;
-      if (status) query = sql`${query} AND o.status = ${status}`;
-      return sql`${query} ORDER BY o.date DESC, o.created_at DESC`;
     });
 
     return { success: true, data: list };

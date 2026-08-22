@@ -23,7 +23,7 @@ export const leaveRoutes: FastifyPluginAsync = async (app) => {
     const { employee_id, status } = request.query as any;
 
     const leaves = await withTenant(tenant_id, async (sql) => {
-      let query = sql`
+      return sql`
         SELECT
           l.*,
           e.full_name as employee_name,
@@ -33,17 +33,10 @@ export const leaveRoutes: FastifyPluginAsync = async (app) => {
         JOIN employees e ON e.id = l.employee_id
         LEFT JOIN users u ON u.id = l.approved_by
         WHERE l.tenant_id = ${tenant_id}
+          AND (${employee_id || null}::uuid IS NULL OR l.employee_id = ${employee_id || null}::uuid)
+          AND (${status || null}::varchar IS NULL OR l.status = ${status || null}::varchar)
+        ORDER BY l.created_at DESC
       `;
-
-      if (employee_id) {
-        query = sql`${query} AND l.employee_id = ${employee_id}`;
-      }
-      if (status) {
-        query = sql`${query} AND l.status = ${status}`;
-      }
-
-      query = sql`${query} ORDER BY l.created_at DESC`;
-      return query;
     });
 
     return { success: true, data: leaves };
@@ -146,7 +139,7 @@ export const leaveRoutes: FastifyPluginAsync = async (app) => {
     const { employee_id, status } = request.query as any;
 
     const list = await withTenant(tenant_id, async (sql) => {
-      let query = sql`
+      return sql`
         SELECT
           o.*,
           e.full_name as employee_name,
@@ -154,17 +147,10 @@ export const leaveRoutes: FastifyPluginAsync = async (app) => {
         FROM overtime_requests o
         JOIN employees e ON e.id = o.employee_id
         WHERE o.tenant_id = ${tenant_id}
+          AND (${employee_id || null}::uuid IS NULL OR o.employee_id = ${employee_id || null}::uuid)
+          AND (${status || null}::varchar IS NULL OR o.status = ${status || null}::varchar)
+        ORDER BY o.date DESC
       `;
-
-      if (employee_id) {
-        query = sql`${query} AND o.employee_id = ${employee_id}`;
-      }
-      if (status) {
-        query = sql`${query} AND o.status = ${status}`;
-      }
-
-      query = sql`${query} ORDER BY o.date DESC`;
-      return query;
     });
 
     return { success: true, data: list };
