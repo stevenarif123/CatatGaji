@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+<script crossorigin="anonymous" referrerpolicy="no-referrer" src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CatatGaji ESS — Portal Karyawan</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "success-green": "#ECFDF5",
+                "secondary": "#006c49",
+                "on-primary-fixed-variant": "#003fa4",
+                "secondary-fixed-dim": "#4edea3",
+                "outline": "#727687",
+                "on-primary-container": "#f8f7ff",
+                "error-container": "#ffdad6",
+                "background": "#f8f9ff",
+                "on-tertiary": "#ffffff",
+                "surface-accent": "#F1F5F9",
+                "tertiary-container": "#5d60eb",
+                "tertiary": "#4345d1",
+                "primary-fixed": "#dae1ff",
+                "on-surface": "#0b1c30",
+                "on-background": "#0b1c30",
+                "primary-fixed-dim": "#b3c5ff",
+                "on-primary": "#ffffff",
+                "on-tertiary-fixed-variant": "#2f2ebe",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-high": "#dce9ff",
+                "tertiary-fixed": "#e1e0ff",
+                "on-secondary": "#ffffff",
+                "warning-amber": "#FFFBEB",
+                "on-primary-fixed": "#001849",
+                "surface-bright": "#f8f9ff",
+                "surface-soft": "#F8FAFC",
+                "tertiary-fixed-dim": "#c0c1ff",
+                "surface-dim": "#cbdbf5",
+                "surface": "#f8f9ff",
+                "on-error-container": "#93000a",
+                "secondary-container": "#6cf8bb",
+                "surface-container-highest": "#d3e4fe",
+                "on-secondary-fixed-variant": "#005236",
+                "on-surface-variant": "#424656",
+                "secondary-fixed": "#6ffbbe",
+                "inverse-surface": "#213145",
+                "on-tertiary-fixed": "#07006c",
+                "info-blue": "#EBF5FF",
+                "on-error": "#ffffff",
+                "on-secondary-fixed": "#002113",
+                "inverse-primary": "#b3c5ff",
+                "surface-white": "#FFFFFF",
+                "surface-tint": "#0054d6",
+                "primary-container": "#0066ff",
+                "error": "#ba1a1a",
+                "on-tertiary-container": "#faf6ff",
+                "surface-container-low": "#eff4ff",
+                "surface-variant": "#d3e4fe",
+                "inverse-on-surface": "#eaf1ff",
+                "on-secondary-container": "#00714d",
+                "primary": "#0050cb",
+                "surface-container": "#e5eeff",
+                "outline-variant": "#c2c6d8"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "container-max": "1440px",
+                "margin-desktop": "32px",
+                "gutter": "24px",
+                "unit": "4px",
+                "margin-mobile": "16px"
+        },
+        "fontFamily": {
+                "headline-xl-mobile": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-lg": [
+                        "Plus Jakarta Sans"
+                ],
+                "label-sm": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-lg": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-sm": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-md": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-xl": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-md": [
+                        "Plus Jakarta Sans"
+                ],
+                "label-md": [
+                        "Plus Jakarta Sans"
+                ]
+        },
+        "fontSize": {
+                "headline-xl-mobile": [
+                        "30px",
+                        {
+                                "lineHeight": "36px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-lg": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-sm": [
+                        "11px",
+                        {
+                                "lineHeight": "14px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-lg": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-sm": [
+                        "13px",
+                        {
+                                "lineHeight": "18px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "18px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-xl": [
+                        "40px",
+                        {
+                                "lineHeight": "48px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-md": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+::-webkit-scrollbar { width: 0px; background: transparent; }
+.bottom-nav { border-top: 1px solid #d3e4fe; }
+.quick-action-card { transition: all 0.2s; }
+.quick-action-card:active { transform: scale(0.95); background-color: #e5eeff; }
+</style>
+</head>
+<body class="bg-background text-on-background font-sans antialiased min-h-[800px] flex flex-col w-full max-w-md mx-auto relative overflow-x-hidden">
+<!-- Top App Bar -->
+<header class="p-5 flex items-center justify-between sticky top-0 bg-background/80 backdrop-blur-md z-20">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border-2 border-primary p-0.5">
+<img class="w-full h-full rounded-full object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD96gXWfNeisGIW4ByaYjCRr52-H9jCEG1rQFirXUnNnlQ6JS5czujJtbr18eecuBsOCisGHFxl0Esid1318zZQN2qM_l1Sh3ZAo9sh05ECOV1tW2XGxxozH_lLhyMRDYpn937DDHZ5z6-gw91kEWGgGiFL_Scs2t_HByjEOP8ZiKWNAJ65xw5yy8kL6dLPLr_sNWbZ2h20sGnjZfo_2huIfpEqtdIKkJLw-b5lwGqPpdQu3CLgyAKT1w"/>
+</div>
+<div>
+<p class="text-[12px] text-on-surface-variant leading-none">Halo,</p>
+<h1 class="text-[15px] font-bold text-on-background mt-1">Budi Prasetyo</h1>
+</div>
+</div>
+<button class="w-10 h-10 flex items-center justify-center bg-surface-white rounded-full shadow-sm border border-surface-container-high relative">
+<i class="fa-regular fa-bell text-on-surface-variant"></i>
+<span class="absolute top-2.5 right-2.5 w-2 h-2 bg-error rounded-full border-2 border-surface-white"></span>
+</button>
+</header>
+<main class="flex-1 px-5 pb-24 space-y-6">
+<!-- Status Card -->
+<section class="bg-primary rounded-3xl p-5 shadow-xl shadow-primary/20 text-on-primary relative overflow-hidden">
+<div class="relative z-10">
+<p class="text-on-primary/70 text-[11px] font-bold uppercase tracking-wider">Jam Kerja Hari Ini</p>
+<h2 class="text-xl font-bold mt-1">Shift Pagi</h2>
+<p class="text-on-primary/60 text-[12px] mt-0.5">07:00 — 15:00 WIB</p>
+<div class="mt-5 flex items-center gap-3 bg-surface-white/10 backdrop-blur-sm rounded-2xl p-3 border border-surface-white/10">
+<div class="w-10 h-10 bg-surface-white/20 rounded-xl flex items-center justify-center text-lg">
+<i class="fa-solid fa-clock-rotate-left"></i>
+</div>
+<div>
+<p class="text-[11px] text-on-primary/70 font-semibold leading-none">Jam Masuk</p>
+<p class="text-[15px] font-bold mt-1">06:58 <span class="text-[11px] font-medium bg-secondary-fixed text-on-secondary-fixed px-1.5 py-0.5 rounded ml-1">Tepat Waktu</span></p>
+</div>
+</div>
+<button class="w-full mt-5 bg-surface-white text-primary py-3.5 rounded-2xl font-bold text-[15px] shadow-lg shadow-black/5 flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<i class="fa-solid fa-right-from-bracket"></i> Clock-Out Pulang
+                </button>
+<p class="text-[10px] text-on-primary/60 text-center mt-3 flex items-center justify-center gap-1">
+<i class="fa-solid fa-location-crosshairs"></i> Radius Kantor Terverifikasi: 15m
+                </p>
+</div>
+<!-- Decorative circle -->
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-surface-white/10 rounded-full"></div>
+</section>
+<!-- Quick Actions Grid -->
+<section>
+<h3 class="text-[14px] font-bold text-on-background mb-4 px-1">Menu Cepat Karyawan</h3>
+<div class="grid grid-cols-2 gap-3">
+<div class="quick-action-card bg-surface-white p-4 rounded-xl shadow-sm border border-surface-container-highest flex flex-col gap-3">
+<div class="w-10 h-10 bg-primary-fixed text-primary rounded-xl flex items-center justify-center text-lg">
+<i class="fa-solid fa-file-invoice-dollar"></i>
+</div>
+<div>
+<p class="text-[13px] font-bold text-on-background">Slip Gaji</p>
+<p class="text-[11px] text-on-surface-variant mt-0.5">Agu: Rp 5.4 Jt</p>
+</div>
+</div>
+<div class="quick-action-card bg-surface-white p-4 rounded-xl shadow-sm border border-surface-container-highest flex flex-col gap-3">
+<div class="w-10 h-10 bg-secondary-container text-secondary rounded-xl flex items-center justify-center text-lg">
+<i class="fa-solid fa-calendar-check"></i>
+</div>
+<div>
+<p class="text-[13px] font-bold text-on-background">Ajukan Cuti</p>
+<p class="text-[11px] text-on-surface-variant mt-0.5">Sisa: 8 Hari</p>
+</div>
+</div>
+<div class="quick-action-card bg-surface-white p-4 rounded-xl shadow-sm border border-surface-container-highest flex flex-col gap-3">
+<div class="w-10 h-10 bg-tertiary-fixed text-tertiary rounded-xl flex items-center justify-center text-lg">
+<i class="fa-solid fa-bolt"></i>
+</div>
+<div>
+<p class="text-[13px] font-bold text-on-background">Ajukan SPKL</p>
+<p class="text-[11px] text-on-surface-variant mt-0.5">Lembur Online</p>
+</div>
+</div>
+<div class="quick-action-card bg-surface-white p-4 rounded-xl shadow-sm border border-surface-container-highest flex flex-col gap-3">
+<div class="w-10 h-10 bg-surface-variant text-on-surface-variant rounded-xl flex items-center justify-center text-lg">
+<i class="fa-solid fa-history"></i>
+</div>
+<div>
+<p class="text-[13px] font-bold text-on-background">Riwayat Abs</p>
+<p class="text-[11px] text-on-surface-variant mt-0.5">Cek Presensi</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Salary Summary -->
+<section class="bg-surface-white rounded-3xl p-5 shadow-sm border border-surface-container-highest">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h3 class="text-[14px] font-bold text-on-background">Gaji Bulan Lalu</h3>
+<p class="text-[11px] text-on-surface-variant">Juli 2026</p>
+</div>
+<button class="text-[11px] font-bold text-primary bg-primary-fixed px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+<i class="fa-solid fa-download"></i> PDF
+                </button>
+</div>
+<div class="flex items-end justify-between">
+<div>
+<p class="text-[11px] text-on-surface-variant font-medium mb-1">Take Home Pay</p>
+<p class="text-xl font-bold text-on-background leading-none">Rp 5.380.000</p>
+</div>
+<i class="fa-solid fa-chevron-right text-surface-variant"></i>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-surface-white/95 backdrop-blur-md bottom-nav flex items-center justify-around h-20 px-4 z-30">
+<button class="flex flex-col items-center gap-1.5 text-primary">
+<i class="fa-solid fa-house text-xl"></i>
+<span class="text-[10px] font-bold">Beranda</span>
+</button>
+<button class="flex flex-col items-center gap-1.5 text-on-surface-variant hover:text-on-surface">
+<i class="fa-regular fa-calendar-check text-xl"></i>
+<span class="text-[10px] font-medium">Absensi</span>
+</button>
+<button class="flex flex-col items-center gap-1.5 text-on-surface-variant hover:text-on-surface">
+<i class="fa-regular fa-paper-plane text-xl"></i>
+<span class="text-[10px] font-medium">Pengajuan</span>
+</button>
+<button class="flex flex-col items-center gap-1.5 text-on-surface-variant hover:text-on-surface">
+<i class="fa-regular fa-circle-user text-xl"></i>
+<span class="text-[10px] font-medium">Akun</span>
+</button>
+</nav>
+</body></html>

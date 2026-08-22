@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+<script crossorigin="anonymous" referrerpolicy="no-referrer" src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Master Data Karyawan — CatatGaji</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "success-green": "#ECFDF5",
+                "secondary": "#006c49",
+                "on-primary-fixed-variant": "#003fa4",
+                "secondary-fixed-dim": "#4edea3",
+                "outline": "#727687",
+                "on-primary-container": "#f8f7ff",
+                "error-container": "#ffdad6",
+                "background": "#f8f9ff",
+                "on-tertiary": "#ffffff",
+                "surface-accent": "#F1F5F9",
+                "tertiary-container": "#5d60eb",
+                "tertiary": "#4345d1",
+                "primary-fixed": "#dae1ff",
+                "on-surface": "#0b1c30",
+                "on-background": "#0b1c30",
+                "primary-fixed-dim": "#b3c5ff",
+                "on-primary": "#ffffff",
+                "on-tertiary-fixed-variant": "#2f2ebe",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-high": "#dce9ff",
+                "tertiary-fixed": "#e1e0ff",
+                "on-secondary": "#ffffff",
+                "warning-amber": "#FFFBEB",
+                "on-primary-fixed": "#001849",
+                "surface-bright": "#f8f9ff",
+                "surface-soft": "#F8FAFC",
+                "tertiary-fixed-dim": "#c0c1ff",
+                "surface-dim": "#cbdbf5",
+                "surface": "#f8f9ff",
+                "on-error-container": "#93000a",
+                "secondary-container": "#6cf8bb",
+                "surface-container-highest": "#d3e4fe",
+                "on-secondary-fixed-variant": "#005236",
+                "on-surface-variant": "#424656",
+                "secondary-fixed": "#6ffbbe",
+                "inverse-surface": "#213145",
+                "on-tertiary-fixed": "#07006c",
+                "info-blue": "#EBF5FF",
+                "on-error": "#ffffff",
+                "on-secondary-fixed": "#002113",
+                "inverse-primary": "#b3c5ff",
+                "surface-white": "#FFFFFF",
+                "surface-tint": "#0054d6",
+                "primary-container": "#0066ff",
+                "error": "#ba1a1a",
+                "on-tertiary-container": "#faf6ff",
+                "surface-container-low": "#eff4ff",
+                "surface-variant": "#d3e4fe",
+                "inverse-on-surface": "#eaf1ff",
+                "on-secondary-container": "#00714d",
+                "primary": "#0050cb",
+                "surface-container": "#e5eeff",
+                "outline-variant": "#c2c6d8"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "container-max": "1440px",
+                "margin-desktop": "32px",
+                "gutter": "24px",
+                "unit": "4px",
+                "margin-mobile": "16px"
+        },
+        "fontFamily": {
+                "headline-xl-mobile": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-lg": [
+                        "Plus Jakarta Sans"
+                ],
+                "label-sm": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-lg": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-sm": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-md": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-xl": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-md": [
+                        "Plus Jakarta Sans"
+                ],
+                "label-md": [
+                        "Plus Jakarta Sans"
+                ]
+        },
+        "fontSize": {
+                "headline-xl-mobile": [
+                        "30px",
+                        {
+                                "lineHeight": "36px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-lg": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-sm": [
+                        "11px",
+                        {
+                                "lineHeight": "14px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-lg": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-sm": [
+                        "13px",
+                        {
+                                "lineHeight": "18px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "18px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-xl": [
+                        "40px",
+                        {
+                                "lineHeight": "48px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-md": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c2c6d8; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #727687; }
+.modal-overlay { background-color: rgba(11, 28, 48, 0.5); backdrop-filter: blur(4px); }
+</style>
+</head>
+<body class="bg-background text-on-background font-sans antialiased min-h-screen flex w-full">
+<!-- Sidebar Sidebar -->
+<aside class="w-[260px] bg-surface-container-lowest border-r border-surface-container flex-shrink-0 flex flex-col hidden md:flex h-screen sticky top-0">
+<div class="h-16 flex items-center px-6 border-b border-surface-container">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white"><i class="fa-solid fa-building-columns text-sm"></i></div>
+<div><p class="text-base font-semibold leading-none text-on-surface">CatatGaji</p><p class="text-[11px] text-on-surface-variant mt-0.5">PT Maju Bersama Logistik</p></div>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto py-5 px-3 space-y-0.5">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="Dashboard Utama__desktop.html"><i class="fa-solid fa-border-all w-5 text-center"></i> Overview</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="#"><i class="fa-solid fa-calculator w-5 text-center"></i> Payroll Processor</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary-fixed text-primary rounded-lg text-[13.5px] font-semibold transition-colors" href="#"><i class="fa-regular fa-user-group w-5 text-center"></i> Employee Roster</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="#"><i class="fa-regular fa-clock w-5 text-center"></i> Time &amp; Attendance</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="#"><i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i> Tax &amp; PPh21</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="#">
+<span class="flex items-center gap-3"><i class="fa-solid fa-user-check w-5 text-center"></i> Approvals</span>
+<span class="ml-auto text-[11px] font-semibold bg-tertiary-fixed text-on-tertiary-fixed-variant px-2 py-0.5 rounded-full">3 pending</span>
+</a>
+</nav>
+<div class="p-3 border-t border-surface-container">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-container-low cursor-pointer transition-colors">
+<img alt="Hendra" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDn1etnswTQKPORW432GJE_46tvgX3mU11BCYFSz8AnVaACmtEftGGy7WJNVAmze_sKWdZbAP-OGgD5N280Eqg6Y-3iLz93gvTa3TPBxK4dHNL0R2Ydf9PuhaqV5ShKqxrOHEszUZasI3jH0m42DO580X0pMuJyHqPUxMkrUzm8kXFMW15gZi9EqikpEC0LirccEt10u1cxvFZFkrhsbqJpGeXMt6jkPxZl0gY3vTwjIUrcxvpSI2iUmA"/>
+<div class="min-w-0 flex-1"><p class="text-[13px] font-semibold text-on-surface truncate">Hendra Wijaya</p><p class="text-[11px] text-on-surface-variant truncate">HR Director</p></div>
+</div>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0">
+<header class="h-16 bg-surface-container-lowest border-b border-surface-container flex items-center justify-between px-6 lg:px-8 sticky top-0 z-20">
+<div class="flex items-center gap-3">
+<h1 class="text-[17px] font-semibold text-on-surface">Master Data Karyawan</h1>
+<span class="text-[12px] bg-surface-container-low text-on-surface-variant px-2 py-0.5 rounded-full font-medium">55 Karyawan</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-low text-on-surface-variant text-[13px] font-medium px-3 py-2 rounded-lg transition-colors flex items-center gap-2"><i class="fa-solid fa-file-import text-[11px]"></i> Import Excel</button>
+<button class="bg-primary hover:opacity-90 text-white text-[13px] font-semibold px-4 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-2" onclick="toggleModal()"><i class="fa-solid fa-plus text-[11px]"></i> Tambah Karyawan</button>
+</div>
+</header>
+<main class="flex-1 p-6 lg:p-8 space-y-6">
+<!-- Filter Bar -->
+<section class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-surface-container flex flex-wrap gap-4 items-end">
+<div class="flex-1 min-w-[200px]">
+<label class="block text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Pencarian</label>
+<div class="relative">
+<i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-xs"></i>
+<input class="w-full pl-9 pr-3 py-2 text-[13px] border border-outline-variant rounded-lg focus:outline-none focus:border-primary transition-all" placeholder="Cari Nama/NIK/NIP..." type="text"/>
+</div>
+</div>
+<div class="w-44">
+<label class="block text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Cabang</label>
+<select class="w-full px-3 py-2 text-[13px] border border-outline-variant rounded-lg focus:outline-none bg-surface-container-lowest">
+<option>Semua Cabang</option>
+<option>Jakarta Pusat</option>
+<option>Tebet</option>
+</select>
+</div>
+<div class="w-44">
+<label class="block text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Status</label>
+<select class="w-full px-3 py-2 text-[13px] border border-outline-variant rounded-lg focus:outline-none bg-surface-container-lowest">
+<option>Aktif</option>
+<option>Non-Aktif</option>
+</select>
+</div>
+<button class="bg-surface-container-low hover:bg-surface-container text-on-surface-variant text-[13px] font-medium px-4 py-2 rounded-lg transition-colors">Reset</button>
+</section>
+<!-- Table -->
+<section class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left whitespace-nowrap">
+<thead>
+<tr class="text-[11px] uppercase tracking-wide text-on-surface-variant border-b border-surface-container bg-surface-container-low font-semibold">
+<th class="py-3 px-5">No</th>
+<th class="py-3 px-5">NIP / NIK</th>
+<th class="py-3 px-5">Nama Karyawan</th>
+<th class="py-3 px-5">Cabang / Dept</th>
+<th class="py-3 px-5">Status</th>
+<th class="py-3 px-5">Gaji Pokok</th>
+<th class="py-3 px-5 text-right">Aksi</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container text-[13.5px]">
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-4 px-5 text-outline">1</td>
+<td class="py-4 px-5 font-mono text-[12px]">NIP-001<br/><span class="text-outline-variant text-[11px]">31710123...</span></td>
+<td class="py-4 px-5">
+<div class="flex items-center gap-3">
+<img class="w-9 h-9 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHo-YOVaCSy_R0o8PHnE8LhYiO64_hlPFQuCPLasj_3KsMcW1ay91lozux6piF4ItKAy6oR4Cj2fKwGB4fCo63Xtq_pAX-1X2m6h7ABcXabSRlClQDhmnNaCALhi_pkjpxCZAoPKSPF081N0Wj2sOfoPYk0WbB72iPV8zcYUPynfOsTIlr4sESLc8jjcbKPjJyH6kBymC6qXuqwHDyU4j5iAqy0nRgqUCMgoFotm7HEd1iw1c3y6tP-Q"/>
+<div>
+<p class="font-semibold text-on-surface">Ahmad Fauzi</p>
+<p class="text-[11px] text-outline">ahmad@perusahaan.com</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-5 text-on-surface-variant">Jakarta / IT<br/><span class="text-[11px] px-1.5 py-0.5 bg-primary-fixed text-primary rounded">PKWTT</span></td>
+<td class="py-4 px-5"><span class="inline-flex items-center gap-1.5 bg-secondary-container text-on-secondary-container text-[11px] font-semibold px-2 py-1 rounded-md"><i class="fa-solid fa-circle text-[6px]"></i> Aktif</span></td>
+<td class="py-4 px-5 text-on-surface font-semibold tabular-nums">Rp 9.000.000 <i class="fa-solid fa-eye-slash text-outline-variant text-[10px] ml-1 cursor-pointer"></i></td>
+<td class="py-4 px-5 text-right">
+<button class="text-on-surface-variant hover:text-primary p-1.5 transition-colors"><i class="fa-solid fa-pen-to-square"></i></button>
+<button class="text-on-surface-variant hover:text-error p-1.5 transition-colors ml-1"><i class="fa-solid fa-trash-can"></i></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-4 px-5 text-outline">2</td>
+<td class="py-4 px-5 font-mono text-[12px]">NIP-002<br/><span class="text-outline-variant text-[11px]">32750211...</span></td>
+<td class="py-4 px-5">
+<div class="flex items-center gap-3">
+<img class="w-9 h-9 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXB_cBHzgw1KuXEh-2-Cl0cp_drTcddiHj8XmHLUcuD5LXerFPgQaQBRVBRL8jD5CB2DIUuqwdNcjNzl8BeJr4d3tYZrkfVVHIznc0G6r2bmXoeMt5FpttOkX3SOXCa4E_hdu8pDSe1V_0EOCegUlbLd3Dyg56NzFx_6MgAGcyMD63kg6dbQEk9YkhWI_8Hm7nvM73zi-GDPjrkE5ru5nT4zkLbX2VDwAYNeJN6NikHeSedSL8UK4kQQ"/>
+<div>
+<p class="font-semibold text-on-surface">Budi Prasetyo</p>
+<p class="text-[11px] text-outline">budi@perusahaan.com</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-5 text-on-surface-variant">Tebet / Kafe<br/><span class="text-[11px] px-1.5 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded">PKWT</span></td>
+<td class="py-4 px-5"><span class="inline-flex items-center gap-1.5 bg-secondary-container text-on-secondary-container text-[11px] font-semibold px-2 py-1 rounded-md"><i class="fa-solid fa-circle text-[6px]"></i> Aktif</span></td>
+<td class="py-4 px-5 text-on-surface font-semibold tabular-nums">Rp 5.200.000 <i class="fa-solid fa-eye-slash text-outline-variant text-[10px] ml-1 cursor-pointer"></i></td>
+<td class="py-4 px-5 text-right">
+<button class="text-on-surface-variant hover:text-primary p-1.5 transition-colors"><i class="fa-solid fa-pen-to-square"></i></button>
+<button class="text-on-surface-variant hover:text-error p-1.5 transition-colors ml-1"><i class="fa-solid fa-trash-can"></i></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-5 flex items-center justify-between border-t border-surface-container bg-surface-container-low/30">
+<p class="text-[13px] text-on-surface-variant">Menampilkan 1-20 dari 55 Karyawan</p>
+<div class="flex items-center gap-1.5">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container-lowest disabled:opacity-50" disabled=""><i class="fa-solid fa-chevron-left text-[10px]"></i></button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white text-[13px] font-semibold">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container-lowest text-[13px]">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container-lowest text-[13px]">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container-lowest"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Modal Form Tambah Karyawan (Layar 2 Side UI) -->
+<div class="fixed inset-0 z-50 hidden" id="modalAdd">
+<div class="modal-overlay absolute inset-0" onclick="toggleModal()"></div>
+<div class="absolute right-0 top-0 bottom-0 w-full max-w-2xl bg-surface-container-lowest shadow-2xl flex flex-col transform transition-transform translate-x-0">
+<div class="h-16 flex items-center justify-between px-6 border-b border-surface-container">
+<h2 class="text-lg font-bold text-on-surface">Tambah Karyawan Baru</h2>
+<button class="text-outline hover:text-on-surface transition-colors" onclick="toggleModal()"><i class="fa-solid fa-xmark text-xl"></i></button>
+</div>
+<!-- Tabs -->
+<div class="px-6 border-b border-surface-container flex gap-6 overflow-x-auto bg-surface-container-low">
+<button class="py-4 border-b-2 border-primary text-primary text-[13.5px] font-semibold whitespace-nowrap">Data Personal</button>
+<button class="py-4 text-on-surface-variant hover:text-on-surface text-[13.5px] font-medium whitespace-nowrap">Kepegawaian</button>
+<button class="py-4 text-on-surface-variant hover:text-on-surface text-[13.5px] font-medium whitespace-nowrap">Pajak &amp; BPJS</button>
+<button class="py-4 text-on-surface-variant hover:text-on-surface text-[13.5px] font-medium whitespace-nowrap">Struktur Gaji</button>
+</div>
+<div class="flex-1 overflow-y-auto p-8 space-y-6">
+<div class="grid grid-cols-1 gap-6">
+<div>
+<label class="block text-[13px] font-semibold text-on-surface mb-1.5">Nama Lengkap (Sesuai KTP) <span class="text-error">*</span></label>
+<input class="w-full px-3.5 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all" placeholder="Masukkan nama lengkap..." type="text"/>
+</div>
+<div>
+<label class="block text-[13px] font-semibold text-on-surface mb-1.5">NIK KTP (16 Digit) <span class="text-error">*</span></label>
+<div class="relative">
+<input class="w-full px-3.5 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-xl focus:outline-none focus:border-primary transition-all" placeholder="Masukkan NIK..." type="text"/>
+<span class="absolute right-3 top-1/2 -translate-y-1/2 text-secondary text-[11px] font-bold bg-secondary-container px-1.5 py-0.5 rounded flex items-center gap-1"><i class="fa-solid fa-check"></i> Valid</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-[13px] font-semibold text-on-surface mb-1.5">Tempat Lahir</label>
+<input class="w-full px-3.5 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-xl focus:outline-none focus:border-primary transition-all" placeholder="Contoh: Jakarta" type="text"/>
+</div>
+<div>
+<label class="block text-[13px] font-semibold text-on-surface mb-1.5">Tanggal Lahir</label>
+<input class="w-full px-3.5 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-xl focus:outline-none focus:border-primary transition-all" type="date"/>
+</div>
+</div>
+<div>
+<label class="block text-[13px] font-semibold text-on-surface mb-2">Jenis Kelamin</label>
+<div class="flex gap-6">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="w-4 h-4 text-primary focus:ring-primary" name="gender" type="radio"/>
+<span class="text-[14px] text-on-surface">Laki-laki</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="w-4 h-4 text-primary focus:ring-primary" name="gender" type="radio"/>
+<span class="text-[14px] text-on-surface">Perempuan</span>
+</label>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-[13px] font-semibold text-on-surface mb-1.5">Email Kerja</label>
+<input class="w-full px-3.5 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-xl focus:outline-none focus:border-primary transition-all" placeholder="nama@perusahaan.com" type="email"/>
+</div>
+<div>
+<label class="block text-[13px] font-semibold text-on-surface mb-1.5">No. WhatsApp</label>
+<input class="w-full px-3.5 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-xl focus:outline-none focus:border-primary transition-all" placeholder="0812..." type="tel"/>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-surface-container flex items-center justify-between bg-surface-container-low">
+<button class="px-6 py-2.5 text-[14px] font-medium text-on-surface-variant hover:text-on-surface transition-colors" onclick="toggleModal()">Batal</button>
+<div class="flex gap-3">
+<button class="px-6 py-2.5 text-[14px] font-medium text-primary hover:bg-primary-fixed rounded-xl transition-colors">Simpan Draft</button>
+<button class="px-8 py-2.5 bg-primary hover:opacity-90 text-white text-[14px] font-bold rounded-xl shadow-md transition-colors">Lanjut: Kepegawaian <i class="fa-solid fa-arrow-right ml-2 text-[11px]"></i></button>
+</div>
+</div>
+</div>
+</div>
+<script>
+function toggleModal() {
+    const modal = document.getElementById('modalAdd');
+    modal.classList.toggle('hidden');
+}
+</script>
+</body></html>

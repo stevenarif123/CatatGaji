@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+<script crossorigin="anonymous" referrerpolicy="no-referrer" src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CatatGaji — Overview</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer" rel="stylesheet"/>
+<script src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "success-green": "#ECFDF5",
+                "secondary": "#006c49",
+                "on-primary-fixed-variant": "#003fa4",
+                "secondary-fixed-dim": "#4edea3",
+                "outline": "#727687",
+                "on-primary-container": "#f8f7ff",
+                "error-container": "#ffdad6",
+                "background": "#f8f9ff",
+                "on-tertiary": "#ffffff",
+                "surface-accent": "#F1F5F9",
+                "tertiary-container": "#5d60eb",
+                "tertiary": "#4345d1",
+                "primary-fixed": "#dae1ff",
+                "on-surface": "#0b1c30",
+                "on-background": "#0b1c30",
+                "primary-fixed-dim": "#b3c5ff",
+                "on-primary": "#ffffff",
+                "on-tertiary-fixed-variant": "#2f2ebe",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-high": "#dce9ff",
+                "tertiary-fixed": "#e1e0ff",
+                "on-secondary": "#ffffff",
+                "warning-amber": "#FFFBEB",
+                "on-primary-fixed": "#001849",
+                "surface-bright": "#f8f9ff",
+                "surface-soft": "#F8FAFC",
+                "tertiary-fixed-dim": "#c0c1ff",
+                "surface-dim": "#cbdbf5",
+                "surface": "#f8f9ff",
+                "on-error-container": "#93000a",
+                "secondary-container": "#6cf8bb",
+                "surface-container-highest": "#d3e4fe",
+                "on-secondary-fixed-variant": "#005236",
+                "on-surface-variant": "#424656",
+                "secondary-fixed": "#6ffbbe",
+                "inverse-surface": "#213145",
+                "on-tertiary-fixed": "#07006c",
+                "info-blue": "#EBF5FF",
+                "on-error": "#ffffff",
+                "on-secondary-fixed": "#002113",
+                "inverse-primary": "#b3c5ff",
+                "surface-white": "#FFFFFF",
+                "surface-tint": "#0054d6",
+                "primary-container": "#0066ff",
+                "error": "#ba1a1a",
+                "on-tertiary-container": "#faf6ff",
+                "surface-container-low": "#eff4ff",
+                "surface-variant": "#d3e4fe",
+                "inverse-on-surface": "#eaf1ff",
+                "on-secondary-container": "#00714d",
+                "primary": "#0050cb",
+                "surface-container": "#e5eeff",
+                "outline-variant": "#c2c6d8"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "container-max": "1440px",
+                "margin-desktop": "32px",
+                "gutter": "24px",
+                "unit": "4px",
+                "margin-mobile": "16px"
+        },
+        "fontFamily": {
+                "headline-xl-mobile": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-lg": [
+                        "Plus Jakarta Sans"
+                ],
+                "label-sm": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-lg": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-sm": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-md": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-xl": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-md": [
+                        "Plus Jakarta Sans"
+                ],
+                "label-md": [
+                        "Plus Jakarta Sans"
+                ]
+        },
+        "fontSize": {
+                "headline-xl-mobile": [
+                        "30px",
+                        {
+                                "lineHeight": "36px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-lg": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-sm": [
+                        "11px",
+                        {
+                                "lineHeight": "14px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-lg": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-sm": [
+                        "13px",
+                        {
+                                "lineHeight": "18px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "18px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-xl": [
+                        "40px",
+                        {
+                                "lineHeight": "48px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-md": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c2c6d8; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #727687; }
+</style>
+</head>
+<body class="bg-background text-on-background font-sans antialiased min-h-screen flex w-full">
+<!-- Sidebar -->
+<aside class="w-[260px] bg-surface-container-lowest border-r border-outline-variant/30 flex-shrink-0 flex flex-col hidden md:flex h-screen sticky top-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+<div class="h-16 flex items-center px-6 border-b border-outline-variant/30">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white"><i class="fa-solid fa-building-columns text-sm"></i></div>
+<div><p class="text-base font-bold leading-none text-on-surface">CatatGaji</p><p class="text-[11px] text-on-surface-variant mt-0.5">PT Maju Bersama Logistik</p></div>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto py-5 px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 bg-primary-container text-white rounded-xl text-[13.5px] font-semibold transition-colors shadow-sm" href="#"><i class="fa-solid fa-border-all w-5 text-center"></i> Overview</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-xl text-[13.5px] font-medium transition-colors" href="Dashboard Utama__desktop.html"><i class="fa-solid fa-calculator w-5 text-center"></i> Payroll Processor</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-xl text-[13.5px] font-medium transition-colors" href="Master Data Karyawan__desktop.html"><i class="fa-regular fa-user-group w-5 text-center"></i> Employee Roster</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-xl text-[13.5px] font-medium transition-colors" href="Manajemen Absensi &amp; Rekap Kehadiran__desktop.html"><i class="fa-regular fa-clock w-5 text-center"></i> Time &amp; Attendance</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-xl text-[13.5px] font-medium transition-colors" href="#"><i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i> Tax &amp; PPh21</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-xl text-[13.5px] font-medium transition-colors" href="#">
+<span class="flex items-center gap-3"><i class="fa-solid fa-user-check w-5 text-center"></i> Approvals</span>
+<span class="ml-auto text-[11px] font-semibold bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full">3</span>
+</a>
+</nav>
+<div class="p-3 border-t border-outline-variant/30 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-xl text-[13.5px] font-medium transition-colors" href="#"><i class="fa-solid fa-gear w-5 text-center"></i> System Settings</a>
+<div class="mt-2 pt-2 border-t border-outline-variant/30">
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-container cursor-pointer transition-colors">
+<img alt="Hendra" class="w-8 h-8 rounded-full object-cover border border-outline-variant/50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRhPQm1rqX-vS0G6Iv29Fs9ZMJiZ5nAj1DrxCjWpAcrzAsQYicMLPeHVeeDoLU61ehQirlyMxb0busuli-GeJVjX4-jX8dg_cmj-E0u2mF3jnsTr3e9z5r4nxFjg7UOPNOoAv6MNNKaCmnma5hsPGMXngTyysweL6XWAvM9ozjjTg1Q0n33jeTtpXJot6gxpeEkwBIctkOoyG3h5Kn1OneEBgDIfrzr8Hfp_44tv7A_8tdgerp-Phviw"/>
+<div class="min-w-0 flex-1"><p class="text-[13px] font-bold text-on-surface truncate">Hendra Wijaya</p><p class="text-[11px] text-on-surface-variant truncate">HR Director</p></div>
+</div>
+</div>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0">
+<header class="h-16 bg-surface-container-lowest/80 backdrop-blur-md border-b border-outline-variant/30 flex items-center justify-between px-6 lg:px-8 sticky top-0 z-20 shadow-sm">
+<div class="flex items-center gap-3">
+<button class="md:hidden text-on-surface-variant hover:text-on-surface"><i class="fa-solid fa-bars text-lg"></i></button>
+<h1 class="text-[17px] font-bold text-on-surface">Overview Dashboard</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center bg-surface-container rounded-xl p-1">
+<button class="px-4 py-1.5 text-[12px] font-bold bg-surface-container-lowest shadow-sm rounded-lg text-primary">Company</button>
+<button class="px-4 py-1.5 text-[12px] font-medium text-on-surface-variant hover:text-on-surface">Department</button>
+</div>
+<button class="w-9 h-9 flex items-center justify-center text-on-surface-variant hover:bg-surface-container rounded-xl transition-colors relative">
+<i class="fa-regular fa-bell"></i>
+<span class="absolute top-2 right-2.5 w-1.5 h-1.5 bg-error rounded-full ring-2 ring-surface-container-lowest"></span>
+</button>
+</div>
+</header>
+<main class="flex-1 p-6 lg:p-8 space-y-6 max-w-[1600px] w-full mx-auto">
+<!-- Top Welcome & Headcount -->
+<div class="flex flex-col lg:flex-row gap-6">
+<div class="flex-1 bg-surface-container-lowest rounded-[20px] shadow-sm border border-outline-variant/30 p-6 flex items-center gap-6">
+<div class="w-16 h-16 rounded-[16px] bg-primary-fixed flex items-center justify-center text-primary text-2xl">
+<i class="fa-solid fa-users"></i>
+</div>
+<div>
+<h2 class="text-[13px] font-medium text-on-surface-variant">Total Karyawan Aktif</h2>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-extrabold text-on-surface">124</span>
+<span class="text-[12px] font-bold text-on-secondary-container bg-secondary-container px-2 py-0.5 rounded-full">+4 bln ini</span>
+</div>
+<p class="text-[11px] text-outline mt-1">PT Maju Bersama Logistik · 3 Cabang</p>
+</div>
+</div>
+<div class="flex-1 bg-surface-container-lowest rounded-[20px] shadow-sm border border-outline-variant/30 p-6 flex items-center gap-6">
+<div class="w-16 h-16 rounded-[16px] bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed text-2xl">
+<i class="fa-solid fa-calendar-check"></i>
+</div>
+<div>
+<h2 class="text-[13px] font-medium text-on-surface-variant">Kehadiran Hari Ini</h2>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-extrabold text-on-surface">118</span>
+<span class="text-[12px] font-bold text-on-surface-variant">/ 124</span>
+</div>
+<p class="text-[11px] text-outline mt-1">95.1% Present Rate · 6 Izin/Cuti</p>
+</div>
+</div>
+<div class="flex-1 bg-surface-container-lowest rounded-[20px] shadow-sm border border-outline-variant/30 p-6 flex items-center gap-6">
+<div class="w-16 h-16 rounded-[16px] bg-primary-fixed flex items-center justify-center text-primary text-2xl">
+<i class="fa-solid fa-user-plus"></i>
+</div>
+<div>
+<h2 class="text-[13px] font-medium text-on-surface-variant">Karyawan Baru</h2>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-extrabold text-on-surface">3</span>
+<span class="text-[12px] font-medium text-on-surface-variant">Join Minggu Ini</span>
+</div>
+<p class="text-[11px] text-outline mt-1">1 IT · 2 Operasional</p>
+</div>
+</div>
+</div>
+<!-- Charts & Lists -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Dept Distribution Chart -->
+<div class="lg:col-span-2 bg-surface-container-lowest rounded-[20px] shadow-sm border border-outline-variant/30 p-6">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-[15px] font-bold text-on-surface">Distribusi Karyawan per Departemen</h3>
+<button class="text-on-surface-variant hover:text-on-surface"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+</div>
+<div class="w-full h-[350px]" id="chart-dept"></div>
+</div>
+<!-- Right Side: Anniversary & Birthdays -->
+<div class="lg:col-span-1 space-y-6">
+<div class="bg-surface-container-lowest rounded-[20px] shadow-sm border border-outline-variant/30 overflow-hidden">
+<div class="p-5 border-b border-outline-variant/30 flex items-center justify-between">
+<h3 class="text-[15px] font-bold text-on-surface">Ulang Tahun &amp; Anniversary</h3>
+<span class="text-[11px] font-bold text-primary">Bulan Ini</span>
+</div>
+<div class="p-2 divide-y divide-surface-container">
+<div class="p-3 flex items-center gap-4 hover:bg-surface-container-low rounded-xl transition-colors">
+<img class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUzDnV0bEk9E3B3XuzTuesZgC3tFKgI944uBj9O-z-ysKE3yW4EWbztWakW_BRSlz0_2x0RUmhiM1RnPw0ym7BkCWKHzFqQbaEpLwhfgwAvxan1UGHz4N4L183WC0Inf-wIrEFL6FAG8no8IKqt3AwqjbgExrW2zGEuimUg6qRJAM7Jibhrf_aeCE-q0Vyjh-xoIKN0lEGRjIRXaqBE9ssVYqrS4FRhVajPO9XBarYidkAGxolX9cR5g"/>
+<div class="flex-1 min-w-0">
+<p class="text-[13.5px] font-bold text-on-surface truncate">Rina Sukmawati</p>
+<p class="text-[11px] text-on-surface-variant">Ulang Tahun · 12 Nov</p>
+</div>
+<div class="w-8 h-8 rounded-xl bg-primary-fixed flex items-center justify-center text-primary">
+<i class="fa-solid fa-cake-candles text-[12px]"></i>
+</div>
+</div>
+<div class="p-3 flex items-center gap-4 hover:bg-surface-container-low rounded-xl transition-colors">
+<img class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4DdHzgfLfy0joFLLOGuc0Gp_UHxsRq3hAO0dePj5qLm3Bj_crKEnChXRODi2AP88CviGvU1j1qrFTZLzl18vVOAhtN4FCj_eSiZhqYOUZgDkTQELQQf6KVxz2yGYWHiqfBMK5RuUmYQ0plxnsuF7rdIzdQXgdZhLKz0DMtyHW88D82txTe08nWN0B-O7B5nGMdHHH4C3SFK5AT_3WKnm3ZXt5gISounUqXz4M4Lq8KLAGYpCE9-m57g"/>
+<div class="flex-1 min-w-0">
+<p class="text-[13.5px] font-bold text-on-surface truncate">Bambang Wijaya</p>
+<p class="text-[11px] text-on-surface-variant">Work Anniversary (2 thn) · 15 Nov</p>
+</div>
+<div class="w-8 h-8 rounded-xl bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+<i class="fa-solid fa-medal text-[12px]"></i>
+</div>
+</div>
+<div class="p-3 flex items-center gap-4 hover:bg-surface-container-low rounded-xl transition-colors">
+<img class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBovAKWq2ZGvKNiGcFc6EMBnwwCiE6FPcINv0-rEU3_EEFvBfhxLeB138Q6yYhawG3h0CuoYvZP6L2MFR9K4lvipG-txUhGRsna5oDswpEVad43kUlummKK_nJUsoG7-dZ7uldFJ3MHZAzh4XQsnNdDL0482vCa7hjaAN8pkPnkcAsQy8Kh9IiBmmqHPzzO58Y664ZRTD89TIWhUX0DAwWCa5kZiZLwFiIXiVrPgFQOVYxU3y32Z5eSHQ"/>
+<div class="flex-1 min-w-0">
+<p class="text-[13.5px] font-bold text-on-surface truncate">Adi Pratama</p>
+<p class="text-[11px] text-on-surface-variant">Ulang Tahun · 20 Nov</p>
+</div>
+<div class="w-8 h-8 rounded-xl bg-primary-fixed flex items-center justify-center text-primary">
+<i class="fa-solid fa-cake-candles text-[12px]"></i>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-surface-container text-center">
+<button class="text-[13px] font-bold text-primary hover:underline">Lihat Kalender Event</button>
+</div>
+</div>
+<div class="bg-primary rounded-[20px] shadow-lg p-6 text-white relative overflow-hidden">
+<i class="fa-solid fa-bullhorn absolute -right-4 -bottom-4 text-white/5 text-8xl -rotate-12"></i>
+<h4 class="text-[14px] font-extrabold mb-2 text-on-primary">Pengumuman Terbaru</h4>
+<p class="text-[12px] text-primary-fixed-dim leading-relaxed mb-4">Reminder: Pengumpulan dokumen pajak PPh21 tahunan paling lambat akhir bulan ini.</p>
+<button class="bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md px-4 py-2.5 rounded-xl text-[12px] font-bold transition-all text-on-primary">Baca Selengkapnya</button>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Quick Access & Recent Hires -->
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+<div class="lg:col-span-1 bg-surface-container-lowest rounded-[20px] shadow-sm border border-outline-variant/30 p-5">
+<h3 class="text-[15px] font-bold text-on-surface mb-4">Akses Cepat</h3>
+<div class="grid grid-cols-2 gap-3">
+<a class="p-3 rounded-[16px] border border-outline-variant/50 hover:border-primary hover:bg-primary-fixed/30 transition-all text-center group" href="Master Data Karyawan__desktop.html">
+<i class="fa-solid fa-user-plus text-lg text-on-surface-variant group-hover:text-primary mb-2"></i>
+<p class="text-[11px] font-bold text-on-surface-variant group-hover:text-primary leading-tight">Tambah Karyawan</p>
+</a>
+<a class="p-3 rounded-[16px] border border-outline-variant/50 hover:border-primary hover:bg-primary-fixed/30 transition-all text-center group" href="Dashboard Utama__desktop.html">
+<i class="fa-solid fa-calculator text-lg text-on-surface-variant group-hover:text-primary mb-2"></i>
+<p class="text-[11px] font-bold text-on-surface-variant group-hover:text-primary leading-tight">Proses Payroll</p>
+</a>
+<a class="p-3 rounded-[16px] border border-outline-variant/50 hover:border-primary hover:bg-primary-fixed/30 transition-all text-center group" href="Manajemen Absensi &amp; Rekap Kehadiran__desktop.html">
+<i class="fa-solid fa-clock-rotate-left text-lg text-on-surface-variant group-hover:text-primary mb-2"></i>
+<p class="text-[11px] font-bold text-on-surface-variant group-hover:text-primary leading-tight">Rekap Absen</p>
+</a>
+<a class="p-3 rounded-[16px] border border-outline-variant/50 hover:border-primary hover:bg-primary-fixed/30 transition-all text-center group" href="#">
+<i class="fa-solid fa-file-export text-lg text-on-surface-variant group-hover:text-primary mb-2"></i>
+<p class="text-[11px] font-bold text-on-surface-variant group-hover:text-primary leading-tight">Export Laporan</p>
+</a>
+</div>
+</div>
+<div class="lg:col-span-3 bg-surface-container-lowest rounded-[20px] shadow-sm border border-outline-variant/30 overflow-hidden">
+<div class="px-6 py-4 border-b border-outline-variant/30 flex items-center justify-between">
+<h3 class="text-[15px] font-bold text-on-surface">Karyawan Baru Terdaftar</h3>
+<button class="text-[12px] font-bold text-primary hover:underline">Lihat Semua</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left whitespace-nowrap">
+<thead>
+<tr class="text-[11px] uppercase tracking-wider text-on-surface-variant font-bold bg-surface-container-low">
+<th class="py-3 px-6">Nama</th>
+<th class="py-3 px-6">Departemen</th>
+<th class="py-3 px-6">Tanggal Join</th>
+<th class="py-3 px-6">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container text-[13px]">
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 px-6 flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9F-s2zP3UzUOHtAaHMyp1vCUGJo6j84Zy7VtznQLOwLXzLBK30tZTr6qnItg14G5y0xMxq3lhv-0YE4GRoF3YippoUcDtkrPVCH2P2K97SV2lgaH97odnzqB_kUl-w5iP6ZLCmW1KyWX_c9Vp0v8vA7BtXq6Hj5M3DDW5xf9cPwYu4rNuPQhwvVSdAIEl9kPAEvubz8T3FGVM5dcxKCuUgvOCnIwZUYr12EkBdaYbLwD-Ols0ShdjMg"/>
+<span class="font-bold text-on-surface">Doni Setiawan</span>
+</td>
+<td class="py-4 px-6 text-on-surface-variant">Operasional (Jakarta)</td>
+<td class="py-4 px-6 text-on-surface-variant">1 Nov 2024</td>
+<td class="py-4 px-6"><span class="px-2 py-1 bg-warning-amber text-on-surface-variant rounded-md text-[11px] font-bold">Probation</span></td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 px-6 flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnPMzx05FvMex6qq9NSuB8gerXAaaPMyZD-AN9_Z53EcSpDRtbkVqQR3T5QG3w28rpEPRW58xxBZSOoWZQowXocc21O5v9-kiAelikrdhf0-qALmsu9uz-7Gm8eow9TWrJAOhs9besJ3fHZZkuYhFUPWVt-oavJlpQ1vw6ISvsRPNbdDdkwLr3wAOFEZ1i3SbqknQp5YIYwzu5HQJ5yri22Mrq8vlkOFqWUEO8ZX8KQkY5P-qTVu8BVg"/>
+<span class="font-bold text-on-surface">Siska Amalia</span>
+</td>
+<td class="py-4 px-6 text-on-surface-variant">Teknologi Informasi</td>
+<td class="py-4 px-6 text-on-surface-variant">28 Okt 2024</td>
+<td class="py-4 px-6"><span class="px-2 py-1 bg-success-green text-on-secondary-container rounded-md text-[11px] font-bold">Tetap</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+window.addEventListener('load', function() {
+    try {
+        const data = [{
+            type: 'bar',
+            x: ['Operasional', 'Logistik', 'Keuangan', 'IT', 'SDM', 'Marketing'],
+            y: [45, 32, 12, 18, 8, 9],
+            marker: {
+                color: '#0050cb',
+                opacity: 0.9,
+                line: {
+                    color: '#0050cb',
+                    width: 1
+                }
+            },
+            hovertemplate: '<b>%{x}</b><br>Karyawan: %{y}<extra></extra>'
+        }];
+
+        const layout = {
+            margin: { t: 10, r: 20, b: 40, l: 40 },
+            plot_bgcolor: 'transparent',
+            paper_bgcolor: 'transparent',
+            font: {
+                family: 'Plus Jakarta Sans, sans-serif'
+            },
+            xaxis: {
+                tickfont: { size: 11, color: '#424656' },
+                gridcolor: '#e5eeff'
+            },
+            yaxis: {
+                tickfont: { size: 11, color: '#424656' },
+                gridcolor: '#e5eeff'
+            },
+            bargap: 0.4
+        };
+
+        const config = { responsive: true, displayModeBar: false, displaylogo: false };
+        Plotly.newPlot('chart-dept', data, layout, config);
+    } catch(e) {
+        console.error("Plotly error", e);
+    }
+});
+</script>
+</body></html>

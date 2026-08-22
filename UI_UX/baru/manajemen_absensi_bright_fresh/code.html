@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+<script crossorigin="anonymous" referrerpolicy="no-referrer" src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Manajemen Absensi — CatatGaji</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer" rel="stylesheet"/>
+<script>
+tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "success-green": "#ECFDF5",
+                "secondary": "#006c49",
+                "on-primary-fixed-variant": "#003fa4",
+                "secondary-fixed-dim": "#4edea3",
+                "outline": "#727687",
+                "on-primary-container": "#f8f7ff",
+                "error-container": "#ffdad6",
+                "background": "#f8f9ff",
+                "on-tertiary": "#ffffff",
+                "surface-accent": "#F1F5F9",
+                "tertiary-container": "#5d60eb",
+                "tertiary": "#4345d1",
+                "primary-fixed": "#dae1ff",
+                "on-surface": "#0b1c30",
+                "on-background": "#0b1c30",
+                "primary-fixed-dim": "#b3c5ff",
+                "on-primary": "#ffffff",
+                "on-tertiary-fixed-variant": "#2f2ebe",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-high": "#dce9ff",
+                "tertiary-fixed": "#e1e0ff",
+                "on-secondary": "#ffffff",
+                "warning-amber": "#FFFBEB",
+                "on-primary-fixed": "#001849",
+                "surface-bright": "#f8f9ff",
+                "surface-soft": "#F8FAFC",
+                "tertiary-fixed-dim": "#c0c1ff",
+                "surface-dim": "#cbdbf5",
+                "surface": "#f8f9ff",
+                "on-error-container": "#93000a",
+                "secondary-container": "#6cf8bb",
+                "surface-container-highest": "#d3e4fe",
+                "on-secondary-fixed-variant": "#005236",
+                "on-surface-variant": "#424656",
+                "secondary-fixed": "#6ffbbe",
+                "inverse-surface": "#213145",
+                "on-tertiary-fixed": "#07006c",
+                "info-blue": "#EBF5FF",
+                "on-error": "#ffffff",
+                "on-secondary-fixed": "#002113",
+                "inverse-primary": "#b3c5ff",
+                "surface-white": "#FFFFFF",
+                "surface-tint": "#0054d6",
+                "primary-container": "#0066ff",
+                "error": "#ba1a1a",
+                "on-tertiary-container": "#faf6ff",
+                "surface-container-low": "#eff4ff",
+                "surface-variant": "#d3e4fe",
+                "inverse-on-surface": "#eaf1ff",
+                "on-secondary-container": "#00714d",
+                "primary": "#0050cb",
+                "surface-container": "#e5eeff",
+                "outline-variant": "#c2c6d8"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "container-max": "1440px",
+                "margin-desktop": "32px",
+                "gutter": "24px",
+                "unit": "4px",
+                "margin-mobile": "16px"
+        },
+        "fontFamily": {
+                "headline-xl-mobile": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-lg": [
+                        "Plus Jakarta Sans"
+                ],
+                "label-sm": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-lg": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-sm": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-md": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-xl": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-md": [
+                        "Plus Jakarta Sans"
+                ],
+                "label-md": [
+                        "Plus Jakarta Sans"
+                ]
+        },
+        "fontSize": {
+                "headline-xl-mobile": [
+                        "30px",
+                        {
+                                "lineHeight": "36px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-lg": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-sm": [
+                        "11px",
+                        {
+                                "lineHeight": "14px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-lg": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-sm": [
+                        "13px",
+                        {
+                                "lineHeight": "18px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "18px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-xl": [
+                        "40px",
+                        {
+                                "lineHeight": "48px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-md": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                        }
+                ]
+        }
+      }
+    }
+}
+</script>
+<style>
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c2c6d8; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #727687; }
+</style>
+</head>
+<body class="bg-surface text-on-surface font-sans antialiased min-h-screen flex w-full">
+<!-- Sidebar -->
+<aside class="w-[260px] bg-white border-r border-surface-container-high flex-shrink-0 flex flex-col hidden md:flex h-screen sticky top-0">
+<div class="h-16 flex items-center px-6 border-b border-surface-container">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white"><i class="fa-solid fa-building-columns text-sm"></i></div>
+<div><p class="text-base font-semibold leading-none text-on-surface">CatatGaji</p><p class="text-[11px] text-outline mt-0.5">PT Maju Bersama Logistik</p></div>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto py-5 px-3 space-y-0.5">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="Dashboard Utama__desktop.html"><i class="fa-solid fa-border-all w-5 text-center"></i> Overview</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="#"><i class="fa-solid fa-calculator w-5 text-center"></i> Payroll Processor</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="Master Data Karyawan__desktop.html"><i class="fa-regular fa-user-group w-5 text-center"></i> Employee Roster</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary-fixed text-primary rounded-lg text-[13.5px] font-semibold transition-colors" href="#"><i class="fa-regular fa-clock w-5 text-center"></i> Time &amp; Attendance</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="#"><i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i> Tax &amp; PPh21</a>
+</nav>
+<div class="p-3 border-t border-surface-container-high">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-container-low cursor-pointer transition-colors">
+<img alt="Hendra" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-gqRY4jTRKhD7U7o9HeMh6U2Sx35s6TvBNHez7FYft3xSnqxgbhteKbgZuEiZ6nMSEXK5eNW0ihxf_KHw78_XC8J5WMaQuSl6Y4b2hl36joaKH2CpyyEAezudrF8eQ-zGHFZLJvmMasr2NkOR75YqvP08EpskgwRHBFjFZpSB_fuibojYxd1NkFOGn9h4ZQTpHy2oJYjhzNvXQoXDfJ_JV8_7dq3301p58bdHRfFSGr3E-P5h9aaqMg"/>
+<div class="min-w-0 flex-1"><p class="text-[13px] font-semibold text-on-surface truncate">Hendra Wijaya</p><p class="text-[11px] text-outline truncate">HR Director</p></div>
+</div>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0">
+<header class="h-16 bg-white border-b border-surface-container-high flex items-center justify-between px-6 lg:px-8 sticky top-0 z-20">
+<div class="flex items-center gap-3">
+<h1 class="text-[17px] font-semibold text-on-surface">Manajemen Absensi &amp; Kehadiran</h1>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex bg-surface-container-low p-1 rounded-lg">
+<button class="px-3 py-1.5 text-[12px] font-semibold bg-white rounded-md shadow-sm text-primary">Kalender Rekap</button>
+<button class="px-3 py-1.5 text-[12px] font-medium text-on-surface-variant hover:text-on-surface">Log Harian</button>
+<button class="px-3 py-1.5 text-[12px] font-medium text-on-surface-variant hover:text-on-surface">Geofence Map</button>
+</div>
+<button class="bg-white border border-outline-variant hover:bg-surface-container-low text-on-surface-variant text-[13px] font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2"><i class="fa-solid fa-file-export text-[11px]"></i> Export Rekap</button>
+</div>
+</header>
+<main class="flex-1 p-6 lg:p-8 space-y-6">
+<!-- Top Stats -->
+<section class="bg-white border border-outline-variant rounded-xl p-5 flex flex-wrap gap-10 items-center justify-between">
+<div class="flex gap-4 items-center">
+<div class="w-10 h-10 bg-surface-container-low rounded-lg flex items-center justify-center border border-outline-variant">
+<i class="fa-solid fa-calendar-days text-primary"></i>
+</div>
+<div>
+<p class="text-[11px] font-semibold text-outline uppercase tracking-wider">Periode Aktif</p>
+<div class="flex items-center gap-2">
+<p class="text-sm font-bold text-on-surface">Agustus 2026</p>
+<i class="fa-solid fa-chevron-down text-[10px] text-outline-variant"></i>
+</div>
+</div>
+</div>
+<div class="flex-1 flex justify-around border-l border-surface-container-high pl-10">
+<div class="text-center">
+<p class="text-[11px] font-semibold text-outline uppercase mb-1">Tepat Waktu</p>
+<p class="text-lg font-bold text-secondary">94.2%</p>
+</div>
+<div class="text-center">
+<p class="text-[11px] font-semibold text-outline uppercase mb-1">Terlambat</p>
+<p class="text-lg font-bold text-tertiary">4.8%</p>
+</div>
+<div class="text-center">
+<p class="text-[11px] font-semibold text-outline uppercase mb-1">Cuti / Izin</p>
+<p class="text-lg font-bold text-primary">1.0%</p>
+</div>
+<div class="text-center">
+<p class="text-[11px] font-semibold text-outline uppercase mb-1">Tanpa Ket.</p>
+<p class="text-lg font-bold text-error">0.0%</p>
+</div>
+</div>
+</section>
+<!-- Calendar Table -->
+<section class="bg-white rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+<div class="p-4 border-b border-surface-container-high flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5 text-[11px] text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Hadir
+                </div>
+<div class="flex items-center gap-1.5 text-[11px] text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span> Terlambat
+                </div>
+<div class="flex items-center gap-1.5 text-[11px] text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Cuti/Libur
+                </div>
+<div class="flex items-center gap-1.5 text-[11px] text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-error"></span> Mangkir
+                </div>
+</div>
+<div class="flex items-center gap-2">
+<select class="px-3 py-1.5 text-[12px] border border-outline-variant rounded-lg focus:outline-none bg-white font-medium text-on-surface-variant">
+<option>Semua Departemen</option>
+<option>IT</option>
+<option>Operasional</option>
+</select>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left whitespace-nowrap border-collapse">
+<thead>
+<tr class="text-[10px] uppercase tracking-wider text-outline border-b border-surface-container-high bg-surface-container-low/50">
+<th class="py-3 px-5 font-semibold sticky left-0 bg-surface-container-low z-10 w-48">Karyawan (Dept)</th>
+<th class="py-3 px-2 font-semibold text-center w-10">1</th>
+<th class="py-3 px-2 font-semibold text-center w-10">2</th>
+<th class="py-3 px-2 font-semibold text-center w-10">3</th>
+<th class="py-3 px-2 font-semibold text-center w-10 bg-surface-container-high/50">4</th>
+<th class="py-3 px-2 font-semibold text-center w-10">5</th>
+<th class="py-3 px-2 font-semibold text-center w-10">...</th>
+<th class="py-3 px-2 font-semibold text-center w-10">31</th>
+<th class="py-3 px-5 font-semibold text-right">Total H/T</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-high text-[12.5px]">
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-3 px-5 sticky left-0 bg-white border-r border-surface-container-high">
+<div class="flex items-center gap-2">
+<img class="w-7 h-7 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7b5xPKklY_iXG_H9ui9uklPV5b2N1lrXz6ODuh2uOBNFvme0ZczbHY8_zd2ohcz7W2ZGi-AjX0DOpqbpLYvQTyMGYNNoxBcVKGEBwW8Y3uy0eGRXFlXIePKIxSQnAQu6emNoStXqH5h1qOha2kttpYsGI5U0Robl-EkqWwEtZhA4yJvd1714DlradEbaBNMlKiQrmI85KtNPY_7iPwjta_Hr9W47zMUn7qtDup7WE2_CJlSomVDcXPw"/>
+<div>
+<p class="font-semibold text-on-surface">Ahmad Fauzi</p>
+<p class="text-[10px] text-outline">IT Support</p>
+</div>
+</div>
+</td>
+<td class="py-3 px-2 text-center"><span class="w-6 h-6 inline-flex items-center justify-center rounded-md bg-secondary/10 text-secondary text-[10px] font-bold">V</span></td>
+<td class="py-3 px-2 text-center"><span class="w-6 h-6 inline-flex items-center justify-center rounded-md bg-surface-container-high text-outline-variant text-[10px] font-bold">L</span></td>
+<td class="py-3 px-2 text-center"><span class="w-6 h-6 inline-flex items-center justify-center rounded-md bg-surface-container-high text-outline-variant text-[10px] font-bold">L</span></td>
+<td class="py-3 px-2 text-center bg-surface-container-low/50"><span class="w-6 h-6 inline-flex items-center justify-center rounded-md bg-secondary/10 text-secondary text-[10px] font-bold">V</span></td>
+<td class="py-3 px-2 text-center cursor-pointer" onclick="openDrawer()"><span class="w-6 h-6 inline-flex items-center justify-center rounded-md bg-tertiary/10 text-tertiary text-[10px] font-bold">T15</span></td>
+<td class="py-3 px-2 text-center text-outline-variant">...</td>
+<td class="py-3 px-2 text-center"><span class="w-6 h-6 inline-flex items-center justify-center rounded-md bg-secondary/10 text-secondary text-[10px] font-bold">V</span></td>
+<td class="py-3 px-5 text-right font-semibold text-on-surface-variant">21 H / 1 T</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-3 px-5 sticky left-0 bg-white border-r border-surface-container-high">
+<div class="flex items-center gap-2">
+<img class="w-7 h-7 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3HnuhShBCMK2TOHuh7RfkvZvm1XYupxq0Ue6ZE8bw_lACNQBGjWqpfyPHJ_w6o3o-UvNNgKJlidAc26thj9Sm239aPtTYVmkZDTL78bxgWemfjSNefA6s-b9mRifrAG_efM7UQJ0-nnNcLZ6Oz0y0lu_UFQZHwI-ukp7NIlNFZdf7lF4MotdwTymGpF06A4VR9SOc5yN8X2PBJ8CPs-HOcpF4gw2ifg6MqEK7E9Xo4mvSyTKGqvntbQ"/>
+<div>
+<p class="font-semibold text-on-surface">Budi Prasetyo</p>
+<p class="text-[10px] text-outline">Barista</p>
+</div>
+</div>
+</td>
+<td class="py-3 px-2 text-center"><span class="w-6 h-6 inline-flex items-center justify-center rounded-md bg-secondary/10 text-secondary text-[10px] font-bold">V</span></td>
+<td class="py-3 px-2 text-center"><span class="w-6 h-6 inline-flex items-center justify-center rounded-md bg-secondary/10 text-secondary text-[10px] font-bold">V</span></td>
+<td class="py-3 px-2 text-center"><span class="w-6 h-6 inline-flex items-center justify-center rounded-md bg-surface-container-high text-outline-variant text-[10px] font-bold">L</span></td>
+<td class="py-3 px-2 text-center bg-surface-container-low/50"><span class="w-6 h-6 inline-flex items-center justify-center rounded-md bg-primary/10 text-primary text-[10px] font-bold">C</span></td>
+<td class="py-3 px-2 text-center"><span class="w-6 h-6 inline-flex items-center justify-center rounded-md bg-secondary/10 text-secondary text-[10px] font-bold">V</span></td>
+<td class="py-3 px-2 text-center text-outline-variant">...</td>
+<td class="py-3 px-2 text-center"><span class="w-6 h-6 inline-flex items-center justify-center rounded-md bg-secondary/10 text-secondary text-[10px] font-bold">V</span></td>
+<td class="py-3 px-5 text-right font-semibold text-on-surface-variant">20 H / 0 T</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Detail Drawer (UI Interaction for Layer 3) -->
+<div class="fixed inset-y-0 right-0 w-96 bg-white shadow-2xl border-l border-outline-variant z-50 transform translate-x-full transition-transform duration-300 flex flex-col" id="drawer">
+<div class="p-6 border-b border-surface-container-high flex items-center justify-between">
+<div>
+<h3 class="text-base font-bold text-on-surface">Log Detail Kehadiran</h3>
+<p class="text-[12px] text-outline">5 Agustus 2026</p>
+</div>
+<button class="text-outline hover:text-on-surface" onclick="closeDrawer()"><i class="fa-solid fa-xmark text-lg"></i></button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-8">
+<div class="flex items-center gap-4">
+<img class="w-12 h-12 rounded-xl object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIR0tT5Xc6G9NX2sqdP4Eq2HBQlhVXV1zaweLTfqjcGZaUYeZbacvB-tbn21zG6InWDek-hb2f_jKvR-drbL_Yssaq_Xw8LMykVZqtUSnSVKJ-ckfJPESfmHCkBLTg-yxW8omGFSfdX4mmbS0o3Xr4JUvGD2UFRgZc_MCl2ahPewoK8mdNiUvWudbCFCgLvllyGBzzat56D630OhfrgG84iV-J56u5Dbmv1bT7JK6salVDTT6A6sPyIQ"/>
+<div>
+<p class="text-[14px] font-bold text-on-surface">Ahmad Fauzi</p>
+<p class="text-[12px] text-outline">Jakarta Pusat — IT Support</p>
+</div>
+</div>
+<div class="space-y-6">
+<div class="relative pl-6 border-l-2 border-primary pb-4">
+<span class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-primary border-4 border-white shadow-sm"></span>
+<p class="text-[11px] font-bold text-primary uppercase mb-1">Jam Masuk (Clock-In)</p>
+<p class="text-lg font-bold text-on-surface leading-none">08:15 WIB</p>
+<p class="text-[12px] text-tertiary font-semibold mt-1 flex items-center gap-1"><i class="fa-solid fa-clock"></i> Terlambat 15 Menit</p>
+<div class="mt-4 bg-surface-container-low rounded-xl p-3 border border-surface-container-high">
+<p class="text-[11px] font-semibold text-outline mb-2">Verifikasi Selfie &amp; Lokasi</p>
+<div class="flex gap-3">
+<img alt="selfie portrait of male employee in office, casual work attire, clear lighting" class="w-20 h-24 rounded-lg object-cover border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtWqQS0KkAmzbYh25LbTb7eC-di_w9ylytkEttKkkvs0YiJyhMTR8xAPZpzrTEQgaKnxLvIJGegBiMWt1lM75Mgo9RHT6Z-RwAZH4-m0O8qFWX-7C31Z0v2UQLrVc5RnIDgx79rHO01LLwee5aJktv9fUssEz24VuXl9JitKCQfQ7OryLatcEISVmGmtvovk5JQcE-TDq56KsIR190K85WBBrpFvAwmWxPtO_Lj0Y_GO3KdRjfxsJvGA"/>
+<div class="flex-1">
+<div class="flex items-center gap-2 text-[12px] font-medium text-on-surface-variant">
+<i class="fa-solid fa-location-dot text-primary"></i> 12m dari Outlet
+                                </div>
+<p class="text-[11px] text-outline-variant mt-1">Status: <span class="text-secondary font-bold">Terverifikasi (Radius OK)</span></p>
+<button class="mt-2 text-[11px] font-bold text-primary hover:underline">Lihat di Peta <i class="fa-solid fa-arrow-up-right-from-square text-[9px] ml-1"></i></button>
+</div>
+</div>
+</div>
+</div>
+<div class="relative pl-6 border-l-2 border-surface-container-high">
+<span class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-outline-variant border-4 border-white shadow-sm"></span>
+<p class="text-[11px] font-bold text-outline uppercase mb-1">Jam Pulang (Clock-Out)</p>
+<p class="text-lg font-bold text-outline-variant leading-none">Belum Absen</p>
+<p class="text-[11px] text-outline-variant mt-2 italic">Estimasi pulang: 17:00 WIB</p>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-surface-container-high bg-surface-container-low/50">
+<button class="w-full py-2.5 bg-primary hover:bg-primary-container text-white text-[13px] font-bold rounded-xl shadow-md shadow-primary/10 transition-colors">Verifikasi Absensi Ini</button>
+</div>
+</div>
+</main>
+</div>
+<script>
+function openDrawer() {
+    document.getElementById('drawer').classList.remove('translate-x-full');
+}
+function closeDrawer() {
+    document.getElementById('drawer').classList.add('translate-x-full');
+}
+</script>
+</body></html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+<script crossorigin="anonymous" referrerpolicy="no-referrer" src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CatatGaji — Payroll Processor</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "success-green": "#ECFDF5",
+                "secondary": "#006c49",
+                "on-primary-fixed-variant": "#003fa4",
+                "secondary-fixed-dim": "#4edea3",
+                "outline": "#727687",
+                "on-primary-container": "#f8f7ff",
+                "error-container": "#ffdad6",
+                "background": "#f8f9ff",
+                "on-tertiary": "#ffffff",
+                "surface-accent": "#F1F5F9",
+                "tertiary-container": "#5d60eb",
+                "tertiary": "#4345d1",
+                "primary-fixed": "#dae1ff",
+                "on-surface": "#0b1c30",
+                "on-background": "#0b1c30",
+                "primary-fixed-dim": "#b3c5ff",
+                "on-primary": "#ffffff",
+                "on-tertiary-fixed-variant": "#2f2ebe",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-high": "#dce9ff",
+                "tertiary-fixed": "#e1e0ff",
+                "on-secondary": "#ffffff",
+                "warning-amber": "#FFFBEB",
+                "on-primary-fixed": "#001849",
+                "surface-bright": "#f8f9ff",
+                "surface-soft": "#F8FAFC",
+                "tertiary-fixed-dim": "#c0c1ff",
+                "surface-dim": "#cbdbf5",
+                "surface": "#f8f9ff",
+                "on-error-container": "#93000a",
+                "secondary-container": "#6cf8bb",
+                "surface-container-highest": "#d3e4fe",
+                "on-secondary-fixed-variant": "#005236",
+                "on-surface-variant": "#424656",
+                "secondary-fixed": "#6ffbbe",
+                "inverse-surface": "#213145",
+                "on-tertiary-fixed": "#07006c",
+                "info-blue": "#EBF5FF",
+                "on-error": "#ffffff",
+                "on-secondary-fixed": "#002113",
+                "inverse-primary": "#b3c5ff",
+                "surface-white": "#FFFFFF",
+                "surface-tint": "#0054d6",
+                "primary-container": "#0066ff",
+                "error": "#ba1a1a",
+                "on-tertiary-container": "#faf6ff",
+                "surface-container-low": "#eff4ff",
+                "surface-variant": "#d3e4fe",
+                "inverse-on-surface": "#eaf1ff",
+                "on-secondary-container": "#00714d",
+                "primary": "#0050cb",
+                "surface-container": "#e5eeff",
+                "outline-variant": "#c2c6d8"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "container-max": "1440px",
+                "margin-desktop": "32px",
+                "gutter": "24px",
+                "unit": "4px",
+                "margin-mobile": "16px"
+        },
+        "fontFamily": {
+                "headline-xl-mobile": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-lg": [
+                        "Plus Jakarta Sans"
+                ],
+                "label-sm": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-lg": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-sm": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-md": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-xl": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-md": [
+                        "Plus Jakarta Sans"
+                ],
+                "label-md": [
+                        "Plus Jakarta Sans"
+                ]
+        },
+        "fontSize": {
+                "headline-xl-mobile": [
+                        "30px",
+                        {
+                                "lineHeight": "36px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-lg": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-sm": [
+                        "11px",
+                        {
+                                "lineHeight": "14px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-lg": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-sm": [
+                        "13px",
+                        {
+                                "lineHeight": "18px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "18px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-xl": [
+                        "40px",
+                        {
+                                "lineHeight": "48px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-md": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c2c6d8; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #727687; }
+.apexcharts-tooltip { border: 1px solid #dce9ff !important; box-shadow: 0 6px 18px -8px rgba(11,28,48,.25) !important; border-radius: 10px !important; font-family: 'Plus Jakarta Sans', sans-serif !important; }
+</style>
+</head>
+<body class="bg-background text-on-surface font-['Plus_Jakarta_Sans'] antialiased min-h-screen flex w-full">
+<aside class="w-[260px] bg-surface-container-lowest border-r border-surface-container flex-shrink-0 flex flex-col hidden md:flex h-screen sticky top-0">
+<div class="h-16 flex items-center px-6 border-b border-surface-container">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary"><i class="fa-solid fa-building-columns text-sm"></i></div>
+<div><p class="text-base font-semibold leading-none text-on-surface">CatatGaji</p><p class="text-[11px] text-on-surface-variant mt-0.5">PT Maju Bersama Logistik</p></div>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto py-5 px-3 space-y-0.5">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="#"><i class="fa-solid fa-border-all w-5 text-center"></i> Overview</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary-fixed text-on-primary-fixed rounded-lg text-[13.5px] font-semibold transition-colors" href="#"><i class="fa-solid fa-calculator w-5 text-center"></i> Payroll Processor</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="#"><i class="fa-regular fa-user-group w-5 text-center"></i> Employee Roster</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="#"><i class="fa-regular fa-clock w-5 text-center"></i> Time &amp; Attendance</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="#"><i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i> Tax &amp; PPh21</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="#">
+<span class="flex items-center gap-3"><i class="fa-solid fa-user-check w-5 text-center"></i> Approvals</span>
+<span class="ml-auto text-[11px] font-semibold bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full">3 pending</span>
+</a>
+</nav>
+<div class="p-3 border-t border-surface-container space-y-0.5">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="#"><i class="fa-solid fa-gear w-5 text-center"></i> System Settings</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-[13.5px] font-medium transition-colors" href="#"><i class="fa-regular fa-circle-question w-5 text-center"></i> Help &amp; Docs</a>
+<div class="mt-2 pt-2 border-t border-surface-container">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-container-low cursor-pointer transition-colors">
+<img alt="Hendra" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfrIzAOw4HIwq1mz2HlD4J2BCP0JhvM6JgfiLs-mgT9U5CaFBfi4fZlATuGvjbgnP2hSZWDPIlBjEANuFyJwoE8nVjDz8AiHldhn62tMiqays2yM_7pTgFl4e6ygmGPSwRz_ndbWcV6zxivGWAvKKWztD78qDI-37uul1u6yN78TqHHzXz5p3e_G-KrlRB8teS9WlucsfGJfYUaKQpfISwp8mqnaV_WdH-8B30ZbYFk-8dLlYjMOhhvg"/>
+<div class="min-w-0 flex-1"><p class="text-[13px] font-semibold text-on-surface truncate">Hendra Wijaya</p><p class="text-[11px] text-on-surface-variant truncate">HR Director</p></div>
+<i class="fa-solid fa-chevron-down text-[11px] text-outline-variant"></i>
+</div>
+</div>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0">
+<header class="h-16 bg-surface-container-lowest border-b border-surface-container flex items-center justify-between px-6 lg:px-8 sticky top-0 z-20">
+<div class="flex items-center gap-3">
+<button class="md:hidden text-on-surface-variant hover:text-on-surface"><i class="fa-solid fa-bars text-lg"></i></button>
+<h1 class="text-[17px] font-semibold text-on-surface">PT Maju Bersama Logistik</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-outline text-xs"></i>
+<input class="pl-9 pr-3 py-2 text-[13px] bg-surface-container-lowest border border-outline-variant rounded-lg w-64 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder-outline" placeholder="Cari data karyawan..." type="text"/>
+</div>
+<div class="flex items-center gap-2 pl-4 border-l border-surface-container">
+<button class="w-9 h-9 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors relative">
+<i class="fa-regular fa-bell"></i>
+<span class="absolute top-2 right-2.5 w-1.5 h-1.5 bg-error rounded-full ring-2 ring-surface-container-lowest"></span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors"><i class="fa-solid fa-gear"></i></button>
+</div>
+<button class="hidden md:flex items-center gap-2 bg-surface-container-lowest border border-outline-variant rounded-lg px-3 py-2 text-[13px] font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors shadow-sm">
+<i class="fa-regular fa-calendar text-outline"></i> 1 Nov 2024 - 30 Nov 2024 <i class="fa-solid fa-chevron-down text-[10px] text-outline ml-1"></i>
+</button>
+</div>
+</header>
+<main class="flex-1 p-6 lg:p-8 space-y-6 max-w-[1600px] w-full mx-auto">
+<!-- Hero banner -->
+<section class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container p-6 lg:p-7 flex flex-col md:flex-row md:items-center justify-between gap-5 relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary"></div>
+<div class="pl-3">
+<p class="text-[13px] font-medium text-on-surface-variant mb-1">Total Payroll Bulan Ini</p>
+<div class="flex items-end gap-3 flex-wrap">
+<h2 class="text-[32px] leading-none font-bold text-on-surface tracking-tight">Rp 245.850.000</h2>
+<span class="inline-flex items-center gap-1 bg-success-green text-secondary text-[12px] font-semibold px-2 py-1 rounded-md mb-1"><i class="fa-solid fa-arrow-trend-up text-[10px]"></i> +4.2% vs bln lalu</span>
+</div>
+<p class="text-[12px] text-outline mt-2">55 karyawan · diproses otomatis · tanggal potong 25 Nov</p>
+</div>
+<div class="flex items-center gap-3 flex-wrap">
+<button class="bg-primary hover:bg-primary-container text-on-primary text-[13px] font-semibold px-4 py-2.5 rounded-lg shadow-sm transition-colors flex items-center gap-2"><i class="fa-solid fa-play text-[11px]"></i> Proses Gaji</button>
+<button class="bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-low text-on-surface-variant text-[13px] font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2"><i class="fa-solid fa-paper-plane text-[11px]"></i> Kirim Slip Gaji</button>
+</div>
+</section>
+<!-- KPI row -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<article class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container p-5">
+<div class="flex items-start justify-between mb-3">
+<div class="w-9 h-9 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center"><i class="fa-solid fa-clock text-sm"></i></div>
+<span class="inline-flex items-center gap-1 bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-semibold px-2 py-0.5 rounded-md"><i class="fa-solid fa-arrow-up text-[9px]"></i> +8.5% tinggi</span>
+</div>
+<p class="text-[12px] text-on-surface-variant font-medium">Total Lembur</p>
+<p class="text-xl font-bold text-on-surface mt-0.5">Rp 18.420.000</p>
+<p class="text-[11px] text-outline mt-2 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> 12 jam rata-rata / orang</p>
+</article>
+<article class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container p-5">
+<div class="flex items-start justify-between mb-3">
+<div class="w-9 h-9 rounded-lg bg-surface-container text-on-surface-variant flex items-center justify-center"><i class="fa-solid fa-receipt text-sm"></i></div>
+</div>
+<p class="text-[12px] text-on-surface-variant font-medium">Total Pajak PPh21</p>
+<p class="text-xl font-bold text-on-surface mt-0.5">Rp 6.120.000</p>
+<p class="text-[11px] text-outline mt-2 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span> Metode Netto · terpotong otomatis</p>
+</article>
+<article class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container p-5">
+<div class="flex items-start justify-between mb-3">
+<div class="w-9 h-9 rounded-lg bg-primary-fixed text-on-primary-fixed flex items-center justify-center"><i class="fa-solid fa-users text-sm"></i></div>
+</div>
+<p class="text-[12px] text-on-surface-variant font-medium">Karyawan Aktif</p>
+<div class="flex items-center gap-3 mt-1">
+<p class="text-xl font-bold text-on-surface">55 Orang</p>
+<div class="flex -space-x-2">
+<img class="w-7 h-7 rounded-full border-2 border-surface-container-lowest object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcMge2be3z0J7Zm-ULH1ctX00ElvEQVUVOFc7RL8FycSDnbDM6rLdCAriP0OaQ16f9PW9gWxrPau_-5pVuGh8JHAMJeD7WKhhmUqfEqZSBFa4RghYoCXv5PAGeDLLxbuYFijcjnPT1BqUklZF0txV8C9ghhxkzKR35bnxTrX8sP-CWg6wmfHrrFCnyx2u5dQsNvM2DmHoa8KC9pcs_sK0C6d1mI19A_nFEq09hLptuZTy1onUUMiKtmg"/>
+<img class="w-7 h-7 rounded-full border-2 border-surface-container-lowest object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBRJcHvUrkJmWgrjLjRD_GoFIOS2zMBQB4FLr-gCKEvbrbdsVYZwOzx8yz6soErcpNyt2bZd5soceFSTtRDmPSLzfh-ZoHDWi12xJCLWpokgE6DJXYPjq75oskpaYDaZbMUN0sOsKRMH2WfPErU9CCC44EuXOBtH8tC5wdi5fOP9BUV1hwnB1NDbIQoU4QPNuLTcpXOTt17cbRBSVUHMNKJ6li7oQlc_Zsbqof7-hOXwR4cBedCyRDRQ"/>
+<img class="w-7 h-7 rounded-full border-2 border-surface-container-lowest object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFBjabajp8Zegjed5yZDTD1TBzgOj1fjpzlP_SlMeFsv2oSduNnJjP5TYKEKyOQ_QaY4kqBtvREO_rX5C5H9jVWFk68nIEYtJ-PieiBz7Rh5d5EHHjXk7yfa1v-LWc1TN53A-yZy3hGPJjoViTd8IL0eS9UhR4SPtvdGOKEOLgQ6qpkdHIvPPGaKI_Y4totrLpQrGk9XqGNNECmUEBztnmZB17z7_gMRjONUC0hW3UFTiPmwOY6grm_A"/>
+<img class="w-7 h-7 rounded-full border-2 border-surface-container-lowest object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApkTXn8xSNmbrHzrAA7mkB7zoypC7f0YxOyJr8W-7LsBrjz6M683a61uDAs0clSZ5FE3EN4drnuOPrktiuQoN4uEitW-RoGttl00NmuQQkIRAFcYWYjV_L8GnYaPl6LtshZTLl8YrnPZsU91AGZV1RNjUjW6l1tU3Kml7jcfK0Ilsq_qDkm75I4sz620Iekm3o9Z6InODh2KFzH88bOckYv1sVc-5nA2s1cZmZMkuR7GWDEZFYjS-BpA"/>
+<div class="w-7 h-7 rounded-full border-2 border-surface-container-lowest bg-surface-container text-[10px] font-semibold text-on-surface-variant flex items-center justify-center">+51</div>
+</div>
+</div>
+<p class="text-[11px] text-outline mt-2 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span> PT Maju Bersama Logistik</p>
+</article>
+</section>
+<!-- Chart row -->
+<section class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+<div class="xl:col-span-2 bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container p-5">
+<div class="flex items-center justify-between mb-1">
+<h3 class="text-[15px] font-semibold text-on-surface">Tren Biaya Gaji 6 Bulan Terakhir</h3>
+<div class="flex items-center gap-4 text-[12px]">
+<span class="flex items-center gap-1.5 text-on-surface-variant"><span class="w-2.5 h-2.5 rounded-sm bg-primary"></span> Basic</span>
+<span class="flex items-center gap-1.5 text-on-surface-variant"><span class="w-2.5 h-2.5 rounded-sm bg-tertiary"></span> Overtime</span>
+<span class="flex items-center gap-1.5 text-on-surface-variant"><span class="w-2.5 h-2.5 rounded-sm bg-secondary"></span> BPJS</span>
+</div>
+</div>
+<p class="text-[12px] text-outline mb-2">dalam jutaan rupiah (Rp)</p>
+<div class="w-full h-[300px]" id="chart-trend"></div>
+</div>
+<!-- Persetujuan widget -->
+<div class="xl:col-span-1 bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container flex flex-col">
+<div class="p-5 pb-4 border-b border-surface-container">
+<h3 class="text-[15px] font-semibold text-on-surface">Persetujuan Tertunda (3)</h3>
+<div class="flex items-center gap-1.5 mt-3">
+<button class="px-2.5 py-1 bg-primary-fixed text-on-primary-fixed text-[11px] font-semibold rounded-md">Semua</button>
+<button class="px-2.5 py-1 text-on-surface-variant hover:bg-surface-container-low text-[11px] font-medium rounded-md transition-colors">Lembur</button>
+<button class="px-2.5 py-1 text-on-surface-variant hover:bg-surface-container-low text-[11px] font-medium rounded-md transition-colors">Cuti</button>
+<button class="px-2.5 py-1 text-on-surface-variant hover:bg-surface-container-low text-[11px] font-medium rounded-md transition-colors">Kasbon</button>
+</div>
+</div>
+<div class="flex-1 p-3 space-y-1">
+<div class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-surface-container-low transition-colors">
+<img class="w-9 h-9 rounded-full object-cover flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_WCnwRFcmbtXuPIDkYpwNRjaLixYtqKcaxBIUk-MnE-x5BAUeSiwojqSfZIiAdE-kMzllAjQIJELSTANTnMscNOSonB4JFjZZF5LxdMqmzXktVvT8WDVCzOr4WhhgpV5Fns7f8CWrG1IRw94Iflpc79UAv_m3OsruW9oCYFdexmF0JNijs0kPX_3bXOAXf244FJiZYmP_XqS9e6GjCFcEp7arJmLFUBIA_4hFcIjHssVI_FbQ_plWww"/>
+<div class="min-w-0 flex-1">
+<p class="text-[13px] font-semibold text-on-surface truncate">Budi</p>
+<p class="text-[12px] text-on-surface-variant truncate">Pengajuan Lembur Akhir Pekan 8 Jam</p>
+</div>
+<div class="flex items-center gap-1.5 flex-shrink-0">
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container rounded-lg border border-outline-variant transition-colors"><i class="fa-solid fa-xmark text-xs"></i></button>
+<button class="w-8 h-8 flex items-center justify-center text-on-primary bg-secondary hover:bg-secondary-fixed transition-colors shadow-sm"><i class="fa-solid fa-check text-xs"></i></button>
+</div>
+</div>
+<div class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-surface-container-low transition-colors">
+<img class="w-9 h-9 rounded-full object-cover flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWkuU0K42egDwPre1BrQYmpmQEovQyErpmtTl47_j9FzhKKroFinNhND8TAqpfk0zZ3dXHGMGrTMfnLnYUHH_yXiBMs0O1oHiYcu2fLDkYLXpwF16NVP262tXbFZWzz4BrNwKHQuzJNHXFMLlQc3Di2ShpymP0cUc48LpkUs4c_jJFjRW33v_GtnkMaboy37XUhx4EFq2hVoBOJXu5A9EogRnsPOQUeIjQHLOTtDHNJSmWMK41hy-WPQ"/>
+<div class="min-w-0 flex-1">
+<p class="text-[13px] font-semibold text-on-surface truncate">Siti</p>
+<p class="text-[12px] text-on-surface-variant truncate">Pengajuan Cuti Tahunan 3 Hari</p>
+</div>
+<div class="flex items-center gap-1.5 flex-shrink-0">
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container rounded-lg border border-outline-variant transition-colors"><i class="fa-solid fa-xmark text-xs"></i></button>
+<button class="w-8 h-8 flex items-center justify-center text-on-primary bg-secondary hover:bg-secondary-fixed transition-colors shadow-sm"><i class="fa-solid fa-check text-xs"></i></button>
+</div>
+</div>
+<div class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-surface-container-low transition-colors">
+<img class="w-9 h-9 rounded-full object-cover flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAj7VC5MGo7XE4-z0Bja806hzjOZRqbM4SnSKvvSLwgLSRPaIWSPe8wnMoMwm8ZsChy0cj41zfE-QEXWOsqLKl9AN-pPHOUpsGlm8sCZ7gRYjd2VvLVn-pSgwO2m0XwAewUIIQFcszwRtz6E0G3Qulhboukv3qs7FJUXcMWJXFIM2lLNLesYehdUxNM_6M63lvZDL5w79SxYWAOPWV70_lgE_BFi6pBLTdb5T9otXdcJWibW9EQrIw68A"/>
+<div class="min-w-0 flex-1">
+<p class="text-[13px] font-semibold text-on-surface truncate">Rudi</p>
+<p class="text-[12px] text-on-surface-variant truncate">Kasbon Darurat Rp 1.500.000</p>
+</div>
+<div class="flex items-center gap-1.5 flex-shrink-0">
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container rounded-lg border border-outline-variant transition-colors"><i class="fa-solid fa-xmark text-xs"></i></button>
+<button class="w-8 h-8 flex items-center justify-center text-on-primary bg-secondary hover:bg-secondary-fixed transition-colors shadow-sm"><i class="fa-solid fa-check text-xs"></i></button>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-surface-container">
+<button class="w-full py-2 text-[13px] font-medium text-primary hover:bg-primary-fixed rounded-lg transition-colors">Lihat Semua Persetujuan</button>
+</div>
+</div>
+</section>
+<!-- Bottom roster -->
+<section class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container overflow-hidden">
+<div class="p-5 flex items-center justify-between border-b border-surface-container">
+<h3 class="text-[15px] font-semibold text-on-surface">Ringkasan Gaji Per Karyawan</h3>
+<button class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-low text-on-surface-variant text-[13px] font-medium px-3 py-2 rounded-lg transition-colors"><i class="fa-solid fa-download text-[11px]"></i> Export CSV</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left whitespace-nowrap">
+<thead>
+<tr class="text-[11px] uppercase tracking-wide text-outline border-b border-surface-container bg-surface-container-low/50">
+<th class="py-3 px-5 font-semibold">Nama</th>
+<th class="py-3 px-5 font-semibold">Divisi</th>
+<th class="py-3 px-5 font-semibold">Metode</th>
+<th class="py-3 px-5 font-semibold">Status</th>
+<th class="py-3 px-5 font-semibold text-right">Total</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container text-[13.5px]" id="roster-body"></tbody>
+</table>
+</div>
+</section>
+</main>
+</div>
+<script>
+const roster = [
+  { n:'Budi Santoso', av:1, div:'Operasional', met:'Netto', st:'Sudah Transfer', amt:'Rp 9.250.000' },
+  { n:'Siti Rahayu', av:2, div:'Logistik', met:'Bruto', st:'Menunggu', amt:'Rp 7.800.000' },
+  { n:'Ahmad Pratama', av:3, div:'Keuangan', met:'Netto', st:'Sudah Transfer', amt:'Rp 11.400.000' },
+  { n:'Rina Dewi', av:4, div:'SDM', met:'Bruto', st:'Sudah Transfer', amt:'Rp 8.950.000' },
+  { n:'Rudi Hermawan', av:5, div:'Armada', met:'Netto', st:'Menunggu', amt:'Rp 6.700.000' },
+];
+const stStyle = s => s==='Sudah Transfer' ? 'bg-success-green text-secondary' : 'bg-warning-amber text-on-surface';
+document.getElementById('roster-body').innerHTML = roster.map(r => `
+  <tr class="hover:bg-surface-container-low/60 transition-colors">
+    <td class="py-3 px-5"><div class="flex items-center gap-3"><img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-${r.av}.jpg" class="w-8 h-8 rounded-full object-cover"><span class="font-semibold text-on-surface">${r.n}</span></div></td>
+    <td class="py-3 px-5 text-on-surface-variant">${r.div}</td>
+    <td class="py-3 px-5 text-on-surface-variant">${r.met}</td>
+    <td class="py-3 px-5"><span class="inline-flex items-center gap-1.5 ${stStyle(r.st)} text-[11px] font-semibold px-2.5 py-1 rounded-md">${r.st==='Sudah Transfer'?'<i class=\'fa-solid fa-circle-check text-[9px]\'></i>':'<i class=\'fa-regular fa-clock text-[9px]\'></i>'}${r.st}</span></td>
+    <td class="py-3 px-5 text-right font-semibold text-on-surface tabular-nums">${r.amt}</td>
+  </tr>`).join('');
+
+new ApexCharts(document.querySelector('#chart-trend'), {
+  chart: { type: 'area', height: 300, fontFamily: 'Plus Jakarta Sans, sans-serif', toolbar: { show: false }, animations: { speed: 600 } },
+  series: [
+    { name: 'Basic', data: [210, 218, 224, 231, 238, 245] },
+    { name: 'Overtime', data: [12, 14, 13, 16, 17, 18] },
+    { name: 'BPJS', data: [9, 9, 10, 10, 11, 11] }
+  ],
+  colors: ['#0050cb', '#4345d1', '#006c49'],
+  fill: { type: 'gradient', gradient: { shadeIntensity: 0, opacityFrom: 0.22, opacityTo: 0.02, stops: [0, 100] } },
+  stroke: { curve: 'smooth', width: 2 },
+  dataLabels: { enabled: false },
+  grid: { borderColor: '#e5eeff', strokeDashArray: 4, padding: { left: 8, right: 8 } },
+  xaxis: { categories: ['Jun','Jul','Agu','Sep','Okt','Nov'], axisBorder: { show: false }, axisTicks: { show: false }, labels: { style: { colors: '#727687', fontSize: '11px' } } },
+  yaxis: { labels: { formatter: v => 'Rp '+v+'jt', style: { colors: '#727687', fontSize: '11px' } } },
+  legend: { show: false },
+  tooltip: { y: { formatter: v => 'Rp '+v+' jt' } }
+}).render();
+</script>
+</body></html>
