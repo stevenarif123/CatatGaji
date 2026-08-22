@@ -69,12 +69,15 @@ export async function buildApp() {
     await app.register(fastifyStatic, {
       root: staticDir,
       prefix: '/',
-      wildcard: false,
+      wildcard: true,
     });
 
     app.setNotFoundHandler((request, reply) => {
-      if (request.raw.url && request.raw.url.startsWith('/api')) {
+      const url = request.raw.url || '';
+      if (url.startsWith('/api')) {
         reply.code(404).send({ success: false, error_code: 'NOT_FOUND', message: 'Endpoint API tidak ditemukan.' });
+      } else if (url.startsWith('/assets/')) {
+        reply.code(404).type('text/plain').send('File aset tidak ditemukan.');
       } else {
         reply.sendFile('index.html');
       }
