@@ -5,7 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = path.join(process.cwd(), '.data', 'postgres');
+const DATA_DIR = path.resolve(__dirname, '..', '..', '..', '.data', 'postgres');
 
 export interface SqlClient {
   <T = any>(strings: TemplateStringsArray, ...values: any[]): Promise<T[]>;
@@ -38,6 +38,9 @@ if (useExternalDb) {
  */
 function createPgliteTagged(target: { query: (q: string, p?: any[]) => Promise<any> }): SqlClient {
   const executor = (async <T = any>(strings: TemplateStringsArray, ...values: any[]): Promise<T[]> => {
+    if (pgliteInstance) {
+      await pgliteInstance.waitReady;
+    }
     let queryText = '';
     const params: any[] = [];
 
@@ -55,6 +58,7 @@ function createPgliteTagged(target: { query: (q: string, p?: any[]) => Promise<a
 
   executor.begin = async function <T>(callback: (tx: SqlClient) => Promise<T>): Promise<T> {
     if (pgliteInstance) {
+      await pgliteInstance.waitReady;
       return pgliteInstance.transaction(async (tx) => {
         const txTagged = createPgliteTagged(tx);
         return callback(txTagged);
@@ -82,29 +86,65 @@ if (postgresClient) {
  * Initialize database migrations automatically on startup
  */
 export async function initDb() {
+  if (pgliteInstance) {
+    await pgliteInstance.waitReady;
+  }
   const migrationsDir = path.join(__dirname, 'database', 'migrations');
-  if (fs.existsSync(migrationsDir)) {
-    const files = fs.readdirSync(migrationsDir).filter((f) => f.endsWith('.sql')).sort();
-    for (const file of files) {
-      const filePath = path.join(migrationsDir, file);
-      const migrationSql = fs.readFileSync(filePath, 'utf8');
-      if (pgliteInstance) {
-        try {
-          await pgliteInstance.exec(migrationSql);
-          console.log(`✅ [Embedded Database] Migrasi ${file} berhasil diterapkan`);
-        } catch (err: any) {
-          if (!err.message?.includes('already exists')) {
-            console.warn(`⚠️ [Embedded Database] Migration ${file} info:`, err.message);
-          }
-        }
-      } else if (postgresClient) {
-        try {
-          await (postgresClient as any).unsafe(migrationSql);
-        } catch (err: any) {
-          if (!err.message?.includes('already exists')) {
-            console.warn(`⚠️ [Postgres Database] Migration ${file} info:`, err.message);
-          }
-        }
+  if (!fs.existsSync(migrationsDir)) return;
+
+  // 1. Ensure schema_migrations table exists
+  if (pgliteInstance) {
+    await pgliteInstance.exec(`
+      CREATE TABLE IF NOT EXISTS schema_migrations (
+        name VARCHAR(255) PRIMARY KEY,
+        applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+  } else if (postgresClient) {
+    await (postgresClient as any).unsafe(`
+      CREATE TABLE IF NOT EXISTS schema_migrations (
+        name VARCHAR(255) PRIMARY KEY,
+        applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+  }
+
+  // 2. Fetch applied migrations
+  let applied: string[] = [];
+  if (pgliteInstance) {
+    const res = await pgliteInstance.query(`SELECT name FROM schema_migrations`);
+    applied = (res.rows || []).map((r: any) => r.name);
+  } else if (postgresClient) {
+    const res = await (postgresClient as any).unsafe(`SELECT name FROM schema_migrations`);
+    applied = (res || []).map((r: any) => r.name);
+  }
+
+  const files = fs.readdirSync(migrationsDir).filter((f) => f.endsWith('.sql')).sort();
+  for (const file of files) {
+    if (applied.includes(file)) {
+      continue;
+    }
+
+    const filePath = path.join(migrationsDir, file);
+    const migrationSql = fs.readFileSync(filePath, 'utf8');
+
+    if (pgliteInstance) {
+      try {
+        await pgliteInstance.exec(migrationSql);
+        await pgliteInstance.query(`INSERT INTO schema_migrations (name) VALUES ($1)`, [file]);
+        console.log(`✅ [Embedded Database] Migrasi ${file} berhasil diterapkan`);
+      } catch (err: any) {
+        console.error(`❌ [Embedded Database] Gagal menerapkan migrasi ${file}:`, err);
+        throw err;
+      }
+    } else if (postgresClient) {
+      try {
+        await (postgresClient as any).unsafe(migrationSql);
+        await (postgresClient as any).unsafe(`INSERT INTO schema_migrations (name) VALUES ($1)`, [file]);
+        console.log(`✅ [Postgres Database] Migrasi ${file} berhasil diterapkan`);
+      } catch (err: any) {
+        console.error(`❌ [Postgres Database] Gagal menerapkan migrasi ${file}:`, err);
+        throw err;
       }
     }
   }

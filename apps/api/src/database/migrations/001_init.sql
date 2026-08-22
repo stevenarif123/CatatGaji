@@ -5,18 +5,41 @@
 -- ============================================================
 
 -- Migration 001: Enums
-CREATE TYPE employment_status_enum AS ENUM ('PKWTT', 'PKWT', 'FREELANCE', 'INTERNSHIP');
-CREATE TYPE salary_type_enum AS ENUM ('MONTHLY', 'DAILY', 'HOURLY');
-CREATE TYPE employee_status_enum AS ENUM ('ACTIVE', 'RESIGNED', 'TERMINATED', 'ON_LEAVE');
-CREATE TYPE payroll_status_enum AS ENUM ('DRAFT', 'CALCULATING', 'REVIEW', 'APPROVED', 'LOCKED');
-CREATE TYPE approval_status_enum AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED');
-CREATE TYPE leave_status_enum AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED');
+DO $$ BEGIN
+    CREATE TYPE employment_status_enum AS ENUM ('PKWTT', 'PKWT', 'FREELANCE', 'INTERNSHIP');
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE salary_type_enum AS ENUM ('MONTHLY', 'DAILY', 'HOURLY');
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE employee_status_enum AS ENUM ('ACTIVE', 'RESIGNED', 'TERMINATED', 'ON_LEAVE');
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE payroll_status_enum AS ENUM ('DRAFT', 'CALCULATING', 'REVIEW', 'APPROVED', 'LOCKED');
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE approval_status_enum AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED');
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE leave_status_enum AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED');
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;
 
 -- ============================================================
 -- Migration 002: Tenants
 -- ============================================================
 
-CREATE TABLE tenants (
+CREATE TABLE IF NOT EXISTS tenants (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     slug VARCHAR(100) NOT NULL UNIQUE,
@@ -33,13 +56,13 @@ CREATE TABLE tenants (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_tenants_slug ON tenants(slug);
+CREATE INDEX IF NOT EXISTS idx_tenants_slug ON tenants(slug);
 
 -- ============================================================
 -- Migration 003: Users & Roles
 -- ============================================================
 
-CREATE TABLE roles_permissions (
+CREATE TABLE IF NOT EXISTS roles_permissions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
     role_name VARCHAR(50) NOT NULL CHECK (role_name IN ('OWNER', 'HR_ADMIN', 'FINANCE', 'BRANCH_MANAGER', 'EMPLOYEE')),
@@ -49,7 +72,7 @@ CREATE TABLE roles_permissions (
     CONSTRAINT uq_roles_tenant_name UNIQUE(tenant_id, role_name)
 );
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
     email VARCHAR(255) NOT NULL,
@@ -65,8 +88,8 @@ CREATE TABLE users (
     CONSTRAINT uq_users_email UNIQUE(email)
 );
 
-CREATE INDEX idx_users_tenant ON users(tenant_id);
-CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_tenant ON users(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 
 -- ============================================================
 -- RLS Policies
@@ -83,15 +106,14 @@ $$ LANGUAGE plpgsql STABLE;
 
 -- Enable RLS on roles_permissions
 ALTER TABLE roles_permissions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation_roles ON roles_permissions;
 CREATE POLICY tenant_isolation_roles ON roles_permissions
     USING (tenant_id = current_tenant_id())
     WITH CHECK (tenant_id = current_tenant_id());
 
 -- Enable RLS on users
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation_users ON users;
 CREATE POLICY tenant_isolation_users ON users
     USING (tenant_id = current_tenant_id())
     WITH CHECK (tenant_id = current_tenant_id());
-
--- Note: tenants table does NOT have RLS — queried by slug for login lookup.
--- Access control is handled at the application layer.
