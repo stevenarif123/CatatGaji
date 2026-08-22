@@ -2,12 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
-import { formatRupiah, formatTanggal } from '@catatgaji/shared';
-
-const NAMA_BULAN = [
-  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-];
+import {
+  formatRupiah,
+  formatTanggal,
+  formatTanggalHari,
+  formatTanggalSingkat,
+  formatPeriodeBulan,
+  BULAN_INDONESIA,
+} from '@catatgaji/shared';
 
 export const Payroll: React.FC = () => {
   const token = useAuthStore((state) => state.token);
@@ -238,13 +240,29 @@ export const Payroll: React.FC = () => {
 
       {/* Modal Buat Periode */}
       {showCreateModal && (
-        <div className="modal-overlay">
+        <div
+          className="modal-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowCreateModal(false);
+          }}
+        >
           <div className="modal-content" style={{ maxWidth: '480px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
-              <h3 style={{ fontSize: '1.125rem', margin: 0 }}>Buka Periode Penggajian Baru</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>
+                  <i className="fa-solid fa-calendar-plus"></i>
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', margin: 0, fontWeight: 700 }}>Buka Periode Penggajian Baru</h3>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+                    Kalkulasi PPh 21 TER, BPJS & Kompensasi
+                  </p>
+                </div>
+              </div>
               <button
+                type="button"
                 onClick={() => setShowCreateModal(false)}
-                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: 'var(--text-faint)', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: 'var(--text-muted)', cursor: 'pointer' }}
               >
                 <i className="fa-solid fa-xmark"></i>
               </button>
@@ -261,7 +279,7 @@ export const Payroll: React.FC = () => {
                     value={periodMonth}
                     onChange={(e) => setPeriodMonth(Number(e.target.value))}
                   >
-                    {NAMA_BULAN.map((name, idx) => (
+                    {BULAN_INDONESIA.map((name, idx) => (
                       <option key={idx + 1} value={idx + 1}>
                         {name}
                       </option>
@@ -285,7 +303,7 @@ export const Payroll: React.FC = () => {
                 </div>
               </div>
 
-              <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
                 <label className="form-label">Tanggal Pembayaran Gaji (Payout Date)</label>
                 <input
                   type="date"
@@ -294,6 +312,33 @@ export const Payroll: React.FC = () => {
                   value={payoutDate}
                   onChange={(e) => setPayoutDate(e.target.value)}
                 />
+                <span style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 600, marginTop: '2px', display: 'block' }}>
+                  📅 {formatTanggalHari(payoutDate)}
+                </span>
+              </div>
+
+              {/* Banner Ringkasan Periode */}
+              <div
+                style={{
+                  padding: '0.625rem 0.875rem',
+                  backgroundColor: 'var(--primary-light)',
+                  border: '1px solid var(--primary-active)',
+                  borderRadius: 'var(--radius-sm)',
+                  marginBottom: '1.25rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.625rem',
+                }}
+              >
+                <i className="fa-solid fa-file-invoice-dollar" style={{ color: 'var(--primary)', fontSize: '0.9rem' }}></i>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-main)' }}>
+                  <div>
+                    Periode Gaji: <strong>{formatPeriodeBulan(periodYear, periodMonth)}</strong>
+                  </div>
+                  <div style={{ fontSize: '0.6875rem', color: 'var(--text-soft)', marginTop: '2px' }}>
+                    Tanggal Transfer Rekening: {formatTanggal(payoutDate)}
+                  </div>
+                </div>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>

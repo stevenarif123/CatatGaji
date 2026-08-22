@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { apiFetch } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
-import { PTKP_TO_TER, formatRupiah } from '@catatgaji/shared';
+import { PTKP_TO_TER, formatRupiah, formatTanggal, formatTanggalHari } from '@catatgaji/shared';
 
 export const Employees: React.FC = () => {
   const token = useAuthStore((state) => state.token);
@@ -366,18 +366,23 @@ export const Employees: React.FC = () => {
 
       {/* Add Employee Multi-Step Modal */}
       {showAddModal && (
-        <div className="modal-overlay">
+        <div
+          className="modal-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowAddModal(false);
+          }}
+        >
           <div className="modal-content" style={{ maxWidth: '650px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
               <div>
-                <h3 style={{ fontSize: '1.125rem', margin: 0 }}>Pendaftaran Karyawan Baru</h3>
+                <h3 style={{ fontSize: '1.125rem', margin: 0, fontWeight: 700 }}>Pendaftaran Karyawan Baru</h3>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
                   Langkah {modalStep} dari 3: {modalStep === 1 ? 'Biodata & Identitas' : modalStep === 2 ? 'Status Kerja & PTKP' : 'Struktur Gaji & BPJS'}
                 </p>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: 'var(--text-faint)', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: 'var(--text-muted)', cursor: 'pointer' }}
               >
                 <i className="fa-solid fa-xmark"></i>
               </button>
@@ -408,17 +413,18 @@ export const Employees: React.FC = () => {
                         required
                         maxLength={16}
                         className="form-control"
-                        placeholder="3171012345670001"
+                        placeholder="3171..."
                         value={formData.nik_ktp}
                         onChange={(e) => handleInputChange('nik_ktp', e.target.value)}
                       />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">NPWP (Opsional)</label>
+                      <label className="form-label">NPWP (15/16 Digit)</label>
                       <input
                         type="text"
+                        maxLength={16}
                         className="form-control"
-                        placeholder="01.234.567.8-901.000"
+                        placeholder="01.234..."
                         value={formData.npwp}
                         onChange={(e) => handleInputChange('npwp', e.target.value)}
                       />
@@ -427,10 +433,9 @@ export const Employees: React.FC = () => {
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
                     <div className="form-group">
-                      <label className="form-label">Email Karyawan *</label>
+                      <label className="form-label">Email Perusahaan</label>
                       <input
                         type="email"
-                        required
                         className="form-control"
                         placeholder="budi@perusahaan.com"
                         value={formData.email}
@@ -438,11 +443,11 @@ export const Employees: React.FC = () => {
                       />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Nomor WhatsApp / HP</label>
+                      <label className="form-label">Nomor Telepon / WhatsApp</label>
                       <input
                         type="text"
                         className="form-control"
-                        placeholder="081234567890"
+                        placeholder="0812..."
                         value={formData.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
                       />
@@ -469,6 +474,11 @@ export const Employees: React.FC = () => {
                         value={formData.birth_date}
                         onChange={(e) => handleInputChange('birth_date', e.target.value)}
                       />
+                      {formData.birth_date && (
+                        <span style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 600, marginTop: '2px' }}>
+                          📅 {formatTanggal(formData.birth_date)}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -498,6 +508,11 @@ export const Employees: React.FC = () => {
                         value={formData.join_date}
                         onChange={(e) => handleInputChange('join_date', e.target.value)}
                       />
+                      {formData.join_date && (
+                        <span style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 600, marginTop: '2px' }}>
+                          📅 {formatTanggalHari(formData.join_date)}
+                        </span>
+                      )}
                     </div>
                   </div>
 

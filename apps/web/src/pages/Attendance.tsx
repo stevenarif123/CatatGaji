@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { apiFetch } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
-import { formatTanggal } from '@catatgaji/shared';
+import {
+  formatTanggal,
+  formatTanggalHari,
+  formatTanggalSingkat,
+  hitungJumlahHari,
+  hitungTanggalSelesai,
+} from '@catatgaji/shared';
 
 export const Attendance: React.FC = () => {
   const token = useAuthStore((state) => state.token);
@@ -26,7 +32,7 @@ export const Attendance: React.FC = () => {
   const [clockMessage, setClockMessage] = useState<string | null>(null);
   const [clockError, setClockError] = useState<string | null>(null);
 
-  // Leave modal form state
+  // Leave modal form state with bidirectional auto-calculator
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [leaveData, setLeaveData] = useState({
     employee_id: '',
@@ -37,6 +43,38 @@ export const Attendance: React.FC = () => {
     reason: '',
   });
   const [leaveSubmitting, setLeaveSubmitting] = useState(false);
+
+  // Handler: Saat tanggal mulai diubah -> perbarui tanggal selesai berdasarkan jumlah hari
+  const handleLeaveStartDateChange = (newStart: string) => {
+    const days = Math.max(1, leaveData.days_count || 1);
+    const newEnd = hitungTanggalSelesai(newStart, days);
+    setLeaveData((prev) => ({
+      ...prev,
+      start_date: newStart,
+      end_date: newEnd,
+    }));
+  };
+
+  // Handler: Saat tanggal selesai diubah -> perbarui jumlah hari secara otomatis
+  const handleLeaveEndDateChange = (newEnd: string) => {
+    const calculatedDays = hitungJumlahHari(leaveData.start_date, newEnd);
+    setLeaveData((prev) => ({
+      ...prev,
+      end_date: newEnd,
+      days_count: calculatedDays,
+    }));
+  };
+
+  // Handler: Saat jumlah hari diubah -> perbarui tanggal selesai secara otomatis
+  const handleLeaveDaysCountChange = (newDays: number) => {
+    const days = Math.max(1, Math.floor(newDays) || 1);
+    const newEnd = hitungTanggalSelesai(leaveData.start_date, days);
+    setLeaveData((prev) => ({
+      ...prev,
+      days_count: days,
+      end_date: newEnd,
+    }));
+  };
 
   // Import CSV state
   const [csvContent, setCsvContent] = useState('');
@@ -303,34 +341,52 @@ export const Attendance: React.FC = () => {
           {/* Filter Bar */}
           <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
-              <input
-                type="date"
-                className="form-control"
-                style={{ width: '150px' }}
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-              <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>s/d</span>
-              <input
-                type="date"
-                className="form-control"
-                style={{ width: '150px' }}
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
-              <select
-                className="form-control"
-                style={{ width: '180px' }}
-                value={selectedEmp}
-                onChange={(e) => setSelectedEmp(e.target.value)}
-              >
-                <option value="">Semua Karyawan</option>
-                {employees.map((e) => (
-                  <option key={e.id} value={e.id}>
-                    {e.full_name}
-                  </option>
-                ))}
-              </select>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '0.6875rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '2px' }}>Tanggal Awal:</span>
+                <input
+                  type="date"
+                  className="form-control"
+                  style={{ width: '150px' }}
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+                <span style={{ fontSize: '0.6875rem', color: 'var(--primary)', fontWeight: 600, marginTop: '2px' }}>
+                  {formatTanggal(startDate)}
+                </span>
+              </div>
+              <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', alignSelf: 'center', marginTop: '10px' }}>s/d</span>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '0.6875rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '2px' }}>Tanggal Akhir:</span>
+                <input
+                  type="date"
+                  className="form-control"
+                  style={{ width: '150px' }}
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+                <span style={{ fontSize: '0.6875rem', color: 'var(--primary)', fontWeight: 600, marginTop: '2px' }}>
+                  {formatTanggal(endDate)}
+                </span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '0.6875rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '2px' }}>Karyawan:</span>
+                <select
+                  className="form-control"
+                  style={{ width: '190px' }}
+                  value={selectedEmp}
+                  onChange={(e) => setSelectedEmp(e.target.value)}
+                >
+                  <option value="">Semua Karyawan</option>
+                  {employees.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.full_name}
+                    </option>
+                  ))}
+                </select>
+                <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                  {selectedEmp ? 'Karyawan Terpilih' : 'Semua Karyawan'}
+                </span>
+              </div>
             </div>
             <button className="btn btn-sm btn-secondary" onClick={loadData}>
               <i className="fa-solid fa-rotate-right"></i>
@@ -742,8 +798,11 @@ export const Attendance: React.FC = () => {
                     required
                     className="form-control"
                     value={leaveData.start_date}
-                    onChange={(e) => setLeaveData({ ...leaveData, start_date: e.target.value })}
+                    onChange={(e) => handleLeaveStartDateChange(e.target.value)}
                   />
+                  <span style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 600, marginTop: '2px' }}>
+                    {formatTanggalHari(leaveData.start_date)}
+                  </span>
                 </div>
 
                 <div className="form-group">
@@ -753,21 +812,69 @@ export const Attendance: React.FC = () => {
                     required
                     className="form-control"
                     value={leaveData.end_date}
-                    onChange={(e) => setLeaveData({ ...leaveData, end_date: e.target.value })}
+                    onChange={(e) => handleLeaveEndDateChange(e.target.value)}
                   />
+                  <span style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 600, marginTop: '2px' }}>
+                    {formatTanggalHari(leaveData.end_date)}
+                  </span>
                 </div>
               </div>
 
               <div className="form-group">
-                <label className="form-label">Jumlah Hari</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className="form-label">Jumlah Hari (Otomatis)</label>
+                  <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
+                    Otomatis terhitung dari rentang tanggal
+                  </span>
+                </div>
                 <input
                   type="number"
                   min={1}
                   required
                   className="form-control"
                   value={leaveData.days_count}
-                  onChange={(e) => setLeaveData({ ...leaveData, days_count: Number(e.target.value) })}
+                  onChange={(e) => handleLeaveDaysCountChange(Number(e.target.value))}
                 />
+              </div>
+
+              {/* Banner Ringkasan Periode Cuti Indonesia */}
+              <div
+                style={{
+                  padding: '0.75rem 1rem',
+                  backgroundColor: 'var(--primary-light)',
+                  border: '1px solid var(--primary-active)',
+                  borderRadius: 'var(--radius-md)',
+                  marginBottom: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                }}
+              >
+                <div
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '8px',
+                    backgroundColor: '#ffffff',
+                    color: 'var(--primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.9rem',
+                    flexShrink: 0,
+                    boxShadow: '0 2px 4px rgba(0, 80, 203, 0.1)',
+                  }}
+                >
+                  <i className="fa-solid fa-calendar-check"></i>
+                </div>
+                <div style={{ fontSize: '0.8125rem', color: 'var(--text-main)' }}>
+                  <div>
+                    Durasi Pengajuan: <strong>{leaveData.days_count} Hari</strong>
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-soft)', marginTop: '2px' }}>
+                    📅 {formatTanggalHari(leaveData.start_date)} s/d {formatTanggalHari(leaveData.end_date)} ({formatTanggalSingkat(leaveData.start_date)} – {formatTanggalSingkat(leaveData.end_date)})
+                  </div>
+                </div>
               </div>
 
               <div className="form-group">

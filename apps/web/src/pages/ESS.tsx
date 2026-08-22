@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { apiFetch } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
-import { formatRupiah, maskNik } from '@catatgaji/shared';
+import {
+  formatRupiah,
+  maskNik,
+  formatTanggal,
+  formatTanggalHari,
+  formatTanggalSingkat,
+  hitungJumlahHari,
+  hitungTanggalSelesai,
+  hitungDurasiJam,
+} from '@catatgaji/shared';
 import { PayslipModal } from '../components/PayslipModal';
 
 export const ESS: React.FC = () => {
@@ -32,19 +41,44 @@ export const ESS: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [clockingLoading, setClockingLoading] = useState(false);
 
-  // Leave Form State
+  // Today ISO Date
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  // Leave Form State (Bidirectional Reactive)
   const [leaveType, setLeaveType] = useState('ANNUAL');
-  const [leaveStart, setLeaveStart] = useState('');
-  const [leaveEnd, setLeaveEnd] = useState('');
+  const [leaveStart, setLeaveStart] = useState(todayStr);
+  const [leaveEnd, setLeaveEnd] = useState(todayStr);
+  const [leaveDaysCount, setLeaveDaysCount] = useState(1);
   const [leaveReason, setLeaveReason] = useState('');
   const [submittingLeave, setSubmittingLeave] = useState(false);
 
   // Overtime Form State
-  const [otDate, setOtDate] = useState('');
+  const [otDate, setOtDate] = useState(todayStr);
   const [otStart, setOtStart] = useState('17:00');
   const [otEnd, setOtEnd] = useState('20:00');
   const [otReason, setOtReason] = useState('');
   const [submittingOt, setSubmittingOt] = useState(false);
+
+  // Leave handlers
+  const handleEssLeaveStartChange = (newStart: string) => {
+    const days = Math.max(1, leaveDaysCount || 1);
+    const newEnd = hitungTanggalSelesai(newStart, days);
+    setLeaveStart(newStart);
+    setLeaveEnd(newEnd);
+  };
+
+  const handleEssLeaveEndChange = (newEnd: string) => {
+    const calculatedDays = hitungJumlahHari(leaveStart, newEnd);
+    setLeaveEnd(newEnd);
+    setLeaveDaysCount(calculatedDays);
+  };
+
+  const handleEssLeaveDaysChange = (newDays: number) => {
+    const days = Math.max(1, Math.floor(newDays) || 1);
+    const newEnd = hitungTanggalSelesai(leaveStart, days);
+    setLeaveDaysCount(days);
+    setLeaveEnd(newEnd);
+  };
 
   // Load ESS Initial Data
   const loadEssData = useCallback(async () => {
@@ -684,12 +718,16 @@ export const ESS: React.FC = () => {
                   <tbody>
                     {attendanceLogs.map((l) => (
                       <tr key={l.id}>
-                        <td style={{ fontWeight: 600 }}>{l.date}</td>
-                        <td>{l.clock_in ? new Date(l.clock_in).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
-                        <td>{l.clock_out ? new Date(l.clock_out).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
+                        <td style={{ fontWeight: 600 }}>{formatTanggalHari(l.date)}</td>
+                        <td style={{ color: 'var(--success-text)', fontWeight: 600 }}>
+                          {l.clock_in ? new Date(l.clock_in).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB' : '-'}
+                        </td>
+                        <td style={{ color: 'var(--text-soft)' }}>
+                          {l.clock_out ? new Date(l.clock_out).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB' : '-'}
+                        </td>
                         <td>
                           <span className={`badge ${l.status === 'PRESENT' ? 'badge-success' : 'badge-warning'}`}>
-                            {l.status === 'PRESENT' ? 'Hadir' : l.status}
+                            {l.status === 'PRESENT' ? 'Hadir Tepat Waktu' : l.status === 'LATE' ? 'Terlambat' : l.status}
                           </span>
                         </td>
                       </tr>
@@ -722,13 +760,15 @@ export const ESS: React.FC = () => {
                     {leaves.map((lv) => (
                       <div key={lv.id} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
                         <div>
-                          <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>{lv.leave_type}</p>
+                          <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>
+                            {lv.leave_type === 'MATERNITY_KIA' ? 'Melahirkan (UU KIA)' : lv.leave_type === 'ANNUAL' ? 'Cuti Tahunan' : lv.leave_type}
+                          </p>
                           <p style={{ fontSize: '0.6875rem', color: '#64748b', margin: '2px 0 0' }}>
-                            {lv.start_date} s/d {lv.end_date} ({lv.total_days} hari)
+                            📅 {formatTanggal(lv.start_date)} s/d {formatTanggal(lv.end_date)} ({lv.days_count || hitungJumlahHari(lv.start_date, lv.end_date)} hari)
                           </p>
                         </div>
-                        <span className={`badge ${lv.status === 'APPROVED' ? 'badge-success' : 'badge-warning'}`}>
-                          {lv.status === 'APPROVED' ? 'Disetujui' : 'Menunggu'}
+                        <span className={`badge ${lv.status === 'APPROVED' ? 'badge-success' : lv.status === 'REJECTED' ? 'badge-danger' : 'badge-warning'}`}>
+                          {lv.status === 'APPROVED' ? 'Disetujui' : lv.status === 'REJECTED' ? 'Ditolak' : 'Menunggu'}
                         </span>
                       </div>
                     ))}
@@ -746,13 +786,13 @@ export const ESS: React.FC = () => {
                     {overtimes.map((ot) => (
                       <div key={ot.id} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
                         <div>
-                          <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>{ot.overtime_date}</p>
+                          <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: 0 }}>📅 {formatTanggalHari(ot.overtime_date)}</p>
                           <p style={{ fontSize: '0.6875rem', color: '#64748b', margin: '2px 0 0' }}>
-                            {ot.start_time?.slice(0, 5)} - {ot.end_time?.slice(0, 5)}: {ot.task_description}
+                            ⏰ {ot.start_time?.slice(0, 5)} - {ot.end_time?.slice(0, 5)} WIB ({hitungDurasiJam(ot.start_time, ot.end_time)} Jam): {ot.task_description}
                           </p>
                         </div>
-                        <span className={`badge ${ot.status === 'APPROVED' ? 'badge-success' : 'badge-warning'}`}>
-                          {ot.status === 'APPROVED' ? 'Disetujui' : 'Menunggu'}
+                        <span className={`badge ${ot.status === 'APPROVED' ? 'badge-success' : ot.status === 'REJECTED' ? 'badge-danger' : 'badge-warning'}`}>
+                          {ot.status === 'APPROVED' ? 'Disetujui' : ot.status === 'REJECTED' ? 'Ditolak' : 'Menunggu'}
                         </span>
                       </div>
                     ))}
@@ -970,11 +1010,70 @@ export const ESS: React.FC = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                   <div className="form-group">
                     <label className="form-label">Tanggal Mulai</label>
-                    <input type="date" required className="form-control" value={leaveStart} onChange={(e) => setLeaveStart(e.target.value)} />
+                    <input
+                      type="date"
+                      required
+                      className="form-control"
+                      value={leaveStart}
+                      onChange={(e) => handleEssLeaveStartChange(e.target.value)}
+                    />
+                    <span style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 600, marginTop: '2px' }}>
+                      {formatTanggalHari(leaveStart)}
+                    </span>
                   </div>
                   <div className="form-group">
                     <label className="form-label">Tanggal Selesai</label>
-                    <input type="date" required className="form-control" value={leaveEnd} onChange={(e) => setLeaveEnd(e.target.value)} />
+                    <input
+                      type="date"
+                      required
+                      className="form-control"
+                      value={leaveEnd}
+                      onChange={(e) => handleEssLeaveEndChange(e.target.value)}
+                    />
+                    <span style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 600, marginTop: '2px' }}>
+                      {formatTanggalHari(leaveEnd)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label className="form-label">Jumlah Hari</label>
+                    <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
+                      Otomatis tersinkronisasi
+                    </span>
+                  </div>
+                  <input
+                    type="number"
+                    min={1}
+                    required
+                    className="form-control"
+                    value={leaveDaysCount}
+                    onChange={(e) => handleEssLeaveDaysChange(Number(e.target.value))}
+                  />
+                </div>
+
+                {/* Banner Ringkasan Periode Cuti */}
+                <div
+                  style={{
+                    padding: '0.625rem 0.875rem',
+                    backgroundColor: 'var(--primary-light)',
+                    border: '1px solid var(--primary-active)',
+                    borderRadius: 'var(--radius-sm)',
+                    marginBottom: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.625rem',
+                  }}
+                >
+                  <i className="fa-solid fa-calendar-check" style={{ color: 'var(--primary)', fontSize: '0.9rem' }}></i>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-main)' }}>
+                    <div>
+                      Durasi: <strong>{leaveDaysCount} Hari</strong>
+                    </div>
+                    <div style={{ fontSize: '0.6875rem', color: 'var(--text-soft)', marginTop: '2px' }}>
+                      📅 {formatTanggalHari(leaveStart)} s/d {formatTanggalHari(leaveEnd)}
+                    </div>
                   </div>
                 </div>
 
@@ -1024,6 +1123,9 @@ export const ESS: React.FC = () => {
                 <div className="form-group">
                   <label className="form-label">Tanggal Lembur</label>
                   <input type="date" required className="form-control" value={otDate} onChange={(e) => setOtDate(e.target.value)} />
+                  <span style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 600, marginTop: '2px' }}>
+                    {formatTanggalHari(otDate)}
+                  </span>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
@@ -1034,6 +1136,30 @@ export const ESS: React.FC = () => {
                   <div className="form-group">
                     <label className="form-label">Jam Selesai</label>
                     <input type="time" required className="form-control" value={otEnd} onChange={(e) => setOtEnd(e.target.value)} />
+                  </div>
+                </div>
+
+                {/* Banner Ringkasan Lembur */}
+                <div
+                  style={{
+                    padding: '0.625rem 0.875rem',
+                    backgroundColor: 'var(--primary-light)',
+                    border: '1px solid var(--primary-active)',
+                    borderRadius: 'var(--radius-sm)',
+                    marginBottom: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.625rem',
+                  }}
+                >
+                  <i className="fa-solid fa-bolt" style={{ color: 'var(--primary)', fontSize: '0.9rem' }}></i>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-main)' }}>
+                    <div>
+                      Estimasi Durasi: <strong>{hitungDurasiJam(otStart, otEnd)} Jam Lembur</strong>
+                    </div>
+                    <div style={{ fontSize: '0.6875rem', color: 'var(--text-soft)', marginTop: '2px' }}>
+                      ⏰ {otStart} s/d {otEnd} WIB (Sesuai Kepmenakertrans No. 102/2004)
+                    </div>
                   </div>
                 </div>
 

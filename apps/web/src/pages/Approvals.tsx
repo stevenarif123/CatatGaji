@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { apiFetch } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
+import {
+  formatTanggal,
+  formatTanggalHari,
+  formatTanggalSingkat,
+  hitungJumlahHari,
+  hitungTanggalSelesai,
+} from '@catatgaji/shared';
 
 export const Approvals: React.FC = () => {
   const token = useAuthStore((state) => state.token);
@@ -15,14 +22,44 @@ export const Approvals: React.FC = () => {
   const [rejectionReason, setRejectionReason] = useState('');
 
   // Delegation form state
+  const todayStr = new Date().toISOString().split('T')[0];
   const [showDelegationModal, setShowDelegationModal] = useState(false);
+  const [delegationDays, setDelegationDays] = useState(7);
   const [delegationForm, setDelegationForm] = useState({
     delegatee_id: '',
     module: 'ALL',
-    start_date: new Date().toISOString().split('T')[0],
-    end_date: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
+    start_date: todayStr,
+    end_date: hitungTanggalSelesai(todayStr, 7),
     reason: '',
   });
+
+  const handleDelegationStartChange = (newStart: string) => {
+    const newEnd = hitungTanggalSelesai(newStart, delegationDays);
+    setDelegationForm((prev) => ({
+      ...prev,
+      start_date: newStart,
+      end_date: newEnd,
+    }));
+  };
+
+  const handleDelegationEndChange = (newEnd: string) => {
+    const days = hitungJumlahHari(delegationForm.start_date, newEnd);
+    setDelegationDays(days);
+    setDelegationForm((prev) => ({
+      ...prev,
+      end_date: newEnd,
+    }));
+  };
+
+  const handleDelegationDaysChange = (newDays: number) => {
+    const days = Math.max(1, Math.floor(newDays) || 1);
+    const newEnd = hitungTanggalSelesai(delegationForm.start_date, days);
+    setDelegationDays(days);
+    setDelegationForm((prev) => ({
+      ...prev,
+      end_date: newEnd,
+    }));
+  };
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -211,7 +248,7 @@ export const Approvals: React.FC = () => {
                             <td>
                               <div style={{ fontWeight: 600 }}>{l.days_count} Hari Kerja</div>
                               <div style={{ fontSize: '0.75rem', color: 'var(--text-soft)' }}>
-                                {l.start_date} s/d {l.end_date}
+                                📅 {formatTanggal(l.start_date)} s/d {formatTanggal(l.end_date)}
                               </div>
                             </td>
                             <td>
@@ -294,11 +331,11 @@ export const Approvals: React.FC = () => {
                               <div style={{ fontWeight: 600 }}>{ot.employee_name}</div>
                               <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{ot.branch_name || 'Kantor Pusat'}</div>
                             </td>
-                            <td style={{ fontWeight: 600 }}>{ot.date}</td>
+                            <td style={{ fontWeight: 600 }}>📅 {formatTanggalHari(ot.date)}</td>
                             <td>
                               <div style={{ fontWeight: 600 }}>{ot.duration_hours} Jam</div>
                               <div style={{ fontSize: '0.75rem', color: 'var(--text-soft)' }}>
-                                {ot.start_time} - {ot.end_time}
+                                ⏰ {ot.start_time} - {ot.end_time} WIB
                               </div>
                             </td>
                             <td>
@@ -383,7 +420,9 @@ export const Approvals: React.FC = () => {
                                 {d.module === 'ALL' ? 'Semua (Cuti & SPKL)' : d.module}
                               </span>
                             </td>
-                            <td style={{ fontSize: '0.8125rem' }}>{d.start_date} s/d {d.end_date}</td>
+                            <td>
+                              <div style={{ fontWeight: 600 }}>📅 {formatTanggal(d.start_date)} s/d {formatTanggal(d.end_date)}</div>
+                            </td>
                             <td style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>{d.reason || '-'}</td>
                             <td>
                               <span className={`badge ${d.status === 'ACTIVE' ? 'badge-success' : 'badge-danger'}`}>
@@ -489,9 +528,12 @@ export const Approvals: React.FC = () => {
                     type="date"
                     className="form-control"
                     value={delegationForm.start_date}
-                    onChange={(e) => setDelegationForm({ ...delegationForm, start_date: e.target.value })}
+                    onChange={(e) => handleDelegationStartChange(e.target.value)}
                     required
                   />
+                  <span style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 600, marginTop: '2px', display: 'block' }}>
+                    {formatTanggalHari(delegationForm.start_date)}
+                  </span>
                 </div>
                 <div>
                   <label style={{ fontSize: '0.75rem', fontWeight: 600, display: 'block', marginBottom: '0.25rem' }}>Tanggal Berakhir:</label>
@@ -499,9 +541,47 @@ export const Approvals: React.FC = () => {
                     type="date"
                     className="form-control"
                     value={delegationForm.end_date}
-                    onChange={(e) => setDelegationForm({ ...delegationForm, end_date: e.target.value })}
+                    onChange={(e) => handleDelegationEndChange(e.target.value)}
                     required
                   />
+                  <span style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 600, marginTop: '2px', display: 'block' }}>
+                    {formatTanggalHari(delegationForm.end_date)}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: 600, display: 'block', marginBottom: '0.25rem' }}>Durasi Masa Delegasi (Hari):</label>
+                <input
+                  type="number"
+                  min={1}
+                  className="form-control"
+                  value={delegationDays}
+                  onChange={(e) => handleDelegationDaysChange(Number(e.target.value))}
+                  required
+                />
+              </div>
+
+              {/* Banner Ringkasan Masa Delegasi */}
+              <div
+                style={{
+                  padding: '0.625rem 0.875rem',
+                  backgroundColor: 'var(--primary-light)',
+                  border: '1px solid var(--primary-active)',
+                  borderRadius: 'var(--radius-sm)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.625rem',
+                }}
+              >
+                <i className="fa-solid fa-user-shield" style={{ color: 'var(--primary)', fontSize: '0.9rem' }}></i>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-main)' }}>
+                  <div>
+                    Masa Berlaku Delegasi: <strong>{delegationDays} Hari</strong>
+                  </div>
+                  <div style={{ fontSize: '0.6875rem', color: 'var(--text-soft)', marginTop: '2px' }}>
+                    📅 {formatTanggalHari(delegationForm.start_date)} s/d {formatTanggalHari(delegationForm.end_date)}
+                  </div>
                 </div>
               </div>
 
