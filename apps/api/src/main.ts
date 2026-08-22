@@ -1,7 +1,10 @@
+import path from 'path';
+import fs from 'fs';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import jwt from '@fastify/jwt';
+import fastifyStatic from '@fastify/static';
 import { authRoutes } from './routes/auth.js';
 import { healthRoutes } from './routes/health.js';
 import { branchRoutes } from './routes/branches.js';
@@ -21,8 +24,14 @@ export async function buildApp() {
   });
 
   // Security & Utility Plugins
-  await app.register(cors, { origin: process.env.CORS_ORIGIN || 'http://localhost:5173' });
-  await app.register(helmet);
+  await app.register(cors, {
+    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : true,
+    credentials: true,
+  });
+  await app.register(helmet, {
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  });
   await app.register(jwt, { secret: process.env.JWT_SECRET || 'dev-secret-change-in-production' });
 
   // Decorators for JWT auth
@@ -44,6 +53,33 @@ export async function buildApp() {
   await app.register(leaveRoutes, { prefix: '/api/v1/leave' });
   await app.register(settingsRoutes, { prefix: '/api/v1/settings' });
   await app.register(approvalRoutes, { prefix: '/api/v1/approvals' });
+
+  // Static files for Frontend SPA (Hostinger / Production All-in-One Deployment)
+  const candidatePaths = [
+    process.env.STATIC_PATH,
+    path.resolve(process.cwd(), '../web/dist'),
+    path.resolve(process.cwd(), 'apps/web/dist'),
+    path.resolve(process.cwd(), 'dist/public'),
+    path.resolve(process.cwd(), 'public'),
+  ].filter(Boolean) as string[];
+
+  const staticDir = candidatePaths.find((p) => fs.existsSync(p));
+
+  if (staticDir) {
+    await app.register(fastifyStatic, {
+      root: staticDir,
+      prefix: '/',
+      wildcard: false,
+    });
+
+    app.setNotFoundHandler((request, reply) => {
+      if (request.raw.url && request.raw.url.startsWith('/api')) {
+        reply.code(404).send({ success: false, error_code: 'NOT_FOUND', message: 'Endpoint API tidak ditemukan.' });
+      } else {
+        reply.sendFile('index.html');
+      }
+    });
+  }
 
   return app;
 }
