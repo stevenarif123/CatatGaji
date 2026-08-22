@@ -268,7 +268,13 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--danger-text);
 }
 
-.badge-secondary {
+.badge-purple {
+  background-color: var(--purple-light);
+  color: var(--purple-text);
+}
+
+.badge-secondary,
+.badge-muted {
   background-color: #f1f5f9;
   color: var(--text-soft);
 }
@@ -336,4 +342,56 @@ h1, h2, h3, h4, h5, h6 {
   background-color: var(--info-light);
   color: var(--info-text);
   border: 1px solid #bfdbfe;
+}
+
+/* ============================================================
+ * Modals & Overlays (Vivid Clarity Design System)
+ * High-diffused Glassmorphism backdrop, centered floating cards
+ * ============================================================ */
+.modal-overlay,
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(11, 28, 48, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 9999;
+  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-content {
+  background-color: #ffffff;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 20px 60px -15px rgba(0, 80, 203, 0.2), 0 0 1px 1px rgba(11, 28, 48, 0.05);
+  padding: 1.75rem;
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  width: 100%;
+  position: relative;
+  animation: modalSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

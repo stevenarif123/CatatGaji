@@ -647,14 +647,53 @@ export const Attendance: React.FC = () => {
       )}
 
       {/* Modal Buat Pengajuan Cuti */}
+      {/* MODAL PENGAJUAN CUTI */}
       {showLeaveModal && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '480px' }}>
+        <div
+          className="modal-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowLeaveModal(false);
+          }}
+        >
+          <div className="modal-content" style={{ maxWidth: '520px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
-              <h3 style={{ fontSize: '1.125rem', margin: 0 }}>Pengajuan Cuti / Izin Karyawan</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div
+                  style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '10px',
+                    backgroundColor: 'var(--primary-light)',
+                    color: 'var(--primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.1rem',
+                  }}
+                >
+                  <i className="fa-solid fa-calendar-plus"></i>
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', margin: 0, fontWeight: 700 }}>Pengajuan Cuti / Izin</h3>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+                    Kepatuhan UU No. 13/2003 & UU KIA No. 4/2024
+                  </p>
+                </div>
+              </div>
               <button
+                type="button"
                 onClick={() => setShowLeaveModal(false)}
-                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: 'var(--text-faint)', cursor: 'pointer' }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '1.25rem',
+                  color: 'var(--text-muted)',
+                  cursor: 'pointer',
+                  padding: '0.25rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
               >
                 <i className="fa-solid fa-xmark"></i>
               </button>
@@ -662,7 +701,7 @@ export const Attendance: React.FC = () => {
 
             <form onSubmit={handleLeaveSubmit}>
               <div className="form-group">
-                <label className="form-label">Karyawan</label>
+                <label className="form-label">Pilih Karyawan</label>
                 <select
                   className="form-control"
                   value={leaveData.employee_id}
@@ -743,7 +782,7 @@ export const Attendance: React.FC = () => {
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.25rem', marginTop: '1.5rem' }}>
                 <button
                   type="button"
                   className="btn btn-secondary"
@@ -752,7 +791,8 @@ export const Attendance: React.FC = () => {
                   Batal
                 </button>
                 <button type="submit" className="btn btn-primary" disabled={leaveSubmitting}>
-                  {leaveSubmitting ? 'Mengajukan...' : 'Kirim Pengajuan'}
+                  <i className={`fa-solid ${leaveSubmitting ? 'fa-spinner fa-spin' : 'fa-paper-plane'}`}></i>
+                  <span>{leaveSubmitting ? 'Mengajukan...' : 'Kirim Pengajuan'}</span>
                 </button>
               </div>
             </form>

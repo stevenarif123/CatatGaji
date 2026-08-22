@@ -931,16 +931,32 @@ export const ESS: React.FC = () => {
 
         {/* MODAL 2: AJUKAN CUTI (UU KIA 2024) */}
         {isLeaveModalOpen && (
-          <div className="modal-backdrop" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div className="modal-content" style={{ maxWidth: '420px', width: '90%', padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: 0 }}>Pengajuan Cuti Karyawan</h3>
-                <button onClick={() => setIsLeaveModalOpen(false)} className="btn-close">&times;</button>
+          <div
+            className="modal-backdrop"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setIsLeaveModalOpen(false);
+            }}
+          >
+            <div className="modal-content" style={{ maxWidth: '440px', width: '90%', padding: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <i className="fa-solid fa-calendar-plus"></i>
+                  </div>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: 0 }}>Pengajuan Cuti Karyawan</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsLeaveModalOpen(false)}
+                  style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: 'var(--text-muted)', cursor: 'pointer' }}
+                >
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
               </div>
 
               <form onSubmit={handleLeaveSubmit}>
                 <div className="form-group">
-                  <label className="form-label">Jenis Cuti (UU Ketenagakerjaan & UU KIA 2024)</label>
+                  <label className="form-label">Jenis Cuti (UU KIA 2024)</label>
                   <select className="form-control" value={leaveType} onChange={(e) => setLeaveType(e.target.value)}>
                     <option value="ANNUAL">Cuti Tahunan (12 Hari)</option>
                     <option value="MATERNITY">Cuti Melahirkan (UU KIA 2024 - 3 s/d 6 Bulan)</option>
@@ -967,7 +983,7 @@ export const ESS: React.FC = () => {
                   <textarea rows={2} required className="form-control" placeholder="Keterangan pengajuan cuti..." value={leaveReason} onChange={(e) => setLeaveReason(e.target.value)} />
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.25rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
                   <button type="button" onClick={() => setIsLeaveModalOpen(false)} className="btn btn-secondary">Batal</button>
                   <button type="submit" className="btn btn-primary" disabled={submittingLeave}>
                     <i className={`fa-solid ${submittingLeave ? 'fa-spinner fa-spin' : 'fa-paper-plane'}`}></i>
@@ -981,11 +997,27 @@ export const ESS: React.FC = () => {
 
         {/* MODAL 3: AJUKAN SPKL LEMBUR */}
         {isOvertimeModalOpen && (
-          <div className="modal-backdrop" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div className="modal-content" style={{ maxWidth: '420px', width: '90%', padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: 0 }}>Pengajuan Lembur Online (SPKL)</h3>
-                <button onClick={() => setIsOvertimeModalOpen(false)} className="btn-close">&times;</button>
+          <div
+            className="modal-backdrop"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setIsOvertimeModalOpen(false);
+            }}
+          >
+            <div className="modal-content" style={{ maxWidth: '440px', width: '90%', padding: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <i className="fa-solid fa-clock"></i>
+                  </div>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: 0 }}>Pengajuan Lembur (SPKL)</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsOvertimeModalOpen(false)}
+                  style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: 'var(--text-muted)', cursor: 'pointer' }}
+                >
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
               </div>
 
               <form onSubmit={handleOvertimeSubmit}>
