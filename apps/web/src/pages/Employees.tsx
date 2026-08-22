@@ -148,6 +148,31 @@ export const Employees: React.FC = () => {
     }
   };
 
+  const handleNextStep = (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+
+    if (modalStep === 1) {
+      if (!formData.full_name.trim()) {
+        setFormError('Nama lengkap karyawan wajib diisi sesuai KTP.');
+        return;
+      }
+      if (!formData.nik_ktp.trim() || formData.nik_ktp.length < 16) {
+        setFormError('NIK KTP wajib 16 digit angka.');
+        return;
+      }
+      setModalStep(2);
+    } else if (modalStep === 2) {
+      if (!formData.join_date) {
+        setFormError('Tanggal mulai bergabung wajib diisi.');
+        return;
+      }
+      setModalStep(3);
+    } else if (modalStep === 3) {
+      handleFormSubmit(e);
+    }
+  };
+
   const handleDelete = async (id: string, name: string) => {
     if (!window.confirm(`Yakin ingin menonaktifkan karyawan ${name}?`)) return;
     try {
@@ -390,7 +415,7 @@ export const Employees: React.FC = () => {
 
             {formError && <div className="alert alert-danger"><i className="fa-solid fa-circle-exclamation"></i>{formError}</div>}
 
-            <form onSubmit={modalStep === 3 ? handleFormSubmit : (e) => { e.preventDefault(); setModalStep((s) => s + 1); }}>
+            <form onSubmit={handleNextStep}>
               {modalStep === 1 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
                   <div className="form-group">
