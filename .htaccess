@@ -1,15 +1,29 @@
-# Apache / LiteSpeed Configuration for CatatGaji
+# Apache / LiteSpeed Configuration for CatatGaji (Production SPA & Node.js Routing)
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
 
-  # Serve existing static files from apps/api/dist/public or apps/web/dist if accessed directly
-  RewriteCond %{DOCUMENT_ROOT}/apps/api/dist/public%{REQUEST_URI} -f
-  RewriteRule ^(.*)$ apps/api/dist/public/$1 [QSA,L]
+  # 1. Jangan ubah jika URL mengarah ke file atau direktori fisik yang benar-benar ada
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
 
-  RewriteCond %{DOCUMENT_ROOT}/apps/web/dist%{REQUEST_URI} -f
-  RewriteRule ^(.*)$ apps/web/dist/$1 [QSA,L]
+  # 2. Rute API Fastify (/api/v1/...) diserahkan langsung ke server Node.js / Passenger
+  RewriteCond %{REQUEST_URI} ^/api/ [NC]
+  RewriteRule ^ - [L]
+
+  # 3. SPA Fallback: Arahkan seluruh rute URL (/register, /login, /attendance, /payroll, /employees, dll) ke index.html
+  RewriteRule ^ index.html [L]
 </IfModule>
 
-# Disable directory browsing (prevent 403 when files exist)
+# Keamanan: Matikan browsing direktori
 Options -Indexes
+
+# Caching & Compression untuk file JS / CSS / Asset Vite
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+</IfModule>
