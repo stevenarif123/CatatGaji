@@ -27,10 +27,27 @@ export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}
     ...rest,
   });
 
-  const data = await response.json();
+  let data: any;
+  const contentType = response.headers.get('content-type') || '';
+
+  if (contentType.includes('application/json')) {
+    data = await response.json();
+  } else {
+    const text = await response.text();
+    if (!response.ok) {
+      throw new Error(
+        `Layanan Backend Node.js belum aktif di Hostinger (Status ${response.status}). Pastikan aplikasi Node.js sudah di-Start di menu hPanel.`
+      );
+    }
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { success: false, message: text };
+    }
+  }
 
   if (!response.ok || data.success === false) {
-    const errorMsg = data.message || `Request failed with status ${response.status}`;
+    const errorMsg = data.message || `Permintaan gagal dengan status ${response.status}`;
     const err = new Error(errorMsg);
     (err as any).data = data;
     throw err;
