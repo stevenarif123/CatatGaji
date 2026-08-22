@@ -89,8 +89,18 @@ export async function initDb() {
   if (pgliteInstance) {
     await pgliteInstance.waitReady;
   }
-  const migrationsDir = path.join(__dirname, 'database', 'migrations');
-  if (!fs.existsSync(migrationsDir)) return;
+  const candidateMigrationDirs = [
+    path.join(__dirname, 'database', 'migrations'),
+    path.join(__dirname, '..', 'src', 'database', 'migrations'),
+    path.resolve(process.cwd(), 'apps/api/src/database/migrations'),
+    path.resolve(process.cwd(), 'src/database/migrations'),
+    path.resolve(process.cwd(), 'database/migrations'),
+  ];
+  const migrationsDir = candidateMigrationDirs.find((d) => fs.existsSync(d));
+  if (!migrationsDir) {
+    console.warn('⚠️ [Database] Direktori migrasi tidak ditemukan di candidate paths.');
+    return;
+  }
 
   // 1. Ensure schema_migrations table exists
   if (pgliteInstance) {
