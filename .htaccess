@@ -1,0 +1,15 @@
+# Apache / LiteSpeed Configuration for CatatGaji
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Serve existing static files from apps/api/dist/public or apps/web/dist if accessed directly
+  RewriteCond %{DOCUMENT_ROOT}/apps/api/dist/public%{REQUEST_URI} -f
+  RewriteRule ^(.*)$ apps/api/dist/public/$1 [QSA,L]
+
+  RewriteCond %{DOCUMENT_ROOT}/apps/web/dist%{REQUEST_URI} -f
+  RewriteRule ^(.*)$ apps/web/dist/$1 [QSA,L]
+</IfModule>
+
+# Disable directory browsing (prevent 403 when files exist)
+Options -Indexes

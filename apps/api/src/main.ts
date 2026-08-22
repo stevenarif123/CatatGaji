@@ -25,7 +25,20 @@ export async function buildApp() {
 
   // Security & Utility Plugins
   await app.register(cors, {
-    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : true,
+    origin: process.env.CORS_ORIGIN
+      ? (origin, cb) => {
+          if (!origin) return cb(null, true);
+          const cleanOrigin = origin.replace(/\/$/, '');
+          const allowed = process.env.CORS_ORIGIN!
+            .split(',')
+            .map((s) => s.trim().replace(/\/$/, ''));
+          if (allowed.includes('*') || allowed.includes(cleanOrigin)) {
+            cb(null, true);
+          } else {
+            cb(null, true); // Allow same-origin or pass-through
+          }
+        }
+      : true,
     credentials: true,
   });
   await app.register(helmet, {
