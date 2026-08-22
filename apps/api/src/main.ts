@@ -74,6 +74,7 @@ export async function buildApp() {
     path.resolve(process.cwd(), 'apps/web/dist'),
     path.resolve(process.cwd(), 'dist/public'),
     path.resolve(process.cwd(), 'public'),
+    fs.existsSync(path.join(process.cwd(), 'index.html')) ? process.cwd() : null,
   ].filter(Boolean) as string[];
 
   const staticDir = candidatePaths.find((p) => fs.existsSync(p));
