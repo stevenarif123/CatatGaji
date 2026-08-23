@@ -67,6 +67,7 @@ export const PayrollWizard: React.FC = () => {
       await apiFetch<any>(`/payroll/periods/${periodId}/run-calculation`, {
         method: 'POST',
         token,
+        body: {},
       });
       await loadData();
       setStep(2);

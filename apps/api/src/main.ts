@@ -23,6 +23,20 @@ export async function buildApp() {
     },
   });
 
+  // Gracefully handle empty JSON body (FST_ERR_CTP_EMPTY_JSON_BODY prevention)
+  app.addContentTypeParser('application/json', { parseAs: 'string' }, (req, body: string, done) => {
+    if (!body || body.trim() === '') {
+      return done(null, {});
+    }
+    try {
+      const json = JSON.parse(body);
+      done(null, json);
+    } catch (err: any) {
+      err.statusCode = 400;
+      done(err, undefined);
+    }
+  });
+
   // Security & Utility Plugins
   await app.register(cors, {
     origin: process.env.CORS_ORIGIN
