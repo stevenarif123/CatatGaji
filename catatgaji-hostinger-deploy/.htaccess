@@ -1,0 +1,29 @@
+# Apache / LiteSpeed Configuration for CatatGaji (Production SPA & Node.js Routing)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. Jangan ubah jika URL mengarah ke file atau direktori fisik yang benar-benar ada
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # 2. Rute API Fastify (/api/v1/...) diserahkan langsung ke server Node.js / Passenger
+  RewriteCond %{REQUEST_URI} ^/api/ [NC]
+  RewriteRule ^ - [L]
+
+  # 3. SPA Fallback: Arahkan seluruh rute URL (/register, /login, /attendance, /payroll, /employees, dll) ke index.html
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Keamanan: Matikan browsing direktori
+Options -Indexes
+
+# Caching & Compression untuk file JS / CSS / Asset Vite
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+</IfModule>

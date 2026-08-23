@@ -1,12 +1,21 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { apiFetch } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { formatRupiah } from '@catatgaji/shared';
 
 export const Settings: React.FC = () => {
   const token = useAuthStore((state) => state.token);
-  const [activeTab, setActiveTab] = useState<'PROFILE' | 'BRANCHES' | 'SECURITY' | 'AUDIT'>('PROFILE');
+  const [searchParams] = useSearchParams();
+  const initialTab = (searchParams.get('tab') as any) || 'PROFILE';
+  const [activeTab, setActiveTab] = useState<'PROFILE' | 'BRANCHES' | 'SECURITY' | 'AUDIT' | 'DEBUG'>(initialTab);
   const [loading, setLoading] = useState(true);
+
+  // Debug / Demo State
+  const [seedingMock, setSeedingMock] = useState(false);
+  const [resettingMock, setResettingMock] = useState(false);
+  const [debugSuccess, setDebugSuccess] = useState<string | null>(null);
+  const [debugError, setDebugError] = useState<string | null>(null);
 
   // Profile Form State
   const [profile, setProfile] = useState<any>({
@@ -159,6 +168,49 @@ export const Settings: React.FC = () => {
     }
   };
 
+  // Handle Seed Demo Data
+  const handleSeedDemoData = async () => {
+    setSeedingMock(true);
+    setDebugSuccess(null);
+    setDebugError(null);
+    try {
+      const res = await apiFetch<any>('/debug/seed-demo-data', {
+        method: 'POST',
+        token,
+        body: {},
+      });
+      setDebugSuccess(res.message || 'Data mock berhasil dibuat!');
+      loadSettings();
+    } catch (err: any) {
+      setDebugError(err.message || 'Gagal membuat data mock.');
+    } finally {
+      setSeedingMock(false);
+    }
+  };
+
+  // Handle Reset Demo Data
+  const handleResetDemoData = async () => {
+    if (!window.confirm('PERINGATAN: Apakah Anda yakin ingin menghapus SELURUH data karyawan, absensi, dan penggajian? Akun perusahaan tetap aman.')) {
+      return;
+    }
+    setResettingMock(true);
+    setDebugSuccess(null);
+    setDebugError(null);
+    try {
+      const res = await apiFetch<any>('/debug/reset-demo-data', {
+        method: 'POST',
+        token,
+        body: {},
+      });
+      setDebugSuccess(res.message || 'Seluruh data berhasil di-reset.');
+      loadSettings();
+    } catch (err: any) {
+      setDebugError(err.message || 'Gagal me-reset data.');
+    } finally {
+      setResettingMock(false);
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Header */}
@@ -176,6 +228,7 @@ export const Settings: React.FC = () => {
           { id: 'BRANCHES', label: 'Cabang & UMK Daerah', icon: 'fa-solid fa-network-wired' },
           { id: 'SECURITY', label: 'Keamanan & PIN Pengesahan', icon: 'fa-solid fa-shield-halved' },
           { id: 'AUDIT', label: 'Log Audit Forensik (UU PDP)', icon: 'fa-solid fa-clipboard-list' },
+          { id: 'DEBUG', label: '🛠️ Menu Debug & Mock Data', icon: 'fa-solid fa-flask-vial' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -542,6 +595,103 @@ export const Settings: React.FC = () => {
             </div>
           )}
         </section>
+      )}
+
+      {/* TAB 5: MENU DEBUG & DEMO DATA GENERATOR */}
+      {activeTab === 'DEBUG' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '850px' }}>
+          {debugSuccess && (
+            <div className="alert alert-success">
+              <i className="fa-solid fa-circle-check"></i>
+              <span>{debugSuccess}</span>
+            </div>
+          )}
+          {debugError && (
+            <div className="alert alert-danger">
+              <i className="fa-solid fa-circle-exclamation"></i>
+              <span>{debugError}</span>
+            </div>
+          )}
+
+          <section className="card" style={{ padding: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '12px',
+                  backgroundColor: 'var(--primary-light)',
+                  color: 'var(--primary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.5rem',
+                }}
+              >
+                <i className="fa-solid fa-flask-vial"></i>
+              </div>
+              <div>
+                <h2 style={{ fontSize: '1.125rem', fontWeight: 700, margin: 0 }}>
+                  Pusat Generator Data Uji Coba (Sandbox & Testing)
+                </h2>
+                <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
+                  Gunakan menu ini untuk menghasilkan data tiruan yang realistis guna menguji seluruh modul sistem.
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+              <div style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-color)' }}>
+                <div style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <i className="fa-solid fa-users text-primary"></i> 5 Karyawan Beragam
+                </div>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+                  Manager, Senior Dev, Staff, Marketing, & Warehouse dengan status TER A, TER B, gaji Rp 5jt - 15jt, BPJS 5 program, dan NPWP valid.
+                </p>
+              </div>
+
+              <div style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-color)' }}>
+                <div style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <i className="fa-solid fa-calendar-check text-success"></i> 10 Hari Log Absensi
+                </div>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+                  Simulasi jam masuk (08:00 WIB), jam pulang (17:00 WIB), variasi keterlambatan, dan lembur 2 jam otomatis.
+                </p>
+              </div>
+
+              <div style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-color)' }}>
+                <div style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <i className="fa-solid fa-calculator text-warning"></i> Periode Penggajian Aktif
+                </div>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+                  Periode draf bulan ini siap dikalkulasikan dengan 1-klik untuk memeriksa PPh 21 TER, slip gaji, dan ekspor formulir pajak.
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
+              <button
+                className="btn btn-primary"
+                onClick={handleSeedDemoData}
+                disabled={seedingMock || resettingMock}
+                style={{ padding: '0.75rem 1.5rem', fontSize: '0.9375rem' }}
+              >
+                <i className={`fa-solid ${seedingMock ? 'fa-spinner fa-spin' : 'fa-wand-magic-sparkles'}`}></i>
+                <span>{seedingMock ? 'Sedang Membuat Data Mock...' : '🚀 Generate Data Mock Lengkap'}</span>
+              </button>
+
+              <button
+                className="btn btn-danger"
+                onClick={handleResetDemoData}
+                disabled={seedingMock || resettingMock}
+                style={{ padding: '0.75rem 1.25rem' }}
+              >
+                <i className={`fa-solid ${resettingMock ? 'fa-spinner fa-spin' : 'fa-trash-can'}`}></i>
+                <span>{resettingMock ? 'Membersihkan...' : 'Reset Seluruh Data Uji Coba'}</span>
+              </button>
+            </div>
+          </section>
+        </div>
       )}
     </div>
   );

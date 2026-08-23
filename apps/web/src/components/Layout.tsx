@@ -21,6 +21,7 @@ export const Layout: React.FC = () => {
     { label: 'Laporan Finansial & Pajak', to: '/tax-reports', icon: 'fa-solid fa-file-invoice-dollar' },
     { label: 'Portal Karyawan (ESS)', to: '/portal-karyawan', icon: 'fa-solid fa-mobile-screen-button' },
     { label: 'Pengaturan Sistem', to: '/settings', icon: 'fa-solid fa-gear' },
+    { label: '🛠️ Sandbox / Demo Data', to: '/settings?tab=DEBUG', icon: 'fa-solid fa-flask-vial' },
   ];
 
   return (

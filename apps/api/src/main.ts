@@ -14,6 +14,7 @@ import { attendanceRoutes } from './routes/attendance.js';
 import { leaveRoutes } from './routes/leave.js';
 import { settingsRoutes } from './routes/settings.js';
 import { approvalRoutes } from './routes/approvals.js';
+import { debugRoutes } from './routes/debug.js';
 import { initDb } from './db.js';
 
 export async function buildApp() {
@@ -80,6 +81,7 @@ export async function buildApp() {
   await app.register(leaveRoutes, { prefix: '/api/v1/leave' });
   await app.register(settingsRoutes, { prefix: '/api/v1/settings' });
   await app.register(approvalRoutes, { prefix: '/api/v1/approvals' });
+  await app.register(debugRoutes, { prefix: '/api/v1/debug' });
 
   // Static files for Frontend SPA (Hostinger / Production All-in-One Deployment)
   const candidatePaths = [

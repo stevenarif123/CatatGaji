@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { apiFetch } from '../lib/api';
+import { apiFetch, API_BASE_URL } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { formatRupiah } from '@catatgaji/shared';
 import { jsPDF } from 'jspdf';
@@ -100,7 +100,8 @@ export const TaxReports: React.FC = () => {
 
   const handleDownloadCsv = async (url: string, defaultFilename: string) => {
     try {
-      const res = await fetch(`http://localhost:3000/api/v1${url}`, {
+      const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+      const res = await fetch(fullUrl, {
         headers: { authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Gagal mengunduh berkas CSV');
