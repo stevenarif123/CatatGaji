@@ -1,4 +1,4 @@
-import { OVERTIME_HOURLY_DIVISOR } from '../constants.js';
+import { OVERTIME_HOURLY_DIVISOR } from '../constants';
 
 export type OvertimeDayType = 'WORKDAY' | 'HOLIDAY_5DAY' | 'HOLIDAY_6DAY';
 

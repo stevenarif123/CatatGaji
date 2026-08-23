@@ -49,7 +49,7 @@ export interface User {
 
 // ── Employee ────────────────────────────────────────────────
 
-import type { PtkpStatus, TerCategory } from './constants.js';
+import type { PtkpStatus, TerCategory } from './constants';
 
 export interface Employee {
   id: string;

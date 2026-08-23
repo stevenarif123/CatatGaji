@@ -4,8 +4,8 @@ import {
   BIAYA_JABATAN_RATE,
   BIAYA_JABATAN_MAX_ANNUAL,
   BIAYA_JABATAN_MAX_MONTHLY,
-} from '../constants.js';
-import type { PtkpStatus } from '../constants.js';
+} from '../constants';
+import type { PtkpStatus } from '../constants';
 
 export interface ReconciliationInput {
   ptkpStatus: PtkpStatus;

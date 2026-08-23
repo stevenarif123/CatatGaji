@@ -1,9 +1,9 @@
-import { PTKP_TO_TER } from '../constants.js';
-import type { PtkpStatus, TerCategory } from '../constants.js';
-import { calculateBpjs } from './bpjsService.js';
-import type { BpjsConfig, BpjsResult } from './bpjsService.js';
-import { lookupTerRate } from './terTables.js';
-import type { TerLayer } from './terTables.js';
+import { PTKP_TO_TER } from '../constants';
+import type { PtkpStatus, TerCategory } from '../constants';
+import { calculateBpjs } from './bpjsService';
+import type { BpjsConfig, BpjsResult } from './bpjsService';
+import { lookupTerRate } from './terTables';
+import type { TerLayer } from './terTables';
 
 export interface AllowanceItem {
   name: string;

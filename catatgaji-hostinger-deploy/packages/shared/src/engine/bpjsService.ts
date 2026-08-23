@@ -1,5 +1,5 @@
-import { BPJS } from '../constants.js';
-import type { JkkRiskGrade } from '../types.js';
+import { BPJS } from '../constants';
+import type { JkkRiskGrade } from '../types';
 
 export interface BpjsConfig {
   jkkRiskGrade?: JkkRiskGrade;

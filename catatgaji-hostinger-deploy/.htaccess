@@ -1,18 +1,18 @@
-# Apache / LiteSpeed Configuration for CatatGaji (Production LiteSpeed Reverse Proxy & SPA Fallback)
+# Apache / LiteSpeed Configuration for CatatGaji (Production SPA & Node.js Routing)
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
 
-  # 1. Teruskan seluruh request API (/api/...) dan status kesehatan (/health) ke backend Fastify Node.js di Port 3000
-  RewriteRule ^api/(.*)$ http://127.0.0.1:3000/api/$1 [P,L]
-  RewriteRule ^health$ http://127.0.0.1:3000/health [P,L]
-
-  # 2. Jangan ubah jika URL mengarah ke file atau direktori statis fisik yang benar-benar ada
+  # 1. Jangan ubah jika URL mengarah ke file atau direktori fisik yang benar-benar ada
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # 3. SPA Fallback: Arahkan seluruh rute URL UI React (/register, /login, /attendance, /payroll, /employees, dll) ke index.html
+  # 2. Rute API Fastify (/api/v1/...) diserahkan langsung ke server Node.js / Passenger
+  RewriteCond %{REQUEST_URI} ^/api/ [NC]
+  RewriteRule ^ - [L]
+
+  # 3. SPA Fallback: Arahkan seluruh rute URL (/register, /login, /attendance, /payroll, /employees, dll) ke index.html
   RewriteRule ^ index.html [L]
 </IfModule>
 
