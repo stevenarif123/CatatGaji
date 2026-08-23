@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { apiFetch } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { formatRupiah, formatTanggal } from '@catatgaji/shared';
@@ -250,7 +250,23 @@ export const PayrollWizard: React.FC = () => {
         </div>
       </section>
 
-      {error && <div className="alert alert-danger"><i className="fa-solid fa-circle-exclamation"></i>{error}</div>}
+      {error && (
+        <div
+          className="alert alert-danger"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <i className="fa-solid fa-circle-exclamation"></i>
+            <span>{error}</span>
+          </div>
+          {error.toLowerCase().includes('karyawan') && (
+            <Link to="/employees" className="btn btn-sm btn-primary" style={{ whiteSpace: 'nowrap' }}>
+              <i className="fa-solid fa-user-plus"></i>
+              <span>+ Tambah Karyawan</span>
+            </Link>
+          )}
+        </div>
+      )}
 
       {/* LANGKAH 1: Kalkulasi Batch */}
       {step === 1 && (
