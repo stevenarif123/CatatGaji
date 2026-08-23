@@ -200,7 +200,7 @@ export const debugRoutes: FastifyPluginAsync = async (app) => {
             ) VALUES (
               ${logId}, ${tenant_id}, ${empId}, ${activeShiftId}, ${dateStr},
               ${clockInTime.toISOString()}, ${clockOutTime.toISOString()},
-              ${lateMins}, 0, 480 + overtimeMins, ${overtimeMins}, ${isLate ? 'LATE' : 'PRESENT'}
+              ${lateMins}, 0, ${480 + overtimeMins}, ${overtimeMins}, ${isLate ? 'LATE' : 'PRESENT'}
             )
             ON CONFLICT DO NOTHING
           `;
